@@ -1,0 +1,9 @@
+node_modules/
+.next/
+target/
+stellar.exe
+stellar.tar.gz
+*.wasm
+.env
+.env.local
+.DS_Store
