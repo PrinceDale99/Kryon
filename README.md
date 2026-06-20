@@ -34,6 +34,12 @@ Our mission is to democratize access to instant working capital for businesses w
 
 ---
 
+## 🔗 Live Testnet Deployment
+- **Deployed Contract ID**: `CCJUOYAZCR4JHADRXSV7IOAHPX45SW3IXH6FJ4A4FM22ARIWDNTJYNNP`
+- **Contract Deployment Hash**: `0be5a3e8e87bb51a2cc8ca619ec98b0cea6bb01f9b37751fb1f662ee04a67383` (Verifiable on Stellar Expert)
+
+---
+
 ## 🛠 Prerequisites
 To build, test, and deploy the smart contracts locally, ensure you have the following installed:
 * **Rust**: `rustc 1.70.0` or higher
