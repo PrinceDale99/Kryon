@@ -1,13 +1,6 @@
-# PledgeeLock
+# Kryon Network
 
 **A decentralized invoice factoring and liquidity provision protocol powered by Stellar and Soroban Smart Contracts.**
-
----
-
-## 📸 Screenshots
-![Wallet Connection](./public/Balance%20+%20Wallet%20Connected.png)
-![Transaction](./public/Transaction.png)
-![Successful Transaction](./public/Successful%20Transaction.png)
 
 ---
 
@@ -15,14 +8,14 @@
 Small to Medium Businesses (SMBs) consistently face crippling cash flow bottlenecks due to standard Net-30, Net-60, or Net-90 invoice payment terms. Traditional invoice factoring is heavily centralized, opaque, painfully slow, and predatory—often charging exorbitant fees and requiring massive amounts of manual paperwork and credit checks.
 
 ## 💡 The Solution
-PledgeeLock revolutionizes SMB financing by bringing invoice factoring on-chain. By leveraging Zero-Knowledge (ZK) proofs to cryptographically verify live ERP data (such as QuickBooks or Stripe), PledgeeLock allows businesses to tokenize their open invoices. 
+Kryon Network revolutionizes SMB financing by bringing invoice factoring on-chain. By leveraging Zero-Knowledge (ZK) proofs to cryptographically verify live ERP data (such as QuickBooks or Stripe), Kryon Network allows businesses to tokenize their open invoices. 
 
 Once verified, Soroban smart contracts instantly route working capital from decentralized Liquidity Provider (LP) pools directly into the borrower's wallet. When the invoice is paid by the original client, the smart contract automatically settles the debt and distributes the yield to the LPs.
 
 ---
 
 ## 🎯 Vision and Purpose
-Our mission is to democratize access to instant working capital for businesses worldwide. By removing the traditional banking middlemen and utilizing the lightning-fast, low-fee architecture of the Stellar network, PledgeeLock aims to establish a global, borderless factoring ecosystem that is transparent, highly liquid, and universally accessible.
+Our mission is to democratize access to instant working capital for businesses worldwide. By removing the traditional banking middlemen and utilizing the lightning-fast, low-fee architecture of the Stellar network, Kryon Network aims to establish a global, borderless factoring ecosystem that is transparent, highly liquid, and universally accessible.
 
 ---
 
@@ -100,5 +93,13 @@ soroban contract invoke \
 
 ---
 
+## 📸 Screenshots
+![Balance + Wallet Connected](./public/Balance%20+%20Wallet%20Connected.png)
+![Transaction](./public/Transaction.png)
+![Successful Transaction](./public/Successful%20Transaction.png)
+
+---
+
 ## 📄 License
 This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more details.
+
