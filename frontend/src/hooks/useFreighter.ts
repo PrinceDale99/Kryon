@@ -8,9 +8,10 @@ export const useFreighter = () => {
 
   useEffect(() => {
     const checkInstallation = async () => {
-      const connected = await isConnected();
-      setHasFreighter(connected);
-      if (connected && localStorage.getItem('kryon_wallet_connected') === 'true') {
+      const connected: any = await isConnected();
+      const isConn = !!(connected === true || (connected && connected.isConnected));
+      setHasFreighter(isConn);
+      if (isConn && localStorage.getItem('kryon_wallet_connected') === 'true') {
         connect();
       }
     };
@@ -44,9 +45,9 @@ export const useFreighter = () => {
 
   const connect = async () => {
     try {
-      let access = await requestAccess();
+      let access: any = await requestAccess();
       if (access && typeof access === 'object' && access.error) {
-        console.error(access.error);
+        console.error("Freighter access error:", typeof access.error === 'string' ? access.error : access.error.message || "User declined or access failed");
         return;
       }
       let keyResp: any = await getAddress();

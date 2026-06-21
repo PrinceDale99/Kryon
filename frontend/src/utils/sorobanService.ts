@@ -40,7 +40,6 @@ const executeTestnetTransaction = async (publicKey: string, amount: string, isPa
     
     // Request Freighter to sign it
     const signedResp: any = await signTransaction(xdr, { 
-      network: "TESTNET",
       networkPassphrase: StellarSdk.Networks.TESTNET
     });
     

@@ -61,7 +61,7 @@ export default function LPDashboard() {
     setLoading(true);
     setErrorMsg(null);
     try {
-      const hash = await depositLiquidity(Number(amount), walletAddress, isDemoMode);
+      const hash = await depositLiquidity(Number(amount), walletAddress || "", isDemoMode);
       setSuccessHash(hash);
       setSuccessAmount(amount);
       setAmount('');
@@ -81,7 +81,7 @@ export default function LPDashboard() {
     }
   };
 
-  const item = {
+  const item: any = {
     hidden: { opacity: 0, y: 20 },
     show: { opacity: 1, y: 0, transition: { type: "spring" } }
   };

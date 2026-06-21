@@ -7,3 +7,5 @@ stellar.tar.gz
 .env
 .env.local
 .DS_Store
+
+.vercel

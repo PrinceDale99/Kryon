@@ -62,7 +62,7 @@ export default function BorrowerDashboard() {
         if (inv) faceValue = inv.amount_due;
       }
       
-      const hash = await submitFactoringRequest(selectedInvoice || "mock_hash_12345", faceValue, walletAddress, isDemoMode);
+      const hash = await submitFactoringRequest(selectedInvoice || "mock_hash_12345", faceValue, walletAddress || "", isDemoMode);
       
       if (!isDemoMode && erpConnected) {
         // Now trigger the backend Treasury to dispense the actual XLM!
