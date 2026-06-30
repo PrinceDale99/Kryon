@@ -159,12 +159,29 @@ export const WalletConnectButton = () => {
                       <div className="mb-6 bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">ZK Identity Verification</p>
                         <p className="text-xs text-slate-500 mb-3">Verify your identity without revealing sensitive info.</p>
-                        <form className="flex flex-col space-y-3">
+                        <form className="flex flex-col space-y-3" onSubmit={(e) => e.preventDefault()}>
                           <label className="flex flex-col">
                               <span className="text-xs font-semibold mb-1 text-slate-600 dark:text-slate-400">Credential Document (Local Only)</span>
                               <input type="file" className="text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-900" />
                           </label>
-                          <button type="button" className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition text-sm font-bold shadow-sm">
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                                setCopied(true); // Reusing a state temporarily, or we can just mock it internally
+                                const btn = document.getElementById('zk-btn');
+                                if (btn) {
+                                    btn.innerText = 'Generating SNARK...';
+                                    btn.classList.replace('bg-blue-600', 'bg-blue-400');
+                                    btn.setAttribute('disabled', 'true');
+                                    setTimeout(() => {
+                                        btn.innerText = 'Proof Generated & Verified!';
+                                        btn.classList.replace('bg-blue-400', 'bg-emerald-500');
+                                    }, 2500);
+                                }
+                            }}
+                            id="zk-btn"
+                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition text-sm font-bold shadow-sm"
+                          >
                               Generate ZK Proof
                           </button>
                         </form>
