@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { Twitter, Github, Disc as Discord } from 'lucide-react';
 
 export const Footer = () => {
   return (
@@ -25,15 +24,15 @@ export const Footer = () => {
           </div>
           <div>
             <h4 className="font-bold text-slate-900 dark:text-white mb-4">Community</h4>
-            <div className="flex space-x-4">
+            <div className="flex space-x-4 font-bold text-sm">
               <a href="https://twitter.com" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-blue-400 transition-colors">
-                <Twitter className="w-5 h-5" />
+                Twitter
               </a>
               <a href="https://github.com/PrinceDale99/Kryon" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors">
-                <Github className="w-5 h-5" />
+                GitHub
               </a>
               <a href="https://discord.com" target="_blank" rel="noreferrer" className="text-slate-400 hover:text-indigo-500 transition-colors">
-                <Discord className="w-5 h-5" />
+                Discord
               </a>
             </div>
           </div>
