@@ -8,7 +8,7 @@ import { TransactionHistory } from '../../../components/TransactionHistory';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LPDashboard() {
-  const { isDemoMode } = useStore();
+  const { isDemoMode, displayCurrency, exchangeRates } = useStore();
   const { walletAddress } = useFreighter();
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,9 +17,14 @@ export default function LPDashboard() {
   const [successAmount, setSuccessAmount] = useState<string>('');
   const [isConfirming, setIsConfirming] = useState(false);
   const [treasuryBalance, setTreasuryBalance] = useState<string>('--');
+  const [treasuryBalanceRaw, setTreasuryBalanceRaw] = useState<number>(0);
 
   useEffect(() => {
-    if (isDemoMode) return;
+    if (isDemoMode) {
+      setTreasuryBalance("2.45M");
+      setTreasuryBalanceRaw(2450000);
+      return;
+    }
     const fetchTVL = async () => {
       try {
         const TREASURY = "GCO5RGVLRVNIF42JRQYCOCIC4Z66W2WIBVO3EMEUIM4LYHPOIM5KPGSG";
@@ -29,6 +34,7 @@ export default function LPDashboard() {
           const native = data.balances.find((b: any) => b.asset_type === 'native');
           if (native) {
             const num = parseFloat(native.balance);
+            setTreasuryBalanceRaw(num);
             if (num > 1000000) {
               setTreasuryBalance((num / 1000000).toFixed(2) + 'M');
             } else if (num > 1000) {
@@ -112,7 +118,10 @@ export default function LPDashboard() {
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl"><Layers className="w-6 h-6" /></div>
             <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Total Value Locked</h3>
           </div>
-          <p className="text-5xl font-black tracking-tighter">{isDemoMode ? "2.45M" : treasuryBalance} <span className="text-2xl text-slate-400 font-medium tracking-normal">XLM</span></p>
+          <div>
+            <p className="text-5xl font-black tracking-tighter">{isDemoMode ? "2.45M" : treasuryBalance} <span className="text-2xl text-slate-400 font-medium tracking-normal">XLM</span></p>
+            <p className="text-sm font-bold text-slate-400 mt-2">({treasuryBalanceRaw ? (treasuryBalanceRaw * (exchangeRates[displayCurrency] || 1)).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '...'} {displayCurrency.toUpperCase()})</p>
+          </div>
         </motion.div>
         
         <motion.div variants={item} className="bg-gradient-to-br from-emerald-500 to-teal-600 p-8 rounded-3xl text-white shadow-xl shadow-emerald-500/20 relative overflow-hidden hover:-translate-y-1 transition-transform">

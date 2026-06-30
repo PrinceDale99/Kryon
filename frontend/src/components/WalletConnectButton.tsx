@@ -8,7 +8,10 @@ import { X, Wallet, Link as LinkIcon, Smartphone, Copy, Check, LogOut, ExternalL
 
 export const WalletConnectButton = () => {
   const { hasFreighter, connect, disconnect, walletAddress } = useFreighter();
-  const { balance } = useStore();
+  const { balance, displayCurrency, exchangeRates } = useStore();
+  const rate = exchangeRates[displayCurrency] || 1;
+  const fiatBalance = balance ? (parseFloat(balance) * rate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '...';
+  const formattedFiat = balance ? `(${fiatBalance} ${displayCurrency.toUpperCase()})` : '';
   
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -43,7 +46,7 @@ export const WalletConnectButton = () => {
           className="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 p-1 pr-3 transition-colors shadow-sm"
         >
           <div className="px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg font-bold text-sm border border-slate-200 dark:border-slate-700 shadow-sm text-blue-600 dark:text-blue-400">
-            {balance ? `${balance} XLM` : '...'}
+            {balance ? `${balance} XLM ${formattedFiat}` : '...'}
           </div>
           <div className="flex items-center space-x-2 px-1">
             <span className="relative flex h-2 w-2">
@@ -107,7 +110,7 @@ export const WalletConnectButton = () => {
 
                         <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
                           <span className="text-sm font-medium text-slate-500">Total Balance</span>
-                          <span className="font-black text-xl text-slate-900 dark:text-white">{balance} <span className="text-sm text-blue-500">XLM</span></span>
+                          <span className="font-black text-xl text-slate-900 dark:text-white">{balance} <span className="text-sm text-blue-500">XLM {formattedFiat}</span></span>
                         </div>
                       </div>
 

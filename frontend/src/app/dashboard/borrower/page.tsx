@@ -8,7 +8,7 @@ import { TransactionHistory } from '../../../components/TransactionHistory';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function BorrowerDashboard() {
-  const { isDemoMode } = useStore();
+  const { isDemoMode, displayCurrency, exchangeRates } = useStore();
   const { walletAddress } = useFreighter();
   const [loadingStep, setLoadingStep] = useState(0);
   const [successHash, setSuccessHash] = useState<string | null>(null);
@@ -131,6 +131,7 @@ export default function BorrowerDashboard() {
             <div className="absolute top-0 right-0 p-4 opacity-20"><Zap className="w-24 h-24" /></div>
             <h2 className="text-sm font-semibold opacity-90 mb-2 relative z-10">Available Credit Line</h2>
             <p className="text-4xl font-black relative z-10 tracking-tight">150,000 <span className="text-2xl text-blue-200">XLM</span></p>
+            <p className="text-sm font-bold text-blue-300 mt-1 relative z-10">({(150000 * (exchangeRates[displayCurrency] || 1)).toLocaleString(undefined, { maximumFractionDigits: 0 })} {displayCurrency.toUpperCase()})</p>
           </div>
         </motion.div>
 

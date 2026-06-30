@@ -5,7 +5,8 @@ import { ExternalLink, ArrowRightLeft, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export const TransactionHistory = () => {
-  const { walletAddress, isDemoMode } = useStore();
+  const { walletAddress, isDemoMode, displayCurrency, exchangeRates } = useStore();
+  const rate = exchangeRates[displayCurrency] || 1;
   const [history, setHistory] = useState<any[]>([]);
 
   useEffect(() => {
@@ -16,9 +17,9 @@ export const TransactionHistory = () => {
 
     if (isDemoMode) {
       setHistory([
-        { id: "mock_1", type: "Liquidity Deposit", amount: "5,000 XLM", date: "Just now", status: "success" },
-        { id: "mock_2", type: "Invoice Factored", amount: "45,000 XLM", date: "2 mins ago", status: "success" },
-        { id: "mock_3", type: "Yield Payout", amount: "120 XLM", date: "1 hour ago", status: "success" },
+        { id: "mock_1", type: "Liquidity Deposit", amount: "5,000 XLM", amountRaw: 5000, date: "Just now", status: "success" },
+        { id: "mock_2", type: "Invoice Factored", amount: "45,000 XLM", amountRaw: 45000, date: "2 mins ago", status: "success" },
+        { id: "mock_3", type: "Yield Payout", amount: "120 XLM", amountRaw: 120, date: "1 hour ago", status: "success" },
       ]);
       return;
     }
@@ -32,6 +33,7 @@ export const TransactionHistory = () => {
             id: r.transaction_hash,
             type: r.type === 'payment' ? 'XLM Payment' : (r.type === 'manage_data' ? 'Factoring Request' : r.type),
             amount: r.type === 'manage_data' ? 'Pending Advance' : (r.amount ? `${r.amount} XLM` : 'Contract Invoke'),
+            amountRaw: r.amount ? parseFloat(r.amount) : null,
             date: new Date(r.created_at).toLocaleString(),
             status: "success",
             link: `https://stellar.expert/explorer/testnet/tx/${r.transaction_hash}`
@@ -89,6 +91,9 @@ export const TransactionHistory = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-black text-emerald-500">{tx.amount}</p>
+                  {tx.amountRaw && (
+                    <p className="text-xs font-bold text-slate-400 mt-0.5">({(tx.amountRaw * rate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })} {displayCurrency.toUpperCase()})</p>
+                  )}
                   {tx.link ? (
                     <a href={tx.link} target="_blank" rel="noreferrer" className="text-xs font-bold text-blue-500 hover:text-blue-600 flex items-center justify-end mt-2 transition-colors">
                       View on Stellar Expert <ExternalLink className="w-3 h-3 ml-1" />
