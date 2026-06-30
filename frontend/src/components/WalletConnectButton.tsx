@@ -156,6 +156,20 @@ export const WalletConnectButton = () => {
                         </div>
                       )}
 
+                      <div className="mb-6 bg-slate-50 dark:bg-slate-950 rounded-2xl p-4 border border-slate-200 dark:border-slate-800">
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">ZK Identity Verification</p>
+                        <p className="text-xs text-slate-500 mb-3">Verify your identity without revealing sensitive info.</p>
+                        <form className="flex flex-col space-y-3">
+                          <label className="flex flex-col">
+                              <span className="text-xs font-semibold mb-1 text-slate-600 dark:text-slate-400">Credential Document (Local Only)</span>
+                              <input type="file" className="text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-900" />
+                          </label>
+                          <button type="button" className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition text-sm font-bold shadow-sm">
+                              Generate ZK Proof
+                          </button>
+                        </form>
+                      </div>
+
                       <button 
                         onClick={() => setShowDisconnectConfirm(true)}
                         className="w-full py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 font-bold rounded-xl hover:bg-red-100 dark:hover:bg-red-900/40 transition-colors flex items-center justify-center space-x-2 border border-red-200 dark:border-red-900/50"

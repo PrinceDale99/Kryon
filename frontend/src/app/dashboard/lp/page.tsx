@@ -197,6 +197,38 @@ export default function LPDashboard() {
         </motion.div>
       </div>
 
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5 }}
+        className="mt-8 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none p-8"
+      >
+        <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="w-full md:w-1/2">
+            <h2 className="text-2xl font-black mb-3">Proof of Solvency</h2>
+            <p className="text-slate-500 text-lg leading-relaxed mb-6">
+              Cryptographically prove that Kryon's assets exceed its liabilities without disclosing the exact amounts.
+              Ideal for institutional partners and liquidity providers verifying the Treasury's health.
+            </p>
+          </div>
+          <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <form className="flex flex-col space-y-4">
+              <label className="flex flex-col">
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-widest">Asset Commitment Hash</span>
+                <input type="text" placeholder="0x..." className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 transition-colors font-mono text-sm" />
+              </label>
+              <label className="flex flex-col">
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-widest">Liability Commitment Hash</span>
+                <input type="text" placeholder="0x..." className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 transition-colors font-mono text-sm" />
+              </label>
+              <button type="button" className="bg-emerald-600 text-white py-3 px-4 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-500/20 mt-2">
+                Verify Solvency on Stellar
+              </button>
+            </form>
+          </div>
+        </div>
+      </motion.div>
+
       <AnimatePresence>
         {isConfirming && (
           <motion.div 

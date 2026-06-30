@@ -119,6 +119,25 @@ export default function DocsPage() {
             </div>
           </div>
         </motion.section>
+        <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
+          <div className="flex items-center space-x-4 mb-6">
+            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
+              <ShieldCheck className="w-8 h-8" />
+            </div>
+            <h2 className="text-3xl font-black">Privacy Architecture</h2>
+          </div>
+          <div className="space-y-4 text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
+            <p>
+              Explore how the Kryon Protocol leverages Noir, Barretenberg, and the Stellar network to enable private state transitions on a public ledger.
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-slate-600 dark:text-slate-300">
+                <li><strong>Client-Side Proving:</strong> Proofs are generated locally in your browser using WASM.</li>
+                <li><strong>Zero-Knowledge:</strong> Only cryptographically sound zero-knowledge proofs are transmitted.</li>
+                <li><strong>On-Chain Verification:</strong> Stellar smart contracts act as verifiers ensuring state transitions are correct.</li>
+                <li><strong>No Middlemen:</strong> Direct peer-to-peer logic secured by mathematics.</li>
+            </ul>
+          </div>
+        </motion.section>
       </motion.div>
 
       {/* Animation Flow Section */}

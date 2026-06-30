@@ -26,12 +26,10 @@ export const Navbar = () => {
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 group-hover:from-indigo-600 group-hover:to-emerald-500 transition-all duration-500">Kryon</span>
               <span className="ml-1 opacity-80">Network</span>
             </Link>
-            <div className="hidden md:flex space-x-6">
+            <div className="hidden md:flex space-x-8">
+              <Link href="/docs" className="text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-white text-sm font-bold tracking-wide transition-colors">Docs</Link>
               <Link href="/dashboard/borrower" className="text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-white text-sm font-bold tracking-wide transition-colors">SMB Dashboard</Link>
               <Link href="/dashboard/lp" className="text-slate-500 hover:text-emerald-600 dark:text-slate-400 dark:hover:text-white text-sm font-bold tracking-wide transition-colors">LP Dashboard</Link>
-              <Link href="/identity" className="text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-white text-sm font-bold tracking-wide transition-colors">Identity</Link>
-              <Link href="/solvency" className="text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-white text-sm font-bold tracking-wide transition-colors">Solvency</Link>
-              <Link href="/privacy" className="text-slate-500 hover:text-purple-600 dark:text-slate-400 dark:hover:text-white text-sm font-bold tracking-wide transition-colors">Privacy</Link>
             </div>
           </div>
           <div className="flex items-center space-x-6">
