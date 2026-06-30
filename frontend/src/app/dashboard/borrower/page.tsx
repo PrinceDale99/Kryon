@@ -22,6 +22,9 @@ export default function BorrowerDashboard() {
   const [erpUrl, setErpUrl] = useState('');
   const [erpApiKey, setErpApiKey] = useState('');
   const [erpApiSecret, setErpApiSecret] = useState('');
+  
+  const [zkmlLoading, setZkmlLoading] = useState(false);
+  const [zkmlResult, setZkmlResult] = useState<any>(null);
 
   useEffect(() => {
     const savedProvider = localStorage.getItem('erp_provider');
@@ -90,6 +93,36 @@ export default function BorrowerDashboard() {
       setErrorMsg(msg);
     } finally {
       setIsConnectingErp(false);
+    }
+  };
+
+  const runZkmlAnalysis = async () => {
+    setZkmlLoading(true);
+    setZkmlResult(null);
+    try {
+      let inv;
+      if (isDemoMode) {
+        inv = { invoice_number: "INV-1042", customer_name: "Apple Inc.", amount_due: 50000, status: "outstanding", currency: "USD", due_date: "2024-12-31" };
+      } else {
+        inv = liveInvoices.find(i => i.id === selectedInvoice);
+      }
+      if (!inv) throw new Error("No invoice selected");
+
+      const res = await fetch('/api/zkml', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ invoiceData: inv })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setZkmlResult(data.data);
+      } else {
+        setErrorMsg("ZKML Oracle failed: " + data.error);
+      }
+    } catch (e: any) {
+      setErrorMsg(e.message);
+    } finally {
+      setZkmlLoading(false);
     }
   };
 
@@ -216,11 +249,42 @@ export default function BorrowerDashboard() {
                       </span>
                       <p className="text-amber-600 dark:text-amber-500 text-sm font-bold tracking-wide uppercase">Mock ERP Connection</p>
                     </div>
-                    <select className="w-full p-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 font-medium focus:ring-2 focus:ring-amber-500 outline-none transition-shadow cursor-pointer shadow-sm">
+                    <select className="w-full p-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 font-medium focus:ring-2 focus:ring-amber-500 outline-none transition-shadow cursor-pointer shadow-sm mb-4">
                       <option>Invoice #1042 - Apple Inc. - $50,000</option>
                       <option>Invoice #1043 - Google LLC - $25,000</option>
                       <option>Invoice #1044 - Amazon - $100,000</option>
                     </select>
+
+                    <div className="border-t border-amber-200 dark:border-amber-900/50 pt-4 mt-2">
+                      <div className="flex justify-between items-center mb-4">
+                        <div className="flex items-center space-x-2 text-amber-700 dark:text-amber-500">
+                          <Zap className="w-5 h-5" />
+                          <span className="font-bold text-sm">ZKML Risk Oracle (Gemini AI)</span>
+                        </div>
+                        <button 
+                          onClick={runZkmlAnalysis}
+                          disabled={zkmlLoading}
+                          className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center space-x-2"
+                        >
+                          {zkmlLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Run Assessment</span>}
+                        </button>
+                      </div>
+                      
+                      {zkmlResult && (
+                        <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="bg-white/60 dark:bg-slate-950/60 p-4 rounded-xl border border-amber-200 dark:border-amber-800/50">
+                          <div className="flex justify-between items-end mb-2">
+                            <div>
+                              <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Risk Score</p>
+                              <p className="text-3xl font-black text-slate-800 dark:text-white">{zkmlResult.score}<span className="text-sm font-medium text-slate-400 ml-1">/ 100</span></p>
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-xs font-bold ${zkmlResult.risk_level === 'Low' ? 'bg-emerald-100 text-emerald-700' : zkmlResult.risk_level === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
+                              {zkmlResult.risk_level} Risk
+                            </div>
+                          </div>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 italic">"{zkmlResult.reasoning}"</p>
+                        </motion.div>
+                      )}
+                    </div>
                   </div>
                 </motion.div>
               ) : (
@@ -289,9 +353,9 @@ export default function BorrowerDashboard() {
                         </p>
                       </div>
                       <select 
-                        className="w-full p-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-shadow cursor-pointer shadow-sm"
+                        className="w-full p-4 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 font-medium focus:ring-2 focus:ring-emerald-500 outline-none transition-shadow cursor-pointer shadow-sm mb-4"
                         value={selectedInvoice}
-                        onChange={(e) => setSelectedInvoice(e.target.value)}
+                        onChange={(e) => { setSelectedInvoice(e.target.value); setZkmlResult(null); }}
                       >
                         {liveInvoices.map((inv) => (
                           <option key={inv.id} value={inv.id}>
@@ -299,6 +363,37 @@ export default function BorrowerDashboard() {
                           </option>
                         ))}
                       </select>
+
+                      <div className="border-t border-emerald-200 dark:border-emerald-900/50 pt-4 mt-2">
+                        <div className="flex justify-between items-center mb-4">
+                          <div className="flex items-center space-x-2 text-emerald-700 dark:text-emerald-500">
+                            <Zap className="w-5 h-5" />
+                            <span className="font-bold text-sm">ZKML Risk Oracle (Gemini AI)</span>
+                          </div>
+                          <button 
+                            onClick={runZkmlAnalysis}
+                            disabled={zkmlLoading}
+                            className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-lg shadow-sm transition flex items-center space-x-2"
+                          >
+                            {zkmlLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <span>Run Assessment</span>}
+                          </button>
+                        </div>
+                        
+                        {zkmlResult && (
+                          <motion.div initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="bg-white/60 dark:bg-slate-950/60 p-4 rounded-xl border border-emerald-200 dark:border-emerald-800/50">
+                            <div className="flex justify-between items-end mb-2">
+                              <div>
+                                <p className="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Risk Score</p>
+                                <p className="text-3xl font-black text-slate-800 dark:text-white">{zkmlResult.score}<span className="text-sm font-medium text-slate-400 ml-1">/ 100</span></p>
+                              </div>
+                              <div className={`px-3 py-1 rounded-full text-xs font-bold ${zkmlResult.risk_level === 'Low' ? 'bg-emerald-100 text-emerald-700' : zkmlResult.risk_level === 'Medium' ? 'bg-amber-100 text-amber-700' : 'bg-red-100 text-red-700'}`}>
+                                {zkmlResult.risk_level} Risk
+                              </div>
+                            </div>
+                            <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 italic">"{zkmlResult.reasoning}"</p>
+                          </motion.div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </motion.div>
