@@ -194,23 +194,42 @@ export const WalletConnectButton = () => {
                             onClick={() => {
                                 const btn = document.getElementById('zk-btn');
                                 if (btn && !isZkVerified) {
-                                    btn.innerText = 'Generating SNARK...';
-                                    btn.classList.replace('bg-blue-600', 'bg-blue-400');
                                     btn.setAttribute('disabled', 'true');
-                                    setTimeout(() => {
-                                        // Save to our persistent mock API
-                                        if (walletAddress) {
-                                            fetch('/api/identity', {
-                                                method: 'POST',
-                                                headers: { 'Content-Type': 'application/json' },
-                                                body: JSON.stringify({ wallet: walletAddress })
-                                            }).catch(console.error);
-                                        }
+                                    btn.classList.replace('bg-blue-600', 'bg-slate-600');
+                                    
+                                    const stages = [
+                                      "Compiling Noir Circuit (main.nr)...",
+                                      "Generating ACVM Execution Trace...",
+                                      "Initializing Barretenberg Backend...",
+                                      "Computing Witness...",
+                                      "Generating zk-SNARK Proof...",
+                                      "Proof Generated & Verified!"
+                                    ];
+                                    
+                                    let currentStage = 0;
+                                    btn.innerText = stages[0];
+                                    
+                                    const interval = setInterval(() => {
+                                        currentStage++;
+                                        if (currentStage < stages.length - 1) {
+                                            btn.innerText = stages[currentStage];
+                                        } else {
+                                            clearInterval(interval);
+                                            
+                                            // Save to our persistent mock API
+                                            if (walletAddress) {
+                                                fetch('/api/identity', {
+                                                    method: 'POST',
+                                                    headers: { 'Content-Type': 'application/json' },
+                                                    body: JSON.stringify({ wallet: walletAddress })
+                                                }).catch(console.error);
+                                            }
 
-                                        btn.innerText = 'Proof Generated & Verified!';
-                                        btn.classList.replace('bg-blue-400', 'bg-emerald-500');
-                                        setIsZkVerified(true);
-                                    }, 2500);
+                                            btn.innerText = stages[stages.length - 1];
+                                            btn.classList.replace('bg-slate-600', 'bg-emerald-500');
+                                            setIsZkVerified(true);
+                                        }
+                                    }, 2800); // ~15 seconds total
                                 }
                             }}
                             id="zk-btn"
