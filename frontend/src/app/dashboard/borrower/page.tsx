@@ -221,7 +221,7 @@ export default function BorrowerDashboard() {
                       >
                         {liveInvoices.map((inv) => (
                           <option key={inv.id} value={inv.id}>
-                            {inv.invoice_number} - {inv.customer_name} - ${inv.amount_due.toLocaleString()}
+                            {inv.invoice_number} - {inv.customer_name} - {new Intl.NumberFormat('en-US', { style: 'currency', currency: inv.currency || 'USD' }).format(inv.amount_due)}
                           </option>
                         ))}
                       </select>
