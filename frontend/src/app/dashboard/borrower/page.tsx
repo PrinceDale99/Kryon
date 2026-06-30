@@ -1,5 +1,5 @@
 "use client";
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../../store/useStore';
 import { useFreighter } from '../../../hooks/useFreighter';
 import { submitFactoringRequest } from '../../../utils/sorobanService';
