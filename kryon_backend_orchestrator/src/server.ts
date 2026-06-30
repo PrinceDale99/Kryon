@@ -115,7 +115,7 @@ app.get('/oracle/pubkey', (_req: Request, res: Response) => {
     res.json({ publicKey: oracle.publicKey, rawHex: oracle.rawPublicKeyBytes.toString('hex') });
 });
 
-const PORT = process.env.PORT || process.env.ORACLE_PORT || 4000;
+const PORT = Number(process.env.PORT || process.env.ORACLE_PORT || 4000);
 app.listen(PORT, '0.0.0.0', () => {
     console.log(`Kryon Oracle Relayer running on port ${PORT}`);
     console.log(`Oracle public key: ${oracle.publicKey}`);
