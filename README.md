@@ -1,5 +1,7 @@
 # Kryon Network 🛡️
 
+![Kryon Logo](public/logo.svg)
+
 **A decentralized invoice factoring and liquidity provision protocol powered by Stellar, Soroban Smart Contracts, and Zero-Knowledge (ZK) Cryptography.**
 
 ---
@@ -65,6 +67,17 @@ Once the ZK Proof is mathematically verified on-chain via **Soroban Smart Contra
 - **Dynamic Fiat-to-XLM Oracles**: Integrates real-time CoinGecko price oracles to instantly convert the live invoice fiat value (like PHP or USD) into the exact equivalent amount of XLM at the exact second of factoring.
 - **Deep Treasury Liquidity**: Our testnet Soroban Treasury maintains a pooled balance of >100,000 XLM, instantly releasing 90% of the invoice's market value dynamically to the borrower.
 - **Soroban Verification**: Ensures all logic is enforced transparently and immutably on the Stellar blockchain.
+
+### 📸 App Gallery
+
+![Balance and Wallet Connected](public/Balance%20+%20Wallet%20Connected.png)
+*Connecting Freighter Wallet and displaying available liquidity*
+
+![Transaction Factoring](public/Transaction.png)
+*Factoring an invoice with Zero-Knowledge verification*
+
+![Successful Transaction](public/Successful%20Transaction.png)
+*XLM deposited after smart contract settlement*
 
 ---
 
