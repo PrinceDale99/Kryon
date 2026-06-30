@@ -16,6 +16,31 @@ Kryon revolutionizes SMB financing by bringing invoice factoring on-chain. By le
 - **Data Authenticity**: Kryon uses ZK to verify the TLS/HTTPS responses from the ERP system (similar to DECO), proving mathematically that the API response came directly from the ERP server and was not tampered with by the borrower.
 - **On-chain Verification**: The generated ZK SNARK is submitted to a Soroban Smart Contract, which natively verifies the proof. This removes the need for centralized credit agencies or manual auditors.
 
+### 🏗 System Architecture (Mermaid)
+
+```mermaid
+sequenceDiagram
+    participant B as Borrower (SMB)
+    participant ERP as ERP System (ERPNext/Stripe)
+    participant F as Frontend (Browser / WASM)
+    participant O as Node.js Orchestrator (Oracle)
+    participant S as Soroban Smart Contract
+    participant LP as Liquidity Providers
+
+    LP->>S: 1. Deposit XLM Liquidity
+    B->>F: 2. Connects Wallet & Links ERP
+    F->>ERP: 3. Fetch Outstanding Invoices (OAuth)
+    ERP-->>F: 4. Invoice Data (JSON)
+    F->>F: 5. Borrower selects Invoice to Factor
+    F->>O: 6. Send ZK Proof Generation Request
+    O->>O: 7. Compile Noir Circuit & Generate Proof
+    O->>O: 8. Cryptographically Sign Attestation (Ed25519)
+    O-->>F: 9. Return Attestation Signature & Payload
+    F->>S: 10. submit_zk_factoring(Signature, Nullifier)
+    S->>S: 11. Verify Oracle Signature & Nullifier
+    S-->>B: 12. Payout 90% Invoice Value (XLM)
+```
+
 Once the ZK Proof is mathematically verified on-chain via **Soroban Smart Contracts**, Kryon instantly routes working capital from decentralized Liquidity Provider (LP) pools directly into the borrower's Freighter wallet.
 
 ### 🌟 Key Features
