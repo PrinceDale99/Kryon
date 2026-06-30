@@ -40,13 +40,24 @@ async def generate_proof(data: InvoiceData):
             json.dump({"input_data": [input_tensor]}, f)
 
         # 2. Run the EZKL Pipeline
-        # (Assuming network.onnx and keys are already compiled, or compile them dynamically)
-        if not os.path.exists(compiled_model_path):
-            # Dynamic compilation for demo purposes
+        # We must ensure the Proving Key (PK) exists before calling .prove()
+        if not os.path.exists(pk_path):
+            import gc
+            print("Optimizing and generating keys for low-RAM environment...")
             ezkl.gen_settings(model_path, settings_path)
+            # Force logrows to a smaller size to fit in 512MB RAM
+            with open(settings_path, 'r') as f:
+                settings = json.load(f)
+            settings['run_args']['logrows'] = 12
+            with open(settings_path, 'w') as f:
+                json.dump(settings, f)
+                
             ezkl.compile_circuit(model_path, compiled_model_path, settings_path)
             ezkl.get_srs(settings_path)
             ezkl.setup(compiled_model_path, vk_path, pk_path)
+            
+            # Force garbage collection to free up memory before the massive prove step
+            gc.collect()
 
         # 3. Generate Witness
         ezkl.gen_witness(data_path, compiled_model_path, witness_path)
