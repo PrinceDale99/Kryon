@@ -1,0 +1,53 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test-noir-circuits:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Nargo (Noir Compiler)
+        run: |
+          curl -L https://raw.githubusercontent.com/noir-lang/noirup/main/install | bash
+          export PATH="$HOME/.nargo/bin:$PATH"
+          noirup -v 0.30.0
+
+      - name: Check and Test Invoice Proof Circuit
+        run: |
+          export PATH="$HOME/.nargo/bin:$PATH"
+          cd kryon_zk/invoice_proof
+          nargo check
+          nargo test
+
+      - name: Check and Test KYC Proof Circuit
+        run: |
+          export PATH="$HOME/.nargo/bin:$PATH"
+          cd kryon_zk/kyc_proof
+          nargo check
+          nargo test
+
+  test-soroban-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Cargo build contracts
+        run: |
+          cd kryon_contracts
+          cargo build --target wasm32-unknown-unknown --release
+
+      - name: Cargo test contracts
+        run: |
+          cd kryon_contracts
+          cargo test

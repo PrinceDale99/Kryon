@@ -26,7 +26,10 @@ fn test_escrow_submit_invoice() {
     let client = KryonEscrowClient::new(&env, &contract_id);
 
     let smb = Address::generate(&env);
-    let invoice_hash = BytesN::from_array(&env, &[0; 32]);
+    let invoice_commitment = BytesN::from_array(&env, &[1; 32]);
+    let nullifier = BytesN::from_array(&env, &[2; 32]);
+    let zk_proof = BytesN::from_array(&env, &[3; 64]);
     
-    client.submit_invoice(&smb, &invoice_hash, &10000, &true);
+    // Test successful submission
+    client.submit_zk_factoring(&smb, &10000, &invoice_commitment, &nullifier, &zk_proof);
 }
