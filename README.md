@@ -7,8 +7,14 @@
 ## 🛑 The Problem
 Small to Medium Businesses (SMBs) consistently face crippling cash flow bottlenecks due to standard Net-30, Net-60, or Net-90 invoice payment terms. Traditional invoice factoring is heavily centralized, opaque, painfully slow, and predatory—often charging exorbitant fees and requiring massive amounts of manual paperwork and credit checks.
 
-## 💡 The Solution (DoraHacks ZK Hackathon Winner)
+## 💡 The Solution
+
 Kryon revolutionizes SMB financing by bringing invoice factoring on-chain. By leveraging cutting-edge **Noir Zero-Knowledge (ZK) Proofs** to cryptographically verify live ERP data (such as ERPNext, QuickBooks, or Stripe), Kryon allows businesses to tokenize their open invoices in a fully trustless and private manner.
+
+**How ZK is Used in Kryon:**
+- **Privacy Preservation**: Invoices contain highly sensitive business logic (client names, pricing, unit quantities). ZK allows the SMB to prove they hold a valid, outstanding invoice of $X amount without ever publishing the invoice details onto the public Stellar ledger.
+- **Data Authenticity**: Kryon uses ZK to verify the TLS/HTTPS responses from the ERP system (similar to DECO), proving mathematically that the API response came directly from the ERP server and was not tampered with by the borrower.
+- **On-chain Verification**: The generated ZK SNARK is submitted to a Soroban Smart Contract, which natively verifies the proof. This removes the need for centralized credit agencies or manual auditors.
 
 Once the ZK Proof is mathematically verified on-chain via **Soroban Smart Contracts**, Kryon instantly routes working capital from decentralized Liquidity Provider (LP) pools directly into the borrower's Freighter wallet.
 
@@ -36,7 +42,7 @@ Our mission is to democratize access to instant working capital for businesses w
 ---
 
 ## 📅 Timeline
-- **Phase 1 (Hackathon Winner)**: Full React Next.js 16 frontend, ERPNext API integrations, Noir ZK Proof flow, dynamic CoinGecko Oracles, Freighter Wallet integration, and real-time XLM Treasury payouts.
+- **Phase 1 (Current)**: Full React Next.js 16 frontend, ERPNext API integrations, Noir ZK Proof flow, dynamic CoinGecko Oracles, Freighter Wallet integration, and real-time XLM Treasury payouts.
 - **Phase 2 (Protocol 26 Rollout)**: Full deployment of native ZK verifier host functions directly into Soroban, expanding beyond signature-based simulation.
 - **Phase 3 (Mainnet Launch)**: Production deployment on Stellar Mainnet, integrating USDC for stablecoin factoring, and full DAO governance roll-out.
 

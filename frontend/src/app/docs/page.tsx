@@ -65,7 +65,15 @@ export default function DocsPage() {
               Traditionally, factoring requires intensive manual audits. Kryon Network removes this friction using <strong>Zero-Knowledge Proofs</strong> (simulating Chainlink DECO).
             </p>
             <p>
-              SMBs connect their ERPs (like QuickBooks or Xero) via OAuth. The protocol generates a cryptographic ZK Proof that mathematically guarantees the invoice exists and is valid on the ERP's servers—without exposing the sensitive underlying data to the public blockchain.
+              SMBs connect their ERPs (like QuickBooks, Stripe, or ERPNext) via OAuth. The protocol generates a cryptographic ZK Proof that mathematically guarantees three things:
+            </p>
+            <ul className="list-disc list-inside space-y-2 ml-4">
+              <li><strong>Authenticity:</strong> The invoice data was fetched directly from the ERP's secure servers and hasn't been tampered with.</li>
+              <li><strong>Integrity:</strong> The invoice amount, due date, and ownership strictly match what is being claimed.</li>
+              <li><strong>Privacy:</strong> The sensitive business data (who the client is, line items, corporate rates) is <em>never</em> exposed to the public Stellar ledger.</li>
+            </ul>
+            <p className="mt-4">
+              This proof is then submitted to the Soroban smart contract, which acts as a decentralized verifier. If the math checks out, the contract autonomously triggers the liquidity release without any human intervention.
             </p>
           </div>
         </motion.section>
