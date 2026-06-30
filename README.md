@@ -25,34 +25,46 @@ Kryon revolutionizes SMB financing by bringing invoice factoring on-chain. By le
 The architecture is divided into three highly decoupled trustless systems: the Client, the ZK Proving Engines, and the Soroban Smart Contracts.
 
 ```mermaid
-sequenceDiagram
-    participant SMB as 🏢 SMB (Borrower)
-    participant ERP as 🗄️ ERP / Stripe
-    participant App as 💻 Kryon Frontend
-    participant Noir as ⚡ Noir ZK Engine
-    participant EZKL as 🧠 ZKML Microservice
-    participant SC as ⛓️ Soroban Contract
+graph TD
+    %% Core Entities
+    SMB["🏢 Borrower (SMB)"]
+    LP["💧 Liquidity Providers"]
+    ERP["🗄️ ERP System (Stripe/QuickBooks)"]
 
-    SMB->>App: 1. Connects Wallet
-    App->>ERP: 2. OAuth Fetch Invoices
-    ERP-->>App: 3. Returns Invoice JSON
-    
-    rect rgb(240, 248, 255)
-    Note over App, EZKL: 🛡️ Zero-Knowledge Proof Generation Phase
-    App->>Noir: 4a. Request Invoice Validity Proof
-    Noir-->>App: 5a. Return Noir zk-SNARK
-    App->>EZKL: 4b. Request AI Risk Assessment
-    EZKL-->>App: 5b. Return EZKL zk-SNARK & Score
+    %% Kryon Network Components
+    subgraph Kryon Network
+        App["💻 Kryon Frontend"]
+        Noir["⚡ Noir Engine (Barretenberg)"]
+        EZKL["🧠 ZKML AI Engine (EZKL)"]
+        SC["⛓️ Soroban Smart Contracts"]
     end
+
+    %% Top-to-Bottom Flow (Linear to prevent entanglement)
+    LP -- "1. Deposits XLM" --> SC
+    SMB -- "2. Connects Wallet" --> App
+    App -- "3. Fetches Invoice" --> ERP
+    ERP -- "4. Returns Data" --> App
     
-    App->>SC: 6. submit_zk_factoring(Proofs)
+    App -- "5a. Request Integrity Proof" --> Noir
+    Noir -- "6a. Return Noir zk-SNARK" --> App
     
-    rect rgb(230, 255, 230)
-    Note over SC: ⛓️ Blockchain Settlement Phase
-    SC->>SC: 7. Verify ZK Proofs On-Chain
-    SC->>SC: 8. Spend Invoice Nullifier
-    SC-->>SMB: 9. Payout XLM from Treasury
-    end
+    App -- "5b. Request AI Risk Score" --> EZKL
+    EZKL -- "6b. Return Halo2 zk-SNARK" --> App
+    
+    App -- "7. submit_zk_factoring()" --> SC
+    SC -- "8. Factoring Advance (XLM)" --> SMB
+
+    %% Styling
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px,color:#000
+    classDef contract fill:#e0f7fa,stroke:#006064,stroke-width:2px,color:#000
+    classDef backend fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef ai fill:#fce4ec,stroke:#880e4f,stroke-width:2px,color:#000
+    classDef external fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+
+    class SC contract
+    class Noir backend
+    class EZKL ai
+    class ERP external
 ```
 
 ---
