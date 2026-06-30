@@ -8,12 +8,11 @@ import { TransactionHistory } from '../../../components/TransactionHistory';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function BorrowerDashboard() {
-  const { isDemoMode, displayCurrency, exchangeRates } = useStore();
+  const { isDemoMode, displayCurrency, exchangeRates, erpConnected, setErpConnected, disconnectErp: globalDisconnectErp } = useStore();
   const { walletAddress } = useFreighter();
   const [loadingStep, setLoadingStep] = useState(0);
   const [successHash, setSuccessHash] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [erpConnected, setErpConnected] = useState<'stripe' | 'quickbooks' | 'erpnext' | false>(false);
   const [isConnectingErp, setIsConnectingErp] = useState<'stripe' | 'quickbooks' | 'erpnext' | false>(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [liveInvoices, setLiveInvoices] = useState<any[]>([]);
@@ -24,8 +23,31 @@ export default function BorrowerDashboard() {
   const [erpApiKey, setErpApiKey] = useState('');
   const [erpApiSecret, setErpApiSecret] = useState('');
 
-  const fetchLiveInvoices = async (provider: 'stripe' | 'quickbooks' | 'erpnext') => {
-    if (provider === 'erpnext' && !erpApiKey) {
+  useEffect(() => {
+    const savedProvider = localStorage.getItem('erp_provider');
+    if (savedProvider) {
+      const url = localStorage.getItem('erp_url') || '';
+      const key = localStorage.getItem('erp_key') || '';
+      const secret = localStorage.getItem('erp_secret') || '';
+      
+      if (savedProvider === 'erpnext') {
+        setErpUrl(url);
+        setErpApiKey(key);
+        setErpApiSecret(secret);
+      }
+      
+      fetchLiveInvoices(savedProvider as any, true, { url, key, secret });
+    }
+  }, []);
+
+  const disconnectErp = () => {
+    globalDisconnectErp();
+    setLiveInvoices([]);
+    setSelectedInvoice('');
+  };
+
+  const fetchLiveInvoices = async (provider: 'stripe' | 'quickbooks' | 'erpnext', autoConnect = false, savedCreds?: any) => {
+    if (provider === 'erpnext' && !autoConnect && !showErpnextModal) {
       setShowErpnextModal(true);
       return;
     }
@@ -37,9 +59,9 @@ export default function BorrowerDashboard() {
         options.method = 'POST';
         options.headers = { 'Content-Type': 'application/json' };
         options.body = JSON.stringify({
-          erpnextUrl: erpUrl,
-          apiKey: erpApiKey,
-          apiSecret: erpApiSecret
+          erpnextUrl: savedCreds ? savedCreds.url : erpUrl,
+          apiKey: savedCreds ? savedCreds.key : erpApiKey,
+          apiSecret: savedCreds ? savedCreds.secret : erpApiSecret
         });
       }
 
@@ -50,6 +72,13 @@ export default function BorrowerDashboard() {
         if (json.data.length > 0) setSelectedInvoice(json.data[0].id);
         setErpConnected(provider);
         setShowErpnextModal(false);
+        
+        localStorage.setItem('erp_provider', provider);
+        if (provider === 'erpnext') {
+          localStorage.setItem('erp_url', savedCreds ? savedCreds.url : erpUrl);
+          localStorage.setItem('erp_key', savedCreds ? savedCreds.key : erpApiKey);
+          localStorage.setItem('erp_secret', savedCreds ? savedCreds.secret : erpApiSecret);
+        }
       } else {
         setErrorMsg(`Failed to fetch from ${provider}: ${json.error}`);
       }
@@ -465,12 +494,15 @@ export default function BorrowerDashboard() {
                       />
                     </div>
                   </div>
+                  <div className="text-center text-sm text-slate-500 mb-4 px-2">
+                    Leave blank to use the default platform account (environment variables)
+                  </div>
                   <motion.button 
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => fetchLiveInvoices('erpnext')} 
                     className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 disabled:opacity-50"
-                    disabled={!erpApiKey || !erpApiSecret || isConnectingErp === 'erpnext'}
+                    disabled={isConnectingErp === 'erpnext'}
                   >
                     {isConnectingErp === 'erpnext' ? 'Connecting...' : 'Connect ERP'}
                   </motion.button>

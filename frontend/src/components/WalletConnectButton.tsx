@@ -8,7 +8,14 @@ import { X, Wallet, Link as LinkIcon, Smartphone, Copy, Check, LogOut, ExternalL
 
 export const WalletConnectButton = () => {
   const { hasFreighter, connect, disconnect, walletAddress } = useFreighter();
-  const { balance, displayCurrency, exchangeRates, setDisplayCurrency } = useStore();
+  const { 
+    balance, 
+    displayCurrency, 
+    exchangeRates, 
+    setDisplayCurrency,
+    erpConnected,
+    disconnectErp 
+  } = useStore();
   const rate = exchangeRates[displayCurrency] || 1;
   const xlmNumber = balance ? parseFloat(balance) : null;
   const fiatBalance = xlmNumber ? (xlmNumber * rate).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '...';
@@ -129,6 +136,25 @@ export const WalletConnectButton = () => {
                           </select>
                         </div>
                       </div>
+
+                      {erpConnected && (
+                        <div className="mb-6 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+                              <span className="text-sm font-bold text-slate-700 dark:text-slate-300 capitalize">
+                                {erpConnected} Connected
+                              </span>
+                            </div>
+                            <button 
+                              onClick={disconnectErp}
+                              className="text-xs text-red-500 hover:text-red-700 font-semibold"
+                            >
+                              Disconnect
+                            </button>
+                          </div>
+                        </div>
+                      )}
 
                       <button 
                         onClick={() => setShowDisconnectConfirm(true)}

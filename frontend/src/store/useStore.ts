@@ -11,6 +11,9 @@ interface AppState {
   setDisplayCurrency: (c: string) => void;
   exchangeRates: Record<string, number>;
   fetchExchangeRates: () => Promise<void>;
+  erpConnected: string | null;
+  setErpConnected: (provider: string | null) => void;
+  disconnectErp: () => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -33,5 +36,16 @@ export const useStore = create<AppState>((set) => ({
     } catch (e) {
       console.warn("Failed to fetch exchange rates", e);
     }
+  },
+  erpConnected: null,
+  setErpConnected: (provider) => set({ erpConnected: provider }),
+  disconnectErp: () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('erp_provider');
+      localStorage.removeItem('erp_url');
+      localStorage.removeItem('erp_key');
+      localStorage.removeItem('erp_secret');
+    }
+    set({ erpConnected: null });
   }
 }));
