@@ -4,7 +4,7 @@ import { BarretenbergBackend } from '@noir-lang/backend_barretenberg';
 import { Noir } from '@noir-lang/noir_js';
 import * as invoiceCircuit from '../../kryon_zk/invoice_proof/target/invoice_proof.json';
 import * as kycCircuit from '../../kryon_zk/kyc_proof/target/kyc_proof.json';
-import { Server, Keypair, TransactionBuilder, Networks, Contract, xdr } from '@stellar/stellar-sdk';
+import { Horizon, Keypair, TransactionBuilder, Networks, Contract, xdr } from '@stellar/stellar-sdk';
 
 /**
  * ZK Orchestrator for Kryon Protocol
@@ -12,10 +12,10 @@ import { Server, Keypair, TransactionBuilder, Networks, Contract, xdr } from '@s
  * and submitting the verified payloads to Soroban smart contracts.
  */
 export class ZKOrchestrator {
-    private rpcServer: Server;
+    private rpcServer: Horizon.Server;
 
     constructor(rpcUrl: string = 'https://soroban-testnet.stellar.org') {
-        this.rpcServer = new Server(rpcUrl);
+        this.rpcServer = new Horizon.Server(rpcUrl);
     }
 
     /**
