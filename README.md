@@ -80,25 +80,71 @@ soroban contract build
 ```
 This will output the `.wasm` binaries into your `target/wasm32-unknown-unknown/release/` directory.
 
+## 🛡️ The Zero-Knowledge Implementation
+
+Kryon uses a highly flexible, multi-mode ZK verification engine built directly into the Soroban Smart Contracts. It dynamically switches between verification strategies depending on the network's capabilities:
+
+### Mode 0: Ed25519 Oracle Attestation (Production Default)
+- **Off-chain**: The Node.js Orchestrator uses `@aztec/bb.js` to compile the Noir circuits, generate a real `Barretenberg` Groth16 proof, and calculate the exact BN254 `poseidonHash`. If the proof is valid, the Oracle signs the `msg_hash` with its secure Ed25519 key.
+- **On-chain**: Soroban uses its highly optimized, native `env.crypto().ed25519_verify()` to validate the Oracle's signature. This allows Kryon to operate securely and cheaply on the Stellar Mainnet *today*, bypassing current WASM budget limitations.
+
+### Mode 1: Arkworks WASM Verifier (Option C)
+- **Off-chain**: Generates standard Groth16 proofs.
+- **On-chain**: Uses `ark-bn254` and `ark-groth16` compiled directly into the Soroban contract (`wasm32-unknown-unknown` `no_std`). The contract natively verifies the mathematical pairing of the proof on-chain. Requires high WASM instruction budgets.
+
+### Mode 2: Protocol 25/26 Native ZK (Option A)
+- **Future-proofed**: Ready for Stellar's upcoming host functions for native BN254 curve arithmetic. This will make native Groth16 pairing verification computationally cheap and native to the Stellar protocol.
+
 ---
 
-## 🧪 How to Test
-Run the native Rust test suite to verify contract logic, mathematical precision, and edge cases:
+## 📅 Timeline
+- **Phase 1 (Current)**: Full React Next.js 16 frontend, ERPNext API integrations, Noir ZK Proof flow (Barretenberg), dynamic CoinGecko Oracles, Freighter Wallet integration, and real-time XLM Treasury payouts.
+- **Phase 2 (Protocol 26 Rollout)**: Full deployment of native ZK verifier host functions directly into Soroban, dropping the Oracle for fully decentralized verification.
+- **Phase 3 (Mainnet Launch)**: Production deployment on Stellar Mainnet, integrating USDC for stablecoin factoring, and full DAO governance roll-out.
+
+---
+
+## 🛠 Prerequisites
+To build, test, and deploy the smart contracts locally, ensure you have the following installed:
+* **Node.js**: `v20.0.0` or higher
+* **Rust**: `rustc 1.70.0` or higher (with `wasm32-unknown-unknown` target)
+* **Soroban CLI**: `stellar-cli` (v22.0.0 or later)
+* **Nargo (Noir)**: For compiling ZK circuits.
+
+---
+
+## 🏗 How to Build & Run
+### 1. The Frontend & ZK Backend
 ```bash
+cd frontend
+npm install
+npm run dev
+```
+The backend ZK prover runs simultaneously on `http://localhost:4000/api/zk/prove`.
+
+### 2. The Smart Contracts
+Run the native Rust test suite to verify contract logic, Oracle Ed25519 signatures, timestamp expiry, and edge cases:
+```bash
+cd kryon_contracts
 cargo test
 ```
 
 ---
 
 ## 🚀 How to Deploy (Testnet)
-Deploy the compiled WASM contract to the Stellar Testnet using the Soroban CLI. Ensure you have a funded testnet identity configured first.
 
-```bash
-soroban contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/kryon_escrow.wasm \
-  --source <YOUR_TESTNET_IDENTITY> \
-  --network testnet
+We provide an automated deployment script for Windows environments that handles compiling the Soroban contracts, registering the Oracle Ed25519 public keys, and extracting the Groth16 VKs.
+
+1. Create a `.env` file in the root directory:
+```env
+TREASURY_SECRET_KEY=S...
+TREASURY_PUBLIC_KEY=G...
 ```
+2. Run the deployment script via PowerShell:
+```powershell
+.\scripts\deploy.ps1
+```
+This will automatically append the deployed `KRYON_VERIFIER_CONTRACT_ID` and the `ORACLE_SECRET_KEY` into your `.env` file.
 
 ---
 

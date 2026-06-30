@@ -1,0 +1,5 @@
+[package]
+name = "solvency_proof"
+type = "bin"
+authors = ["Kryon Network"]
+compiler_version = ">=0.18.0"

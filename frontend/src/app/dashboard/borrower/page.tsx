@@ -26,27 +26,28 @@ export default function BorrowerDashboard() {
   useEffect(() => {
     const savedProvider = localStorage.getItem('erp_provider');
     if (savedProvider) {
-      const url = localStorage.getItem('erp_url') || '';
-      const key = localStorage.getItem('erp_key') || '';
-      const secret = localStorage.getItem('erp_secret') || '';
-      
       if (savedProvider === 'erpnext') {
-        setErpUrl(url);
-        setErpApiKey(key);
-        setErpApiSecret(secret);
+        // We no longer retrieve credentials from localStorage.
+        // They are stored securely in HTTP-only cookies on the server.
       }
-      
-      fetchLiveInvoices(savedProvider as any, true, { url, key, secret });
+      fetchLiveInvoices(savedProvider as any, true);
     }
   }, []);
 
-  const disconnectErp = () => {
+  const disconnectErp = async () => {
     globalDisconnectErp();
     setLiveInvoices([]);
     setSelectedInvoice('');
+    localStorage.removeItem('erp_provider');
+    // Clear the secure cookies on the server
+    try {
+      await fetch('/api/erp/session', { method: 'DELETE' });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  const fetchLiveInvoices = async (provider: 'stripe' | 'quickbooks' | 'erpnext', autoConnect = false, savedCreds?: any) => {
+  const fetchLiveInvoices = async (provider: 'stripe' | 'quickbooks' | 'erpnext', autoConnect = false) => {
     if (provider === 'erpnext' && !autoConnect && !showErpnextModal) {
       setShowErpnextModal(true);
       return;
@@ -54,18 +55,25 @@ export default function BorrowerDashboard() {
 
     setIsConnectingErp(provider);
     try {
-      const options: RequestInit = {};
-      if (provider === 'erpnext') {
-        options.method = 'POST';
-        options.headers = { 'Content-Type': 'application/json' };
-        options.body = JSON.stringify({
-          erpnextUrl: savedCreds ? savedCreds.url : erpUrl,
-          apiKey: savedCreds ? savedCreds.key : erpApiKey,
-          apiSecret: savedCreds ? savedCreds.secret : erpApiSecret
+      // If ERPNext is selected manually, submit the credentials to be stored as secure cookies
+      if (provider === 'erpnext' && !autoConnect) {
+        const sessionRes = await fetch('/api/erp/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            erpnextUrl: erpUrl,
+            apiKey: erpApiKey,
+            apiSecret: erpApiSecret
+          })
         });
+        const sessionJson = await sessionRes.json();
+        if (!sessionJson.success) {
+          throw new Error('Failed to save ERP credentials securely');
+        }
       }
 
-      const res = await fetch(`/api/invoices/${provider}`, options);
+      // The server will use cookies or environment variables for credentials
+      const res = await fetch(`/api/invoices/${provider}`, { method: 'GET' });
       const json = await res.json();
       if (json.success) {
         setLiveInvoices(json.data);
@@ -74,16 +82,12 @@ export default function BorrowerDashboard() {
         setShowErpnextModal(false);
         
         localStorage.setItem('erp_provider', provider);
-        if (provider === 'erpnext') {
-          localStorage.setItem('erp_url', savedCreds ? savedCreds.url : erpUrl);
-          localStorage.setItem('erp_key', savedCreds ? savedCreds.key : erpApiKey);
-          localStorage.setItem('erp_secret', savedCreds ? savedCreds.secret : erpApiSecret);
-        }
       } else {
         setErrorMsg(`Failed to fetch from ${provider}: ${json.error}`);
       }
-    } catch (err: any) {
-      setErrorMsg(err.message);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "An error occurred";
+      setErrorMsg(msg);
     } finally {
       setIsConnectingErp(false);
     }
@@ -150,9 +154,10 @@ export default function BorrowerDashboard() {
       } else {
         setSuccessHash(hash);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error(e);
-      setErrorMsg(e.message || "Factoring failed. Did you decline the prompt?");
+      const msg = e instanceof Error ? e.message : "Factoring failed. Did you decline the prompt?";
+      setErrorMsg(msg);
     } finally {
       setLoadingStep(0);
     }

@@ -12,54 +12,49 @@ impl ShieldedPool {
         amount: i128,
         asset_commitment: BytesN<32>
     ) {
-        // In a true shielded pool, we don't store balances by Address.
-        // We store UTXO commitments to hide who owns what.
-        
-        // Ensure the UTXO doesn't already exist
         if env.storage().persistent().has(&asset_commitment) {
             panic!("UTXO Commitment already exists");
         }
         
-        // Store the encrypted UTXO commitment (Amount + Blinding Factor + Stealth PubKey)
         env.storage().persistent().set(&asset_commitment, &amount);
         
-        // Emit an event so the recipient can scan the ledger with their viewing key
-        // to detect if this UTXO belongs to them.
         env.events().publish((symbol_short!("shielded"), stealth_pubkey), asset_commitment);
     }
     
-    /// Spend a Shielded UTXO using a ZK Proof
+    /// Spend a Shielded UTXO using a ZK Proof verified by oracle
     pub fn spend_shielded(
         env: Env,
         nullifier: BytesN<32>,
-        zk_proof: BytesN<64>,
-        new_commitment: BytesN<32>
+        new_commitment: BytesN<32>,
+        message_hash: BytesN<32>,
+        oracle_signature: BytesN<64>,
+        attestation_timestamp: u64,
     ) {
         if env.storage().persistent().has(&nullifier) {
             panic!("Double spend detected: Nullifier already spent");
         }
-        
-        // Verify the ZK proof that the spender owns the UTXO commitment and it matches the nullifier
-        // (Mock BN254 verification)
-        let is_valid = Self::verify_spend_proof(&env, &nullifier, &new_commitment, &zk_proof);
-        if !is_valid {
-            panic!("Invalid ZK spend proof");
-        }
-        
-        // Mark nullifier as spent
-        env.storage().persistent().set(&nullifier, &true);
-        
-        // Add new UTXO commitment (the change + recipient output)
-        env.storage().persistent().set(&new_commitment, &true);
-    }
 
-    fn verify_spend_proof(
-        _env: &Env,
-        _nullifier: &BytesN<32>,
-        _new_commitment: &BytesN<32>,
-        _proof: &BytesN<64>
-    ) -> bool {
-        // Mock ZK Verification for Protocol 25/26 BN254 host functions
-        true
+        let oracle_pubkey: BytesN<32> = env.storage().instance()
+            .get(&symbol_short!("OKey"))
+            .expect("Oracle not initialized");
+
+        let current_time = env.ledger().timestamp();
+        if current_time > attestation_timestamp + 300 {
+            panic!("Attestation expired");
+        }
+
+        env.crypto().ed25519_verify(
+            &oracle_pubkey,
+            &message_hash.clone().into(),
+            &oracle_signature,
+        );
+
+        env.storage().persistent().set(&nullifier, &env.ledger().sequence());
+        env.storage().persistent().set(&new_commitment, &env.ledger().sequence());
+
+        env.events().publish(
+            (symbol_short!("spent"), symbol_short!("utxo")),
+            (nullifier, new_commitment)
+        );
     }
 }

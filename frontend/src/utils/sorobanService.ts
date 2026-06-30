@@ -81,17 +81,152 @@ export const depositLiquidity = async (amount: number, publicKey: string, isDemo
   return await executeTestnetTransaction(publicKey, formattedAmount); 
 };
 
-export const submitFactoringRequest = async (invoiceHash: string, faceValue: number, publicKey: string, isDemo: boolean): Promise<string> => {
-  if (isDemo) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(`mock_hash_escrow_factor_${Date.now()}`);
-      }, 3000);
-    });
-  }
+export const submitFactoringRequest = async (
+    invoiceId: string,
+    faceValue: number,
+    publicKey: string,
+    isDemo: boolean,
+    invoiceSecret?: string,
+    nullifierSecret?: string,
+): Promise<string> => {
+    if (isDemo) {
+        return new Promise(resolve => setTimeout(() =>
+            resolve(`demo_zk_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`), 3000
+        ));
+    }
 
-  // Live Mode: The borrower is receiving funds, not sending them!
-  // To get a real blockchain hash without taking money from the borrower, we simulate the smart contract invocation using a ManageData operation (which costs 0 XLM).
-  // The 'false' flag tells the helper to use ManageData instead of Payment.
-  return await executeTestnetTransaction(publicKey, "0", false);
+    // Step 1: Generate inputs
+    const secret = invoiceSecret || crypto.randomUUID().replace(/-/g, '');
+    const nullSecret = nullifierSecret || crypto.randomUUID().replace(/-/g, '');
+    const advanceRequested = Math.floor(faceValue * 0.9);
+
+    // Step 2: Generate proof + oracle attestation
+    const proveResponse = await fetch('/api/zk/prove', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            type: 'invoice',
+            invoiceAmount: faceValue,
+            advanceRequested,
+            invoiceSecret: secret,
+            invoiceCommitment: `0x${secret}`,
+            nullifierSecret: nullSecret,
+            nullifier: `0x${nullSecret}`,
+        }),
+    });
+
+    if (!proveResponse.ok) {
+        const err = await proveResponse.json();
+        throw new Error(`Proof generation failed: ${err.error}`);
+    }
+
+    const { attestation } = await proveResponse.json();
+    const { messageHash, signature, nullifier, timestamp } = attestation;
+
+    // Step 3: Build Soroban contract invocation using SorobanRpc
+    const rpcUrl = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org';
+    const contractId = process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ID;
+    if (!contractId) {
+        throw new Error('NEXT_PUBLIC_ESCROW_CONTRACT_ID env var is not set');
+    }
+
+    // Convert attestation hex strings to Buffers for XDR encoding
+    const msgHashBuf = Buffer.from(messageHash, 'hex').slice(0, 32);
+    const sigBuf = Buffer.from(signature, 'hex').slice(0, 64);
+    const nullifierBuf = Buffer.from(nullifier.replace('0x', ''), 'hex').slice(0, 32);
+    // Invoice commitment = Poseidon(faceValue, secret)  for now use the raw secret hash
+    const commitmentBuf = Buffer.from(secret, 'hex').slice(0, 32);
+
+    // Pad to exact byte lengths
+    const padTo = (buf: Buffer, len: number): Buffer => {
+        if (buf.length === len) return buf;
+        if (buf.length > len) return buf.slice(0, len);
+        return Buffer.concat([buf, Buffer.alloc(len - buf.length)]);
+    };
+
+    // Build the XDR operation to call KryonEscrow::submit_zk_factoring
+    const { Contract, TransactionBuilder, Networks, xdr, SorobanRpc } = StellarSdk;
+    const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
+    const sorobanServer = new SorobanRpc.Server(rpcUrl);
+    const account = await server.loadAccount(publicKey);
+    const fee = await server.fetchBaseFee();
+    const contract = new Contract(contractId);
+
+    const operation = contract.call(
+        'submit_zk_factoring',
+        // borrower: Address  caller's address
+        StellarSdk.xdr.ScVal.scvAddress(
+            StellarSdk.xdr.ScAddress.scAddressTypeAccount(
+                StellarSdk.Keypair.fromPublicKey(publicKey).xdrPublicKey()
+            )
+        ),
+        // advance_requested: i128
+        StellarSdk.xdr.ScVal.scvI128(new StellarSdk.xdr.Int128Parts({
+            hi: new StellarSdk.xdr.Int64(0),
+            lo: new StellarSdk.xdr.Uint64(advanceRequested)
+        })),
+        // invoice_commitment: BytesN<32>
+        StellarSdk.xdr.ScVal.scvBytes(padTo(commitmentBuf, 32)),
+        // nullifier: BytesN<32>
+        StellarSdk.xdr.ScVal.scvBytes(padTo(nullifierBuf, 32)),
+        // message_hash: BytesN<32>
+        StellarSdk.xdr.ScVal.scvBytes(padTo(msgHashBuf, 32)),
+        // oracle_signature: BytesN<64>
+        StellarSdk.xdr.ScVal.scvBytes(padTo(sigBuf, 64)),
+        // attestation_timestamp: u64
+        StellarSdk.xdr.ScVal.scvU64(new StellarSdk.xdr.Uint64(timestamp)),
+    );
+
+    // Build the transaction
+    let tx = new StellarSdk.TransactionBuilder(account, {
+        fee: fee.toString(),
+        networkPassphrase: StellarSdk.Networks.TESTNET,
+    })
+    .addOperation(operation)
+    .setTimeout(60)
+    .build();
+
+    // Simulate the transaction first to get the resource fee
+    const simResult = await sorobanServer.simulateTransaction(tx);
+    if (SorobanRpc.Api.isSimulationError(simResult)) {
+        throw new Error(`Soroban simulation failed: ${simResult.error}`);
+    }
+
+    // Assemble with correct resource limits from simulation
+    tx = SorobanRpc.assembleTransaction(tx, simResult).build();
+
+    // Sign with Freighter
+    const txXdr = tx.toXDR();
+    const { signTransaction } = await import('@stellar/freighter-api');
+    const signedResp: any = await signTransaction(txXdr, {
+        networkPassphrase: StellarSdk.Networks.TESTNET,
+    });
+
+    if (signedResp?.error) {
+        throw new Error(`Freighter signing failed: ${JSON.stringify(signedResp.error)}`);
+    }
+
+    const finalXdr = typeof signedResp === 'string' ? signedResp : signedResp.signedTxXdr;
+    const signedTx = StellarSdk.TransactionBuilder.fromXDR(finalXdr, StellarSdk.Networks.TESTNET);
+
+    // Submit to Soroban RPC (not Horizon  Soroban contracts use RPC)
+    const sendResult = await sorobanServer.sendTransaction(signedTx);
+    if (sendResult.status === 'ERROR') {
+        throw new Error(`Soroban submission failed: ${sendResult.errorResult}`);
+    }
+
+    // Poll for confirmation
+    let getResult = await sorobanServer.getTransaction(sendResult.hash);
+    let attempts = 0;
+    while (getResult.status === SorobanRpc.Api.GetTransactionStatus.NOT_FOUND && attempts < 30) {
+        await new Promise(r => setTimeout(r, 2000));
+        getResult = await sorobanServer.getTransaction(sendResult.hash);
+        attempts++;
+    }
+
+    if (getResult.status === SorobanRpc.Api.GetTransactionStatus.FAILED) {
+        throw new Error(`Soroban transaction failed: ${JSON.stringify(getResult)}`);
+    }
+
+    return sendResult.hash;
 };

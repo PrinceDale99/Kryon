@@ -11,9 +11,9 @@ Kryon utilizes a hybrid proving architecture:
 - **On-Chain Verification:** Soroban smart contracts serve exclusively as verifiers, minimizing gas costs and leveraging Stellar's native cryptographic host functions.
 
 ### Supported Proving Systems
-- **Primary:** Noir (PLONK / Groth16) for business logic circuits.
-- **Secondary:** Arkworks / Halo2 for complex aggregated proofs (Proof of Solvency, ZKML).
-- **zkVM Integration:** Future readiness for RISC Zero/SP1 for arbitrary Rust execution proofs.
+- **Primary (Mode 0):** Ed25519 Oracle Attestation using Barretenberg (via Node.js Orchestrator). Secure, cheap, and ready for mainnet today using native `ed25519_verify`.
+- **Secondary (Mode 1):** Arkworks / Halo2 WASM execution in Soroban. Mathematically verifies pure PLONK/Groth16 proofs natively on-chain. Requires high WASM bounds and `no_std` `alloc`.
+- **Future (Mode 2):** Protocol 25/26 Native ZK using built-in Soroban host functions for ultra-cheap BN254 arithmetic.
 
 ---
 
@@ -81,17 +81,17 @@ To ensure the system is modular and reusable, Kryon is built on the following pr
 
 ## 6. Implementation Roadmap
 
-### Phase 1: Core ZK Verification (Current)
+### Phase 1: Core ZK Verification (Completed)
 - [x] Set up Noir project structure (`kryon_zk`).
 - [x] Write Noir circuit for Invoice Integrity (`outstanding_amount > advance`).
-- [x] Integrate Soroban ZK Verifier stub.
+- [x] Integrate Soroban ZK Verifier (KryonVerifier using Oracle Attestation + Arkworks BN254).
 
-### Phase 2: Privacy & Identity
-- [ ] Implement Poseidon-based Merkle Tree for Shielded Accounts.
-- [ ] Create Nullifier registry in Soroban to prevent double-spending.
-- [ ] Implement ZK KYC (Proof of Accredited Investor).
+### Phase 2: Privacy & Identity (Completed)
+- [x] Implement Poseidon-based Merkle Tree for Shielded Accounts (MerkleMembership circuit).
+- [x] Create Nullifier registry in Soroban to prevent double-spending.
+- [x] Implement ZK KYC (Proof of Accredited Investor) and Age Verification.
 
-### Phase 3: Advanced Ecosystem
-- [ ] Deploy Shielded Pool Contract for confidential XLM/USDC transfers.
-- [ ] Implement Proof of Solvency circuit.
-- [ ] Finalize DoraHacks presentation, architecture diagrams, and benchmark tests.
+### Phase 3: Advanced Ecosystem (Completed)
+- [x] Deploy Shielded Pool Contract for confidential XLM/USDC transfers.
+- [x] Implement Proof of Solvency circuit.
+- [x] Finalize automated deployment script (`deploy.ps1`) and Multi-Mode verification architecture.
