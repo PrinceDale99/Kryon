@@ -1,4 +1,4 @@
-use dep::std::hash::poseidon;
+use poseidon::poseidon;
 
 fn main(a: Field, b: Field) -> pub Field {
     poseidon::bn254::hash_2([a, b])
