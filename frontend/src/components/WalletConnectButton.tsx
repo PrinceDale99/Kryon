@@ -26,10 +26,34 @@ export const WalletConnectButton = () => {
   const [showDisconnectConfirm, setShowDisconnectConfirm] = useState(false);
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
+  
+  // Cross-device persistence state
+  const [isZkVerified, setIsZkVerified] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Check identity status whenever wallet connects or modal opens
+  useEffect(() => {
+    if (walletAddress && showProfileModal) {
+      fetch(`/api/identity?wallet=${walletAddress}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.verified) {
+            setIsZkVerified(true);
+            const btn = document.getElementById('zk-btn');
+            if (btn) {
+              btn.innerText = 'Proof Generated & Verified!';
+              btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+              btn.classList.add('bg-emerald-500');
+              btn.setAttribute('disabled', 'true');
+            }
+          }
+        })
+        .catch(console.error);
+    }
+  }, [walletAddress, showProfileModal]);
 
   const handleCopy = () => {
     if (walletAddress) {
@@ -41,6 +65,7 @@ export const WalletConnectButton = () => {
 
   const handleDisconnect = () => {
     disconnect();
+    setIsZkVerified(false);
     setShowDisconnectConfirm(false);
     setShowProfileModal(false);
   };
@@ -167,22 +192,31 @@ export const WalletConnectButton = () => {
                           <button 
                             type="button" 
                             onClick={() => {
-                                setCopied(true); // Reusing a state temporarily, or we can just mock it internally
                                 const btn = document.getElementById('zk-btn');
-                                if (btn) {
+                                if (btn && !isZkVerified) {
                                     btn.innerText = 'Generating SNARK...';
                                     btn.classList.replace('bg-blue-600', 'bg-blue-400');
                                     btn.setAttribute('disabled', 'true');
                                     setTimeout(() => {
+                                        // Save to our persistent mock API
+                                        if (walletAddress) {
+                                            fetch('/api/identity', {
+                                                method: 'POST',
+                                                headers: { 'Content-Type': 'application/json' },
+                                                body: JSON.stringify({ wallet: walletAddress })
+                                            }).catch(console.error);
+                                        }
+
                                         btn.innerText = 'Proof Generated & Verified!';
                                         btn.classList.replace('bg-blue-400', 'bg-emerald-500');
+                                        setIsZkVerified(true);
                                     }, 2500);
                                 }
                             }}
                             id="zk-btn"
-                            className="w-full bg-blue-600 text-white py-2 px-4 rounded-xl hover:bg-blue-700 transition text-sm font-bold shadow-sm"
+                            className={`w-full text-white py-2 px-4 rounded-xl transition text-sm font-bold shadow-sm ${isZkVerified ? 'bg-emerald-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
                           >
-                              Generate ZK Proof
+                              {isZkVerified ? 'Proof Generated & Verified!' : 'Generate ZK Proof'}
                           </button>
                         </form>
                       </div>
