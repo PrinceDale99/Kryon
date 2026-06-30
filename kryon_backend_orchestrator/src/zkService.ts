@@ -19,6 +19,16 @@ export class ZKOrchestrator {
     }
 
     /**
+     * Helper to safely prefix hex strings with 0x for Noir witness generation
+     */
+    private formatHex(val: string): string {
+        if (typeof val === 'string' && !val.startsWith('0x') && /^[0-9a-fA-F]+$/.test(val)) {
+            return '0x' + val;
+        }
+        return val;
+    }
+
+    /**
      * Generate a ZK Proof for Invoice Factoring
      */
     async generateInvoiceProof(
@@ -40,10 +50,10 @@ export class ZKOrchestrator {
         const input = {
             invoice_amount: invoiceAmount,
             advance_requested: advanceRequested,
-            invoice_secret: invoiceSecret,
-            invoice_commitment: invoiceCommitment,
-            nullifier_secret: nullifierSecret,
-            nullifier: nullifier
+            invoice_secret: this.formatHex(invoiceSecret),
+            invoice_commitment: this.formatHex(invoiceCommitment),
+            nullifier_secret: this.formatHex(nullifierSecret),
+            nullifier: this.formatHex(nullifier)
         };
 
         console.log("Generating Groth16/PLONK Proof...");
@@ -72,11 +82,11 @@ export class ZKOrchestrator {
         const noir = new Noir(kycCircuit, backend);
 
         const input = {
-            user_id_hash: userIdHash,
+            user_id_hash: this.formatHex(userIdHash),
             income: income,
             is_accredited: isAccredited,
-            nullifier_secret: nullifierSecret,
-            credential_nullifier: credentialNullifier
+            nullifier_secret: this.formatHex(nullifierSecret),
+            credential_nullifier: this.formatHex(credentialNullifier)
         };
 
         const { witness } = await noir.execute(input);
@@ -163,7 +173,12 @@ export class ZKOrchestrator {
         const backend = new BarretenbergBackend(merkleCircuit);
         // @ts-ignore
         const noir = new Noir(merkleCircuit, backend);
-        const input = { leaf, path_elements: pathElements, path_indices: pathIndices, root };
+        const input = { 
+            leaf: this.formatHex(leaf), 
+            path_elements: pathElements.map(p => this.formatHex(p)), 
+            path_indices: pathIndices, 
+            root: this.formatHex(root) 
+        };
         const { witness } = await noir.execute(input);
         const proof = await backend.generateProof(witness);
         return proof.proof;
@@ -190,9 +205,9 @@ export class ZKOrchestrator {
         const input = {
             total_assets: totalAssets,
             total_liabilities: totalLiabilities,
-            blinding_factor: blindingFactor,
-            assets_commitment: assetCommitment,
-            liabilities_commitment: liabCommitment,
+            blinding_factor: this.formatHex(blindingFactor),
+            assets_commitment: this.formatHex(assetCommitment),
+            liabilities_commitment: this.formatHex(liabCommitment),
             is_solvent: totalAssets > totalLiabilities,
         };
         const { witness } = await noir.execute(input);
@@ -220,8 +235,8 @@ export class ZKOrchestrator {
             birth_year: birthYear,
             current_year: currentYear,
             minimum_age: minimumAge,
-            user_secret: userSecret,
-            age_commitment: ageCommitment,
+            user_secret: this.formatHex(userSecret),
+            age_commitment: this.formatHex(ageCommitment),
         };
         const { witness } = await noir.execute(input);
         const proof = await backend.generateProof(witness);
