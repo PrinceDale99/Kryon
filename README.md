@@ -2,7 +2,7 @@
 
 ![Kryon Logo](public/logo.svg)
 
-**A decentralized invoice factoring and liquidity provision protocol powered by Stellar, Soroban Smart Contracts, and Zero-Knowledge (ZK) Cryptography.**
+**A decentralized invoice factoring and liquidity provision protocol powered by Stellar, Soroban Smart Contracts, Zero-Knowledge (ZK) Cryptography, and ZKML Risk Assessment.**
 
 ---
 
@@ -11,210 +11,120 @@ Small to Medium Businesses (SMBs) consistently face crippling cash flow bottlene
 
 ## 💡 The Solution
 
-Kryon revolutionizes SMB financing by bringing invoice factoring on-chain. By leveraging cutting-edge **Noir Zero-Knowledge (ZK) Proofs** to cryptographically verify live ERP data (such as ERPNext, QuickBooks, or Stripe), Kryon allows businesses to tokenize their open invoices in a fully trustless and private manner.
+Kryon revolutionizes SMB financing by bringing invoice factoring on-chain. By leveraging cutting-edge **Noir Zero-Knowledge (ZK) Proofs** and **EZKL Machine Learning Models**, Kryon allows businesses to tokenize their open invoices in a fully trustless and private manner.
 
-**How ZK is Used in Kryon:**
-- **Privacy Preservation**: Invoices contain highly sensitive business logic (client names, pricing, unit quantities). ZK allows the SMB to prove they hold a valid, outstanding invoice of $X amount without ever publishing the invoice details onto the public Stellar ledger.
-- **Data Authenticity**: Kryon uses ZK to verify the TLS/HTTPS responses from the ERP system (similar to DECO), proving mathematically that the API response came directly from the ERP server and was not tampered with by the borrower.
-- **On-chain Verification**: The generated ZK SNARK is submitted to a Soroban Smart Contract, which natively verifies the proof. This removes the need for centralized credit agencies or manual auditors.
+### How ZK is Used in Kryon:
+- **Privacy Preservation**: Invoices contain highly sensitive business logic (client names, pricing). ZK allows the SMB to prove they hold a valid invoice without publishing details to the public ledger.
+- **ZKML Risk Assessment**: AI dynamically scores default risk using an EZKL PyTorch model. The generated zk-SNARK proves that the AI model ran correctly and wasn't tampered with, allowing the Soroban Smart Contract to execute loan parameters trustlessly.
+- **On-chain Verification**: The generated ZK SNARKs are submitted to a Soroban Smart Contract, which natively verifies the proof. This completely removes the need for centralized credit agencies or manual auditors.
 
-### 🏗 System Architecture
+---
+
+## 🏗 System Architecture
+
+The architecture is divided into three highly decoupled trustless systems: the Client, the ZK Proving Engines, and the Soroban Smart Contracts.
 
 ```mermaid
-graph TD
-    %% Core Entities
-    SMB["🏢 Borrower (SMB)"]
-    LP["💧 Liquidity Providers"]
-    ERP["🗄️ ERP System<br/>(ERPNext / Stripe)"]
+sequenceDiagram
+    participant SMB as 🏢 SMB (Borrower)
+    participant ERP as 🗄️ ERP / Stripe
+    participant App as 💻 Kryon Frontend
+    participant Noir as ⚡ Noir ZK Engine
+    participant EZKL as 🧠 ZKML Microservice
+    participant SC as ⛓️ Soroban Contract
+
+    SMB->>App: 1. Connects Wallet
+    App->>ERP: 2. OAuth Fetch Invoices
+    ERP-->>App: 3. Returns Invoice JSON
     
-    %% Kryon Network Components
-    subgraph Kryon Network
-        App["💻 Frontend Client<br/>(React / WASM)"]
-        Oracle["⚡ ZK Orchestrator<br/>(Node.js / Barretenberg)"]
-        SmartContract["⛓️ Soroban Smart Contracts<br/>(KryonEscrow)"]
+    rect rgb(240, 248, 255)
+    Note over App, EZKL: 🛡️ Zero-Knowledge Proof Generation Phase
+    App->>Noir: 4a. Request Invoice Validity Proof
+    Noir-->>App: 5a. Return Noir zk-SNARK
+    App->>EZKL: 4b. Request AI Risk Assessment
+    EZKL-->>App: 5b. Return EZKL zk-SNARK & Score
     end
-
-    %% Interactions
-    LP -- "1. Deposits XLM" --> SmartContract
-    SMB -- "2. Connects Wallet" --> App
-    App -- "3. Fetches Invoices" --> ERP
-    ERP -- "4. Returns JSON" --> App
-    App -- "5. Requests ZK Proof" --> Oracle
     
-    Oracle -. "6. Generates SNARK<br/>& Ed25519 Sig" .-> Oracle
-    Oracle -- "7. Returns Attestation" --> App
+    App->>SC: 6. submit_zk_factoring(Proofs)
     
-    App -- "8. submit_zk_factoring()" --> SmartContract
-    SmartContract -. "9. Verifies Sig<br/>& Spends Nullifier" .-> SmartContract
-    SmartContract -- "10. Payouts 90% XLM" --> SMB
-
-    %% Styling
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px,color:#000
-    classDef contract fill:#e0f7fa,stroke:#006064,stroke-width:2px,color:#000
-    classDef backend fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
-    classDef external fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
-
-    class SmartContract contract
-    class Oracle backend
-    class ERP external
-```
-
-Once the ZK Proof is mathematically verified on-chain via **Soroban Smart Contracts**, Kryon instantly routes working capital from decentralized Liquidity Provider (LP) pools directly into the borrower's Freighter wallet.
-
-### 🌟 Key Features
-- **Live ERP Integration**: Direct, secure OAuth fetches to live ERP systems (e.g. ERPNext, Stripe).
-- **Noir ZK Proofs**: Generates proofs locally that an invoice exists, has a specific value, and belongs to the borrower—without leaking the corporate client's data or identity.
-- **Dynamic Fiat-to-XLM Oracles**: Integrates real-time CoinGecko price oracles to instantly convert the live invoice fiat value (like PHP or USD) into the exact equivalent amount of XLM at the exact second of factoring.
-- **Deep Treasury Liquidity**: Our testnet Soroban Treasury maintains a pooled balance of >100,000 XLM, instantly releasing 90% of the invoice's market value dynamically to the borrower.
-- **Soroban Verification**: Ensures all logic is enforced transparently and immutably on the Stellar blockchain.
-
-### 📸 App Gallery
-
-![Balance and Wallet Connected](public/Balance%20+%20Wallet%20Connected.png)
-*Connecting Freighter Wallet and displaying available liquidity*
-
-![Transaction Factoring](public/Transaction.png)
-*Factoring an invoice with Zero-Knowledge verification*
-
-![Successful Transaction](public/Successful%20Transaction.png)
-*XLM deposited after smart contract settlement*
-
----
-
-## 🎯 Vision and Purpose
-Our mission is to democratize access to instant working capital for businesses worldwide. By removing the traditional banking middlemen and utilizing the lightning-fast, low-fee architecture of the Stellar network, Kryon aims to establish a global, borderless factoring ecosystem that is transparent, highly liquid, and universally accessible.
-
----
-
-## ⚙️ Stellar Protocol 25/26 Features Used
-- **Soroban Smart Contracts**: Core logic for escrow, ZK-proof verification flow, and automated yield distribution.
-- **Noir Cryptography**: Employing ultra-fast ZK SNARKs tailored for Stellar's upcoming host function capabilities.
-- **Stellar Horizon Testnet**: High-liquidity testnet deployment for rapid, verifiable transaction execution.
-- **Stellar SDK**: Programmatic transaction building, XDR serialization, and native asset (`XLM`) routing.
-- **Freighter Wallet**: Seamless, non-custodial user authentication and transaction signing.
-
----
-
-## 📅 Timeline
-- **Phase 1 (Current)**: Full React Next.js 16 frontend, ERPNext API integrations, Noir ZK Proof flow, dynamic CoinGecko Oracles, Freighter Wallet integration, and real-time XLM Treasury payouts.
-- **Phase 2 (Protocol 26 Rollout)**: Full deployment of native ZK verifier host functions directly into Soroban, expanding beyond signature-based simulation.
-- **Phase 3 (Mainnet Launch)**: Production deployment on Stellar Mainnet, integrating USDC for stablecoin factoring, and full DAO governance roll-out.
-
----
-
-## 🛠 Prerequisites
-To build, test, and deploy the smart contracts locally, ensure you have the following installed:
-* **Node.js**: `v20.0.0` or higher (for the frontend and orchestrator)
-* **Rust**: `rustc 1.70.0` or higher
-* **Target**: `wasm32-unknown-unknown`
-* **Soroban CLI**: `stellar-cli` (v21.0.0 or later)
-* **Nargo (Noir)**: For compiling ZK circuits.
-
-Install the WASM target if you haven't already:
-```bash
-rustup target add wasm32-unknown-unknown
+    rect rgb(230, 255, 230)
+    Note over SC: ⛓️ Blockchain Settlement Phase
+    SC->>SC: 7. Verify ZK Proofs On-Chain
+    SC->>SC: 8. Spend Invoice Nullifier
+    SC-->>SMB: 9. Payout XLM from Treasury
+    end
 ```
 
 ---
-
-## 🏗 How to Build & Run
-### 1. The Frontend & ZK Backend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-The application will launch on `http://localhost:3000`.
-
-### 2. The Smart Contracts
-To compile the Soroban smart contracts into WebAssembly (WASM):
-```bash
-cd kryon_contracts
-soroban contract build
-```
-This will output the `.wasm` binaries into your `target/wasm32-unknown-unknown/release/` directory.
 
 ## 🛡️ The Zero-Knowledge Implementation
 
-Kryon uses a highly flexible, multi-mode ZK verification engine built directly into the Soroban Smart Contracts. It dynamically switches between verification strategies depending on the network's capabilities:
+We have implemented a comprehensive suite of Zero-Knowledge circuits to ensure total privacy, compliance, and security across the protocol:
 
-### ZK Verification Modes
-- **Mode 0: Ed25519 Oracle Attestation (Production Default)**: The Node.js Orchestrator uses `@aztec/bb.js` to compile Noir circuits, generate a real `Barretenberg` Groth16 proof, and calculate the exact BN254 `poseidonHash`. The Oracle signs the `msg_hash` with its Ed25519 key, which Soroban natively verifies.
-- **Mode 1: Arkworks WASM Verifier**: Uses `ark-bn254` and `ark-groth16` compiled directly into the Soroban contract to natively verify mathematical pairings on-chain.
-- **Mode 2: Protocol 25/26 Native ZK**: Ready for Stellar's upcoming host functions for native BN254 curve arithmetic, making native Groth16 pairing verification computationally cheap.
+### 1. Confidential Invoice Factoring (`invoice_proof`)
+Proves that a borrower holds a valid, digitally signed invoice from an ERP without leaking the corporate client's data or identity.
 
-### 🧩 Implemented ZK Circuits & Their Role in Kryon
+### 2. ZKML AI Risk Assessment (`zkml_risk_model`)
+Uses **EZKL** to compile a PyTorch Neural Network into a Halo2 circuit. It evaluates the invoice amount and borrower history, generating a risk score and a cryptographic proof that the exact AI model was used without tampering.
 
-We have implemented a comprehensive suite of Zero-Knowledge circuits (located in `kryon_zk/`) using Noir to ensure total privacy, compliance, and security across the protocol:
+### 3. Digital Identity & Verifiable Credentials (`kyc_proof` & `age_proof`)
+Verifies compliance (Proof of Accredited Investor, Age > 18) by checking cryptographic signatures against a trusted issuer's public key inside the circuit (Sybil resistance).
 
-#### 1. Confidential Invoice Factoring (`invoice_proof`)
-- **What it does**: Proves that a borrower holds a valid, digitally signed invoice from an ERP (e.g., ERPNext, Stripe) and that the outstanding amount is greater than the requested advance.
-- **Importance**: Businesses do not want to publicly reveal their clients, pricing data, or financial distress. This circuit enables **Shielded Invoice Factoring**, allowing the SMB to secure liquidity without leaking sensitive corporate data onto the public ledger.
-
-#### 2. Digital Identity & Verifiable Credentials (`kyc_proof` & `age_proof`)
-- **What it does**: Verifies that a user meets specific compliance criteria (e.g., Proof of Accredited Investor, Age Verification > 18) by checking cryptographic signatures against a trusted issuer's public key inside the circuit.
-- **Importance**: KYC/AML compliance is required for liquidity providers and borrowers. ZK allows users to prove compliance (Sybil resistance) without revealing *who* they are, preserving on-chain privacy while satisfying regulatory requirements.
-
-#### 3. Shielded Accounts & Double-Spend Protection (`merkle_membership` & Nullifiers)
-- **What it does**: Implements a Poseidon-based Merkle Tree for Shielded Accounts and generates unique Nullifiers for each factored invoice.
-- **Importance**: Address reuse links borrowing activity. By using Merkle membership and Nullifiers, funds can be disbursed to cryptographically derived stealth addresses securely. The Nullifier registry inside Soroban prevents double-spending (factoring the same invoice twice) or replay attacks without exposing the underlying invoice ID.
-
-#### 4. Proof of Solvency (`solvency_proof`)
-- **What it does**: Generates a zk-SNARK proving that `Total Protocol Assets > Total LP Liabilities`.
-- **Importance**: Liquidity providers (LPs) need assurance that the protocol is solvent and their funds are safe. This circuit provides mathematical proof of the protocol's health without revealing individual borrower debts or trade secrets, building trust in a fully trustless environment.
+### 4. Proof of Solvency (`solvency_proof`)
+Generates a zk-SNARK proving that `Total Protocol Assets > Total LP Liabilities`, assuring Liquidity Providers that the protocol is healthy without revealing trade secrets.
 
 ---
 
-## 📅 Timeline
-- **Phase 1 (Current)**: Full React Next.js 16 frontend, ERPNext API integrations, Noir ZK Proof flow (Barretenberg), dynamic CoinGecko Oracles, Freighter Wallet integration, and real-time XLM Treasury payouts.
+## 🌟 Key Features
+- **Live ERP Integration**: Direct, secure OAuth fetches to live ERP systems (e.g. ERPNext, Stripe).
+- **Dynamic Fiat-to-XLM Oracles**: Integrates real-time CoinGecko price oracles to instantly convert the live invoice fiat value into XLM.
+- **Deep Treasury Liquidity**: Our testnet Soroban Treasury maintains a pooled balance of >100,000 XLM, instantly releasing liquidity.
+- **Soroban Verification**: Ensures all logic is enforced transparently and immutably on the Stellar blockchain.
+
+---
+
+## 📸 App Gallery
+
+| Wallet Connected | ZK Factoring Process | Settlement Complete |
+| :---: | :---: | :---: |
+| ![Balance](public/Balance%20+%20Wallet%20Connected.png) | ![Transaction](public/Transaction.png) | ![Success](public/Successful%20Transaction.png) |
+
+---
+
+## 📅 Development Timeline
+- **Phase 1 (Current)**: Full React Next.js frontend, ERP integrations, Noir ZK Proof flow, EZKL ZKML models, and real-time XLM payouts.
 - **Phase 2 (Protocol 26 Rollout)**: Full deployment of native ZK verifier host functions directly into Soroban, dropping the Oracle for fully decentralized verification.
-- **Phase 3 (Mainnet Launch)**: Production deployment on Stellar Mainnet, integrating USDC for stablecoin factoring, and full DAO governance roll-out.
+- **Phase 3 (Mainnet Launch)**: Production deployment on Stellar Mainnet, integrating USDC for stablecoin factoring, and full DAO governance.
 
 ---
 
-## 🛠 Prerequisites
-To build, test, and deploy the smart contracts locally, ensure you have the following installed:
-* **Node.js**: `v20.0.0` or higher
-* **Rust**: `rustc 1.70.0` or higher (with `wasm32-unknown-unknown` target)
-* **Soroban CLI**: `stellar-cli` (v22.0.0 or later)
-* **Nargo (Noir)**: For compiling ZK circuits.
+## 🛠 Prerequisites & Running Locally
 
----
+1. **Node.js**: `v20.0.0` or higher
+2. **Rust**: `rustc 1.70.0` (with `wasm32-unknown-unknown` target)
+3. **Soroban CLI**: `stellar-cli v22.0.0+`
+4. **Python 3.10+**: For EZKL ZKML circuit compilation.
 
-## 🏗 How to Build & Run
-### 1. The Frontend & ZK Backend
+### The Frontend & ZK Backend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-The backend ZK prover runs simultaneously on `http://localhost:4000/api/zk/prove`.
 
-### 2. The Smart Contracts
-Run the native Rust test suite to verify contract logic, Oracle Ed25519 signatures, timestamp expiry, and edge cases:
+### The EZKL ZKML Microservice
+```bash
+cd kryon_zk/zkml_risk_model
+pip install -r requirements.txt
+uvicorn app:app --reload
+```
+
+### The Soroban Smart Contracts
 ```bash
 cd kryon_contracts
+soroban contract build
 cargo test
 ```
 
----
-
-## 🚀 How to Deploy (Testnet)
-
-We provide an automated deployment script for Windows environments that handles compiling the Soroban contracts, registering the Oracle Ed25519 public keys, and extracting the Groth16 VKs.
-
-1. Create a `.env` file in the root directory:
-```env
-TREASURY_SECRET_KEY=S...
-TREASURY_PUBLIC_KEY=G...
-```
-2. Run the deployment script via PowerShell:
-```powershell
-.\scripts\deploy.ps1
-```
-This will automatically append the deployed `KRYON_VERIFIER_CONTRACT_ID` and the `ORACLE_SECRET_KEY` into your `.env` file.
-
----
-
 ## 📄 License
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more details.
+This project is licensed under the **MIT License**.
