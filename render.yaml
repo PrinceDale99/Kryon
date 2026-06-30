@@ -2,9 +2,8 @@ services:
   - type: web
     name: kryon-orchestrator
     env: node
-    rootDir: kryon_backend_orchestrator
-    buildCommand: npm install
-    startCommand: npm start
+    buildCommand: cd kryon_backend_orchestrator && npm install
+    startCommand: cd kryon_backend_orchestrator && npm start
     plan: free
     envVars:
       - key: NODE_ENV
