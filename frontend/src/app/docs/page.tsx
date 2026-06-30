@@ -58,22 +58,28 @@ export default function DocsPage() {
             <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl">
               <ShieldCheck className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-black">Zero-Knowledge (ZK) Proofs</h2>
+            <h2 className="text-3xl font-black">Zero-Knowledge Architecture</h2>
           </div>
           <div className="space-y-4 text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
             <p>
-              Traditionally, factoring requires intensive manual audits. Kryon Network removes this friction using <strong>Zero-Knowledge Proofs</strong> (simulating Chainlink DECO).
+              Traditionally, factoring requires intensive manual audits and highly biased credit checks. Kryon Network completely removes this friction using a dual-engine <strong>Zero-Knowledge Cryptography</strong> framework.
             </p>
+            
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-2">1. Privacy & Authenticity (Noir)</h3>
             <p>
-              SMBs connect their ERPs (like QuickBooks, Stripe, or ERPNext) via OAuth. The protocol generates a cryptographic ZK Proof that mathematically guarantees three things:
+              SMBs connect their ERPs (QuickBooks, Stripe) via OAuth. The protocol uses the Noir ZK engine to generate a cryptographic proof that mathematically guarantees:
             </p>
             <ul className="list-disc list-inside space-y-2 ml-4">
               <li><strong>Authenticity:</strong> The invoice data was fetched directly from the ERP's secure servers and hasn't been tampered with.</li>
-              <li><strong>Integrity:</strong> The invoice amount, due date, and ownership strictly match what is being claimed.</li>
-              <li><strong>Privacy:</strong> The sensitive business data (who the client is, line items, corporate rates) is <em>never</em> exposed to the public Stellar ledger.</li>
+              <li><strong>Privacy:</strong> Sensitive business data (the client's identity, line items, corporate rates) is <em>never</em> exposed to the public Stellar ledger.</li>
             </ul>
+
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-2">2. AI Risk Assessment (EZKL ZKML)</h3>
+            <p>
+              Instead of relying on biased banking officers, Kryon uses a PyTorch Neural Network to score the default risk of the invoice based on borrower history. We use <strong>EZKL</strong> to compile this AI inference into a <strong>Halo2 zk-SNARK</strong>.
+            </p>
             <p className="mt-4">
-              This proof is then submitted to the Soroban smart contract, which acts as a decentralized verifier. If the math checks out, the contract autonomously triggers the liquidity release without any human intervention.
+              This proof guarantees that the AI model ran correctly on the true invoice data without the borrower tampering with the algorithm to get a better rate. Both proofs are submitted to the Soroban smart contract, which acts as the decentralized judge.
             </p>
           </div>
         </motion.section>
@@ -105,7 +111,7 @@ export default function DocsPage() {
 
             <div className="p-6 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">2. KryonEscrow</h3>
-              <p className="text-base mb-6">Verifies the ZK proof logic and manages the factoring execution. When an SMB calls <code>submit_invoice()</code> with a valid proof, the contract instructs the Liquidity pool to release a 90% advance directly to the SMB's Freighter wallet.</p>
+              <p className="text-base mb-6">Verifies the ZK proof logic and manages the factoring execution. When an SMB calls <code>submit_zk_factoring()</code> with the Noir and EZKL proofs, the contract instructs the Liquidity pool to release the advance directly to the SMB's Freighter wallet.</p>
               
               <a 
                 href="https://stellar.expert/explorer/testnet/contract/CCJUOYAZCR4JHADRXSV7IOAHPX45SW3IXH6FJ4A4FM22ARIWDNTJYNNP" 
@@ -117,25 +123,6 @@ export default function DocsPage() {
                 <ExternalLink className="w-4 h-4" />
               </a>
             </div>
-          </div>
-        </motion.section>
-        <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
-              <ShieldCheck className="w-8 h-8" />
-            </div>
-            <h2 className="text-3xl font-black">Privacy Architecture</h2>
-          </div>
-          <div className="space-y-4 text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
-            <p>
-              Explore how the Kryon Protocol leverages Noir, Barretenberg, and the Stellar network to enable private state transitions on a public ledger.
-            </p>
-            <ul className="list-disc pl-6 space-y-2 text-slate-600 dark:text-slate-300">
-                <li><strong>Client-Side Proving:</strong> Proofs are generated locally in your browser using WASM.</li>
-                <li><strong>Zero-Knowledge:</strong> Only cryptographically sound zero-knowledge proofs are transmitted.</li>
-                <li><strong>On-Chain Verification:</strong> Stellar smart contracts act as verifiers ensuring state transitions are correct.</li>
-                <li><strong>No Middlemen:</strong> Direct peer-to-peer logic secured by mathematics.</li>
-            </ul>
           </div>
         </motion.section>
       </motion.div>

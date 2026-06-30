@@ -1,18 +1,24 @@
 # Kryon v2: Zero Knowledge Architecture & Roadmap
 
-Kryon v2 transforms the existing invoice factoring platform into a comprehensive, privacy-preserving, decentralized finance powerhouse. Built for the Stellar DoraHacks competition, this architecture leverages the bleeding-edge capabilities of **Stellar Protocol 25/26** combined with **Noir**, **Barretenberg**, and a suite of advanced cryptographic primitives to deliver a production-ready Zero Knowledge ecosystem.
+Kryon v2 transforms the existing invoice factoring platform into a comprehensive, privacy-preserving, decentralized finance powerhouse. Built for the Stellar DoraHacks competition, this architecture leverages the bleeding-edge capabilities of **Stellar Protocol 25/26** combined with **Noir**, **Barretenberg**, **EZKL (ZKML)**, and a suite of advanced cryptographic primitives to deliver a production-ready Zero Knowledge ecosystem.
 
 ---
 
 ## 1. Zero Knowledge Framework
 
-Kryon utilizes a hybrid proving architecture:
-- **Off-Chain Proving:** Heavy computational lifting is done off-chain by the borrower's client using **Noir** (compiling to **Barretenberg** backend for PLONK/Groth16 proofs) or **Circom/snarkJS** where specialized legacy circuits are needed.
-- **On-Chain Verification:** Soroban smart contracts serve exclusively as verifiers, minimizing gas costs and leveraging Stellar's native cryptographic host functions.
+Kryon utilizes a multi-engine, hybrid proving architecture:
 
-### Supported Proving Systems
-- **Primary (Mode 0):** Ed25519 Oracle Attestation using Barretenberg (via Node.js Orchestrator). Secure, cheap, and ready for mainnet today using native `ed25519_verify`.
-- **Secondary (Mode 1):** Arkworks / Halo2 WASM execution in Soroban. Mathematically verifies pure PLONK/Groth16 proofs natively on-chain. Requires high WASM bounds and `no_std` `alloc`.
+### A. The Proving Engines (Off-Chain)
+Heavy computational lifting is done off-chain by specialized cryptographic engines depending on the required task:
+- **Noir (Barretenberg Backend):** Used for standard programmatic logic (Invoice Identity, Age, KYC, Solvency). Compiles to PLONK/Groth16 proofs.
+- **EZKL (Halo2 Backend):** Used exclusively for **Zero-Knowledge Machine Learning (ZKML)**. Compiles PyTorch Neural Networks into Halo2 circuits to mathematically prove that an AI Risk Assessment Model was executed correctly on the exact invoice data without tampering.
+
+### B. The Verifiers (On-Chain)
+Soroban smart contracts serve exclusively as verifiers, minimizing gas costs and leveraging Stellar's native cryptographic host functions.
+
+**Supported Verification Modes:**
+- **Primary (Mode 0):** Ed25519 Oracle Attestation via Node.js Orchestrator & Render ZKML Microservice. Secure, cheap, and ready for mainnet today using native `ed25519_verify`.
+- **Secondary (Mode 1):** Arkworks / Halo2 WASM execution in Soroban. Mathematically verifies pure PLONK/Groth16/Halo2 proofs natively on-chain. Requires high WASM bounds and `no_std` `alloc`.
 - **Future (Mode 2):** Protocol 25/26 Native ZK using built-in Soroban host functions for ultra-cheap BN254 arithmetic.
 
 ---
@@ -38,7 +44,15 @@ To ensure the system is modular and reusable, Kryon is built on the following pr
 
 ## 4. Core Features & ZK Modules
 
-### A. Confidential Factoring & Private Invoicing
+### A. ZKML Risk Assessment (EZKL)
+*Problem:* Centralized credit agencies are slow, biased, and require full access to private corporate accounting to determine risk.
+*Solution:* **On-Chain AI Risk Oracles**.
+1. Borrower submits normalized invoice data (amount, borrower history score) to the EZKL Microservice.
+2. The PyTorch Neural Network executes inference, outputting a highly accurate Risk Score (1-100).
+3. EZKL compiles the execution trace into a Halo2 zk-SNARK.
+4. Soroban verifies the Halo2 proof, guaranteeing that the Risk Score is mathematically accurate and hasn't been maliciously altered by the borrower to get a better rate.
+
+### B. Confidential Factoring & Private Invoicing (Noir)
 *Problem:* Businesses do not want to publicly reveal their clients, invoice amounts, or financial distress.
 *Solution:* **Shielded Invoice Factoring**.
 1. Borrower fetches invoice from ERPNext.
@@ -46,20 +60,20 @@ To ensure the system is modular and reusable, Kryon is built on the following pr
    - Invoice outstanding amount > requested advance.
    - Invoice is digitally signed by trusted ERP oracle.
    - Invoice has not been factored before (Nullifier generation).
-3. The Soroban contract verifies the proof and deposits a **Shielded Stablecoin** (e.g., private USDC variant) or native XLM to a Stealth Address.
+3. The Soroban contract verifies the proof and deposits funds.
 
-### B. Digital Identity & Verifiable Credentials
+### C. Digital Identity & Verifiable Credentials
 *Problem:* KYC/AML compliance is required for liquidity providers, but revealing identity on-chain is a privacy risk.
 *Solution:* **Anonymous Credentials & Sybil Resistance**.
 - LPs use W3C Verifiable Credentials to prove they are accredited investors or KYC compliant without revealing *who* they are.
 - Soroban verifies the ZK proof of the credential signature against a trusted issuer's public key.
 
-### C. Proof of Solvency & Liquidity Pool Integrity
+### D. Proof of Solvency & Liquidity Pool Integrity
 *Problem:* Liquidity providers need assurance that the protocol is solvent without revealing individual borrower debts.
 *Solution:* **ZK Proof of Solvency**.
 - The protocol generates a daily zk-SNARK proving that `Total Protocol Assets > Total LP Liabilities`.
 
-### D. Stealth Addresses & One-Time Payments
+### E. Stealth Addresses & One-Time Payments
 *Problem:* Address reuse links borrowing activity.
 *Solution:* Funds are disbursed to cryptographically derived one-time stealth addresses, ensuring on-chain anonymity.
 
@@ -86,12 +100,18 @@ To ensure the system is modular and reusable, Kryon is built on the following pr
 - [x] Write Noir circuit for Invoice Integrity (`outstanding_amount > advance`).
 - [x] Integrate Soroban ZK Verifier (KryonVerifier using Oracle Attestation + Arkworks BN254).
 
-### Phase 2: Privacy & Identity (Completed)
+### Phase 2: ZKML AI Integration (Completed)
+- [x] Build PyTorch MLP for AI Risk Assessment (`kryon_zk/zkml_risk_model`).
+- [x] Integrate EZKL pipeline (ONNX export, calibration, settings gen).
+- [x] Deploy ZKML Python Microservice API for Next.js frontend consumption.
+- [x] Generate Halo2 zk-SNARK proving honest AI inference.
+
+### Phase 3: Privacy & Identity (Completed)
 - [x] Implement Poseidon-based Merkle Tree for Shielded Accounts (MerkleMembership circuit).
 - [x] Create Nullifier registry in Soroban to prevent double-spending.
 - [x] Implement ZK KYC (Proof of Accredited Investor) and Age Verification.
 
-### Phase 3: Advanced Ecosystem (Completed)
+### Phase 4: Advanced Ecosystem (Completed)
 - [x] Deploy Shielded Pool Contract for confidential XLM/USDC transfers.
 - [x] Implement Proof of Solvency circuit.
 - [x] Finalize automated deployment script (`deploy.ps1`) and Multi-Mode verification architecture.
