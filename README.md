@@ -138,16 +138,30 @@ This will output the `.wasm` binaries into your `target/wasm32-unknown-unknown/r
 
 Kryon uses a highly flexible, multi-mode ZK verification engine built directly into the Soroban Smart Contracts. It dynamically switches between verification strategies depending on the network's capabilities:
 
-### Mode 0: Ed25519 Oracle Attestation (Production Default)
-- **Off-chain**: The Node.js Orchestrator uses `@aztec/bb.js` to compile the Noir circuits, generate a real `Barretenberg` Groth16 proof, and calculate the exact BN254 `poseidonHash`. If the proof is valid, the Oracle signs the `msg_hash` with its secure Ed25519 key.
-- **On-chain**: Soroban uses its highly optimized, native `env.crypto().ed25519_verify()` to validate the Oracle's signature. This allows Kryon to operate securely and cheaply on the Stellar Mainnet *today*, bypassing current WASM budget limitations.
+### ZK Verification Modes
+- **Mode 0: Ed25519 Oracle Attestation (Production Default)**: The Node.js Orchestrator uses `@aztec/bb.js` to compile Noir circuits, generate a real `Barretenberg` Groth16 proof, and calculate the exact BN254 `poseidonHash`. The Oracle signs the `msg_hash` with its Ed25519 key, which Soroban natively verifies.
+- **Mode 1: Arkworks WASM Verifier**: Uses `ark-bn254` and `ark-groth16` compiled directly into the Soroban contract to natively verify mathematical pairings on-chain.
+- **Mode 2: Protocol 25/26 Native ZK**: Ready for Stellar's upcoming host functions for native BN254 curve arithmetic, making native Groth16 pairing verification computationally cheap.
 
-### Mode 1: Arkworks WASM Verifier (Option C)
-- **Off-chain**: Generates standard Groth16 proofs.
-- **On-chain**: Uses `ark-bn254` and `ark-groth16` compiled directly into the Soroban contract (`wasm32-unknown-unknown` `no_std`). The contract natively verifies the mathematical pairing of the proof on-chain. Requires high WASM instruction budgets.
+### 🧩 Implemented ZK Circuits & Their Role in Kryon
 
-### Mode 2: Protocol 25/26 Native ZK (Option A)
-- **Future-proofed**: Ready for Stellar's upcoming host functions for native BN254 curve arithmetic. This will make native Groth16 pairing verification computationally cheap and native to the Stellar protocol.
+We have implemented a comprehensive suite of Zero-Knowledge circuits (located in `kryon_zk/`) using Noir to ensure total privacy, compliance, and security across the protocol:
+
+#### 1. Confidential Invoice Factoring (`invoice_proof`)
+- **What it does**: Proves that a borrower holds a valid, digitally signed invoice from an ERP (e.g., ERPNext, Stripe) and that the outstanding amount is greater than the requested advance.
+- **Importance**: Businesses do not want to publicly reveal their clients, pricing data, or financial distress. This circuit enables **Shielded Invoice Factoring**, allowing the SMB to secure liquidity without leaking sensitive corporate data onto the public ledger.
+
+#### 2. Digital Identity & Verifiable Credentials (`kyc_proof` & `age_proof`)
+- **What it does**: Verifies that a user meets specific compliance criteria (e.g., Proof of Accredited Investor, Age Verification > 18) by checking cryptographic signatures against a trusted issuer's public key inside the circuit.
+- **Importance**: KYC/AML compliance is required for liquidity providers and borrowers. ZK allows users to prove compliance (Sybil resistance) without revealing *who* they are, preserving on-chain privacy while satisfying regulatory requirements.
+
+#### 3. Shielded Accounts & Double-Spend Protection (`merkle_membership` & Nullifiers)
+- **What it does**: Implements a Poseidon-based Merkle Tree for Shielded Accounts and generates unique Nullifiers for each factored invoice.
+- **Importance**: Address reuse links borrowing activity. By using Merkle membership and Nullifiers, funds can be disbursed to cryptographically derived stealth addresses securely. The Nullifier registry inside Soroban prevents double-spending (factoring the same invoice twice) or replay attacks without exposing the underlying invoice ID.
+
+#### 4. Proof of Solvency (`solvency_proof`)
+- **What it does**: Generates a zk-SNARK proving that `Total Protocol Assets > Total LP Liabilities`.
+- **Importance**: Liquidity providers (LPs) need assurance that the protocol is solvent and their funds are safe. This circuit provides mathematical proof of the protocol's health without revealing individual borrower debts or trade secrets, building trust in a fully trustless environment.
 
 ---
 

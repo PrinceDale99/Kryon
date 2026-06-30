@@ -1,15 +1,29 @@
 import { NextResponse } from 'next/server';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { exec } from 'child_process';
+import util from 'util';
 
-// Initialize Gemini with the provided key from env for ZKML Oracle
+const execAsync = util.promisify(exec);
+
+// Initialize Gemini with the provided key from env for the fallback MVP
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: Request) {
   try {
     const { invoiceData } = await req.json();
     
-    // For a hackathon MVP, we use Gemini as the ML Oracle for ZKML
-    // In production, the model weights and inference would be proven via a ZK circuit (like EZKL).
+    // =========================================================================
+    // EZKL ZKML Integration Path
+    // =========================================================================
+    // In production, this route would execute the EZKL PyTorch model we built 
+    // in `kryon_zk/zkml_risk_model/run_ezkl.py` to generate a real zk-SNARK.
+    // 
+    // Example production execution:
+    // const { stdout } = await execAsync('python ../../../kryon_zk/zkml_risk_model/run_ezkl.py');
+    // const zkProofPayload = parseEZKLProof(stdout);
+    
+    // For the hackathon MVP, we use Gemini to generate the risk score, 
+    // and mock the EZKL zk-SNARK proof buffer that would be sent to Soroban.
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     const prompt = `
@@ -34,7 +48,43 @@ export async function POST(req: Request) {
     }
     
     const analysis = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ success: true, data: analysis });
+
+    // =========================================================================
+    // Fetch EZKL ZK Proof from Render Microservice
+    // =========================================================================
+    let zkProofPayload = null;
+    try {
+        const RENDER_API_URL = process.env.RENDER_ZKML_API_URL || "https://kryon-zkml-api.onrender.com/generate-proof";
+        
+        // Normalize the mock invoice data for the EZKL PyTorch model (which expects floats)
+        // In a real scenario, you would normalize the exact invoiceData here.
+        const proofResponse = await fetch(RENDER_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                invoice_amount_normalized: 0.5,
+                borrower_history_score: analysis.score / 100, // Normalized 0-1
+                client_trust_score: 0.9
+            })
+        });
+
+        if (proofResponse.ok) {
+            const proofData = await proofResponse.json();
+            zkProofPayload = proofData.proof;
+        } else {
+            console.warn("Render ZKML API returned an error:", await proofResponse.text());
+            zkProofPayload = { error: "Failed to fetch proof from Render", fallback: true };
+        }
+    } catch (e) {
+        console.warn("Could not connect to Render ZKML API, is it deployed? Falling back to mock.");
+        zkProofPayload = { error: "Render API not reachable", fallback: true };
+    }
+
+    return NextResponse.json({ 
+        success: true, 
+        data: analysis,
+        zk_proof: zkProofPayload 
+    });
   } catch (error: any) {
     console.error("ZKML Oracle Error:", error);
     return NextResponse.json({ success: false, error: error.message }, { status: 500 });

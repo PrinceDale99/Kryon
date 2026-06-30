@@ -1,0 +1,7 @@
+torch==2.1.2
+onnx==1.15.0
+onnxscript==0.1.0.dev20240122
+ezkl==23.0.5
+fastapi==0.109.0
+uvicorn==0.27.0
+pydantic==2.5.3
