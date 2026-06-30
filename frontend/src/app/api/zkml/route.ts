@@ -54,7 +54,7 @@ export async function POST(req: Request) {
     // =========================================================================
     let zkProofPayload = null;
     try {
-        const RENDER_API_URL = process.env.RENDER_ZKML_API_URL || "https://kryon-zkml-api.onrender.com/generate-proof";
+        const RENDER_API_URL = process.env.RENDER_ZKML_API_URL || "https://kryon.onrender.com/generate-proof";
         
         // Normalize the mock invoice data for the EZKL PyTorch model (which expects floats)
         // In a real scenario, you would normalize the exact invoiceData here.
