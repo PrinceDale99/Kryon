@@ -57,7 +57,7 @@ export async function POST(req: Request) {
         // =========================================================================
         // Fallback Path: Gemini AI Mock ZKML Generation
         // =========================================================================
-        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
         const prompt = `
           You are an AI Risk Assessor acting as a ZKML (Zero-Knowledge Machine Learning) Oracle for a decentralized invoice factoring protocol.
           Evaluate the risk of this invoice defaulting. 
