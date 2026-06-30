@@ -16,7 +16,7 @@ fn main(
 ) {
     let mut current = leaf;
     for i in 0..DEPTH {
-        let (left, right) = if path_indices[i] == 0 {
+        let (left, right) = if path_indices[i] == false {
             (current, path_elements[i])
         } else {
             (path_elements[i], current)
