@@ -47,7 +47,8 @@ export class ZKOrchestrator {
         };
 
         console.log("Generating Groth16/PLONK Proof...");
-        const proof = await noir.generateFinalProof(input);
+        const { witness } = await noir.execute(input);
+        const proof = await backend.generateProof(witness);
         
         console.log("Proof successfully generated off-chain!");
         return proof.proof; // Hex/Bytes payload ready for Soroban
@@ -78,7 +79,8 @@ export class ZKOrchestrator {
             credential_nullifier: credentialNullifier
         };
 
-        const proof = await noir.generateFinalProof(input);
+        const { witness } = await noir.execute(input);
+        const proof = await backend.generateProof(witness);
         return proof.proof;
     }
 
@@ -162,7 +164,8 @@ export class ZKOrchestrator {
         // @ts-ignore
         const noir = new Noir(merkleCircuit, backend);
         const input = { leaf, path_elements: pathElements, path_indices: pathIndices, root };
-        const proof = await noir.generateFinalProof(input);
+        const { witness } = await noir.execute(input);
+        const proof = await backend.generateProof(witness);
         return proof.proof;
     }
 
@@ -192,7 +195,8 @@ export class ZKOrchestrator {
             liabilities_commitment: liabCommitment,
             is_solvent: totalAssets > totalLiabilities,
         };
-        const proof = await noir.generateFinalProof(input);
+        const { witness } = await noir.execute(input);
+        const proof = await backend.generateProof(witness);
         return proof.proof;
     }
 
@@ -219,7 +223,8 @@ export class ZKOrchestrator {
             user_secret: userSecret,
             age_commitment: ageCommitment,
         };
-        const proof = await noir.generateFinalProof(input);
+        const { witness } = await noir.execute(input);
+        const proof = await backend.generateProof(witness);
         return proof.proof;
     }
 
