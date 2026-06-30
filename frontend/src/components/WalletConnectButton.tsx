@@ -10,8 +10,9 @@ export const WalletConnectButton = () => {
   const { hasFreighter, connect, disconnect, walletAddress } = useFreighter();
   const { balance, displayCurrency, exchangeRates } = useStore();
   const rate = exchangeRates[displayCurrency] || 1;
-  const fiatBalance = balance ? (parseFloat(balance) * rate).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '...';
-  const formattedFiat = balance ? `(${fiatBalance} ${displayCurrency.toUpperCase()})` : '';
+  const xlmNumber = balance ? parseFloat(balance) : null;
+  const fiatBalance = xlmNumber ? (xlmNumber * rate).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '...';
+  const formattedFiat = xlmNumber ? `(${fiatBalance} ${displayCurrency.toUpperCase()})` : '';
   
   const [showConnectModal, setShowConnectModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
@@ -45,8 +46,8 @@ export const WalletConnectButton = () => {
           onClick={() => setShowProfileModal(true)}
           className="flex items-center space-x-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-xl border border-slate-200 dark:border-slate-700 p-1 pr-3 transition-colors shadow-sm"
         >
-          <div className="px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg font-bold text-sm border border-slate-200 dark:border-slate-700 shadow-sm text-blue-600 dark:text-blue-400">
-            {balance ? `${balance} XLM ${formattedFiat}` : '...'}
+          <div className="px-3 py-1.5 bg-white dark:bg-slate-900 rounded-lg font-bold text-sm border border-slate-200 dark:border-slate-700 shadow-sm text-blue-600 dark:text-blue-400 truncate max-w-[140px] md:max-w-[200px]">
+            {xlmNumber !== null ? `${xlmNumber.toLocaleString(undefined, {maximumFractionDigits: 2})} XLM ${formattedFiat}` : '...'}
           </div>
           <div className="flex items-center space-x-2 px-1">
             <span className="relative flex h-2 w-2">
