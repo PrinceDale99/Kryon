@@ -13,13 +13,13 @@ export default function BorrowerDashboard() {
   const [loadingStep, setLoadingStep] = useState(0);
   const [successHash, setSuccessHash] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [erpConnected, setErpConnected] = useState<'stripe' | 'quickbooks' | false>(false);
-  const [isConnectingErp, setIsConnectingErp] = useState<'stripe' | 'quickbooks' | false>(false);
+  const [erpConnected, setErpConnected] = useState<'stripe' | 'quickbooks' | 'erpnext' | false>(false);
+  const [isConnectingErp, setIsConnectingErp] = useState<'stripe' | 'quickbooks' | 'erpnext' | false>(false);
   const [isConfirming, setIsConfirming] = useState(false);
   const [liveInvoices, setLiveInvoices] = useState<any[]>([]);
   const [selectedInvoice, setSelectedInvoice] = useState<string>('');
 
-  const fetchLiveInvoices = async (provider: 'stripe' | 'quickbooks') => {
+  const fetchLiveInvoices = async (provider: 'stripe' | 'quickbooks' | 'erpnext') => {
     setIsConnectingErp(provider);
     try {
       const res = await fetch(`/api/invoices/${provider}`);
@@ -189,6 +189,18 @@ export default function BorrowerDashboard() {
                             <span>QuickBooks</span>
                           )}
                         </button>
+
+                        <button 
+                          onClick={() => fetchLiveInvoices('erpnext')}
+                          disabled={isConnectingErp !== false}
+                          className="px-6 py-3 bg-[#0089FF] text-white font-bold rounded-xl hover:scale-105 transition-all shadow-lg flex items-center justify-center space-x-2 disabled:opacity-70 disabled:hover:scale-100 flex-1 max-w-[200px]"
+                        >
+                          {isConnectingErp === 'erpnext' ? (
+                            <><Loader2 className="w-5 h-5 animate-spin" /><span>Authenticating...</span></>
+                          ) : (
+                            <span>ERPNext</span>
+                          )}
+                        </button>
                       </div>
                     </div>
                   ) : (
@@ -199,7 +211,7 @@ export default function BorrowerDashboard() {
                           <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                         </span>
                         <p className="text-emerald-600 dark:text-emerald-500 text-sm font-bold tracking-wide uppercase">
-                          {erpConnected === 'stripe' ? 'Stripe Connected (Live)' : 'QuickBooks Connected (Live)'}
+                          {erpConnected === 'stripe' ? 'Stripe Connected (Live)' : erpConnected === 'quickbooks' ? 'QuickBooks Connected (Live)' : 'ERPNext Connected (Live)'}
                         </p>
                       </div>
                       <select 
