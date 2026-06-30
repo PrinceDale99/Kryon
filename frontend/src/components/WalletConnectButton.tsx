@@ -8,7 +8,7 @@ import { X, Wallet, Link as LinkIcon, Smartphone, Copy, Check, LogOut, ExternalL
 
 export const WalletConnectButton = () => {
   const { hasFreighter, connect, disconnect, walletAddress } = useFreighter();
-  const { balance, displayCurrency, exchangeRates } = useStore();
+  const { balance, displayCurrency, exchangeRates, setDisplayCurrency } = useStore();
   const rate = exchangeRates[displayCurrency] || 1;
   const xlmNumber = balance ? parseFloat(balance) : null;
   const fiatBalance = xlmNumber ? (xlmNumber * rate).toLocaleString(undefined, { maximumFractionDigits: 0 }) : '...';
@@ -112,6 +112,21 @@ export const WalletConnectButton = () => {
                         <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between">
                           <span className="text-sm font-medium text-slate-500">Total Balance</span>
                           <span className="font-black text-xl text-slate-900 dark:text-white">{balance} <span className="text-sm text-blue-500">XLM {formattedFiat}</span></span>
+                        </div>
+                        
+                        <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between mt-3">
+                          <span className="text-sm font-medium text-slate-500">Local Currency</span>
+                          <select 
+                            value={displayCurrency} 
+                            onChange={(e) => setDisplayCurrency(e.target.value)}
+                            className="bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm font-bold text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer p-2 outline-none w-24 text-center"
+                          >
+                            <option value="usd">USD</option>
+                            <option value="php">PHP</option>
+                            <option value="eur">EUR</option>
+                            <option value="gbp">GBP</option>
+                            <option value="jpy">JPY</option>
+                          </select>
                         </div>
                       </div>
 

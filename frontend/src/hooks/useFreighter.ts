@@ -31,7 +31,7 @@ export const useFreighter = () => {
         setBalance(parseFloat(nativeBalance.balance).toFixed(2));
       }
     } catch (e) {
-      console.error(e);
+      // console.error(e); // Silenced fetch error to prevent console spam
       setBalance("0.00");
     }
   };

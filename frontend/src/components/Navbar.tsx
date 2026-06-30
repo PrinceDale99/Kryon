@@ -6,7 +6,7 @@ import { WalletConnectButton } from './WalletConnectButton';
 import { motion } from 'framer-motion';
 
 export const Navbar = () => {
-  const { isDemoMode, toggleDemoMode, fetchExchangeRates, displayCurrency, setDisplayCurrency } = useStore();
+  const { isDemoMode, toggleDemoMode, fetchExchangeRates } = useStore();
 
   useEffect(() => {
     fetchExchangeRates();
@@ -33,21 +33,6 @@ export const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center space-x-6">
-            <div className="hidden sm:flex items-center space-x-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Currency</label>
-              <select 
-                value={displayCurrency} 
-                onChange={(e) => setDisplayCurrency(e.target.value)}
-                className="bg-slate-100 dark:bg-slate-800 border-none rounded-lg text-sm font-bold text-slate-700 dark:text-slate-300 focus:ring-0 cursor-pointer p-2 outline-none"
-              >
-                <option value="usd">USD</option>
-                <option value="php">PHP</option>
-                <option value="eur">EUR</option>
-                <option value="gbp">GBP</option>
-                <option value="jpy">JPY</option>
-              </select>
-            </div>
-            
             <div className="flex items-center space-x-3 bg-slate-100/50 dark:bg-slate-800/50 p-2 rounded-2xl border border-slate-200/50 dark:border-slate-700/50">
               <span className={`text-[10px] font-black uppercase tracking-widest px-2 ${isDemoMode ? 'text-amber-600 dark:text-amber-400' : 'text-slate-400'}`}>
                 {isDemoMode ? 'Demo' : 'Live'}
