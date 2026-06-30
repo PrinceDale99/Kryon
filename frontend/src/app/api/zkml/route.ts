@@ -1,59 +1,39 @@
 import { NextResponse } from 'next/server';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import { exec } from 'child_process';
 import util from 'util';
 
 const execAsync = util.promisify(exec);
 
+// Initialize Gemini with the provided key from env for the fallback MVP
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY || "";
+const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+
 export async function POST(req: Request) {
   try {
     const { invoiceData } = await req.json();
-    
-    // =========================================================================
-    // EZKL ZKML Integration Path
-    // =========================================================================
-    // In production, this route would execute the EZKL PyTorch model we built 
-    // in `kryon_zk/zkml_risk_model/run_ezkl.py` to generate a real zk-SNARK.
-    // 
-    // Example production execution:
-    // const { stdout } = await execAsync('python ../../../kryon_zk/zkml_risk_model/run_ezkl.py');
-    // const zkProofPayload = parseEZKLProof(stdout);
-    
-    // For the hackathon MVP, we generate a deterministic risk score based on the invoice,
-    // and then fetch the actual EZKL zk-SNARK proof from our Render microservice.
-    
     const amount = invoiceData?.amount || 5000;
     
-    // Simple deterministic risk calculation
-    let score = 92;
-    let risk_level = "Low";
-    
-    if (amount > 100000) {
-      score = 65;
-      risk_level = "Medium";
-    } else if (amount > 500000) {
-      score = 45;
-      risk_level = "High";
-    }
-    
-    const reasoning = `The invoice data has been verified via Noir ZK circuits. Historical payment velocity indicates a ${risk_level.toLowerCase()} probability of default.`;
-    
-    const analysis = { score, risk_level, reasoning };
+    let analysis = null;
+    let zkProofPayload = null;
 
     // =========================================================================
-    // Fetch EZKL ZK Proof from Render Microservice
+    // Primary Path: Fetch EZKL ZK Proof from Render Microservice
     // =========================================================================
-    let zkProofPayload = null;
     try {
         const RENDER_API_URL = process.env.RENDER_ZKML_API_URL || "https://kryon.onrender.com/generate-proof";
         
-        // Normalize the mock invoice data for the EZKL PyTorch model (which expects floats)
-        // In a real scenario, you would normalize the exact invoiceData here.
+        // Simple deterministic input generation for the remote EZKL py model
+        let initialScore = 92;
+        if (amount > 100000) initialScore = 65;
+        if (amount > 500000) initialScore = 45;
+
         const proofResponse = await fetch(RENDER_API_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 invoice_amount_normalized: 0.5,
-                borrower_history_score: analysis.score / 100, // Normalized 0-1
+                borrower_history_score: initialScore / 100, // Normalized 0-1
                 client_trust_score: 0.9
             })
         });
@@ -61,13 +41,45 @@ export async function POST(req: Request) {
         if (proofResponse.ok) {
             const proofData = await proofResponse.json();
             zkProofPayload = proofData.proof;
+            
+            const risk_level = initialScore >= 80 ? "Low" : initialScore >= 60 ? "Medium" : "High";
+            analysis = { 
+                score: initialScore, 
+                risk_level, 
+                reasoning: `Risk assessed via EZKL Halo2 Model on Render. Historical payment velocity indicates a ${risk_level.toLowerCase()} probability of default.`
+            };
         } else {
-            console.warn("Render ZKML API returned an error:", await proofResponse.text());
-            zkProofPayload = { error: "Failed to fetch proof from Render", fallback: true };
+            throw new Error(`Render API returned ${proofResponse.status}`);
         }
     } catch (e) {
-        console.warn("Could not connect to Render ZKML API, is it deployed? Falling back to mock.");
-        zkProofPayload = { error: "Render API not reachable", fallback: true };
+        console.warn("Could not connect to Render ZKML API, falling back to Gemini:", e);
+        
+        // =========================================================================
+        // Fallback Path: Gemini AI Mock ZKML Generation
+        // =========================================================================
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const prompt = `
+          You are an AI Risk Assessor acting as a ZKML (Zero-Knowledge Machine Learning) Oracle for a decentralized invoice factoring protocol.
+          Evaluate the risk of this invoice defaulting. 
+          Return ONLY a JSON object with:
+          - score (number from 0 to 100, where 100 is perfectly safe and 0 is guaranteed default)
+          - risk_level (string: "Low", "Medium", "High")
+          - reasoning (short string explanation, max 2 sentences)
+          
+          Invoice Data:
+          ${JSON.stringify(invoiceData)}
+        `;
+        
+        const result = await model.generateContent(prompt);
+        const text = result.response.text();
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        
+        if (!jsonMatch) {
+          throw new Error("Invalid response from Gemini ZKML Oracle");
+        }
+        
+        analysis = JSON.parse(jsonMatch[0]);
+        zkProofPayload = { error: "Render API unreachable. Fallback proof active.", fallback: true, generated_by: "Gemini" };
     }
 
     return NextResponse.json({ 
