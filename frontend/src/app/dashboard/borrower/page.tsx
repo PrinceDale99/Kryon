@@ -18,16 +18,38 @@ export default function BorrowerDashboard() {
   const [isConfirming, setIsConfirming] = useState(false);
   const [liveInvoices, setLiveInvoices] = useState<any[]>([]);
   const [selectedInvoice, setSelectedInvoice] = useState<string>('');
+  
+  const [showErpnextModal, setShowErpnextModal] = useState(false);
+  const [erpUrl, setErpUrl] = useState('');
+  const [erpApiKey, setErpApiKey] = useState('');
+  const [erpApiSecret, setErpApiSecret] = useState('');
 
   const fetchLiveInvoices = async (provider: 'stripe' | 'quickbooks' | 'erpnext') => {
+    if (provider === 'erpnext' && !erpApiKey) {
+      setShowErpnextModal(true);
+      return;
+    }
+
     setIsConnectingErp(provider);
     try {
-      const res = await fetch(`/api/invoices/${provider}`);
+      const options: RequestInit = {};
+      if (provider === 'erpnext') {
+        options.method = 'POST';
+        options.headers = { 'Content-Type': 'application/json' };
+        options.body = JSON.stringify({
+          erpnextUrl: erpUrl,
+          apiKey: erpApiKey,
+          apiSecret: erpApiSecret
+        });
+      }
+
+      const res = await fetch(`/api/invoices/${provider}`, options);
       const json = await res.json();
       if (json.success) {
         setLiveInvoices(json.data);
         if (json.data.length > 0) setSelectedInvoice(json.data[0].id);
         setErpConnected(provider);
+        setShowErpnextModal(false);
       } else {
         setErrorMsg(`Failed to fetch from ${provider}: ${json.error}`);
       }
@@ -390,6 +412,67 @@ export default function BorrowerDashboard() {
                     className="w-full py-4 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold rounded-xl shadow-lg"
                   >
                     Dismiss
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* ERPNext Connect Modal */}
+          <AnimatePresence>
+            {showErpnextModal && (
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
+              >
+                <motion.div 
+                  initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-black">Connect ERPNext</h3>
+                    <button onClick={() => setShowErpnextModal(false)} className="text-slate-400 hover:text-slate-600">
+                      <XCircle className="w-6 h-6" />
+                    </button>
+                  </div>
+                  <div className="space-y-4 mb-8">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">ERPNext URL</label>
+                      <input 
+                        type="url" 
+                        value={erpUrl} 
+                        onChange={e => setErpUrl(e.target.value)} 
+                        placeholder="https://demo.erpnext.com" 
+                        className="w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">API Key</label>
+                      <input 
+                        type="text" 
+                        value={erpApiKey} 
+                        onChange={e => setErpApiKey(e.target.value)} 
+                        className="w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">API Secret</label>
+                      <input 
+                        type="password" 
+                        value={erpApiSecret} 
+                        onChange={e => setErpApiSecret(e.target.value)} 
+                        className="w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => fetchLiveInvoices('erpnext')} 
+                    className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 disabled:opacity-50"
+                    disabled={!erpApiKey || !erpApiSecret || isConnectingErp === 'erpnext'}
+                  >
+                    {isConnectingErp === 'erpnext' ? 'Connecting...' : 'Connect ERP'}
                   </motion.button>
                 </motion.div>
               </motion.div>

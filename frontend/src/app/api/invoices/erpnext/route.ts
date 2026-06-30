@@ -1,13 +1,14 @@
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function POST(req: Request) {
   try {
-    const apiKey = process.env.ERPNEXT_API_KEY;
-    const apiSecret = process.env.ERPNEXT_API_SECRET;
-    const baseUrl = process.env.ERPNEXT_URL || 'https://demo.erpnext.com';
+    const body = await req.json().catch(() => ({}));
+    const apiKey = body.apiKey || process.env.ERPNEXT_API_KEY;
+    const apiSecret = body.apiSecret || process.env.ERPNEXT_API_SECRET;
+    const baseUrl = body.erpnextUrl || process.env.ERPNEXT_URL || 'https://demo.erpnext.com';
 
     if (!apiKey || !apiSecret) {
-      throw new Error("ERPNext credentials missing in environment");
+      throw new Error("ERPNext credentials missing. Please provide API Key and Secret.");
     }
 
     const response = await fetch(`${baseUrl}/api/resource/Sales%20Invoice?fields=["name","customer_name","outstanding_amount","currency"]&filters=[["outstanding_amount",">",0],["status","=","Unpaid"]]`, {
