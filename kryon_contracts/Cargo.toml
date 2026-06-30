@@ -21,3 +21,19 @@ lto = true
 
 [dev_dependencies]
 soroban-sdk = { version = "22.0.0", testutils = true }
+
+[dependencies.ark-groth16]
+version = "0.4.0"
+default-features = false
+
+[dependencies.ark-bn254]
+version = "0.4.0"
+default-features = false
+
+[dependencies.ark-serialize]
+version = "0.4.0"
+default-features = false
+
+[dependencies.ark-crypto-primitives]
+version = "0.4.0"
+default-features = false
