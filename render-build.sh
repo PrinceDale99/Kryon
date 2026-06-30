@@ -2,7 +2,7 @@
 set -e
 
 echo "Downloading nargo (Noir compiler) for Linux..."
-curl -L https://github.com/noir-lang/noir/releases/download/v0.36.0/nargo-x86_64-unknown-linux-gnu.tar.gz -o nargo.tar.gz
+curl -L https://github.com/noir-lang/noir/releases/download/v1.0.0-beta.22/nargo-x86_64-unknown-linux-gnu.tar.gz -o nargo.tar.gz
 tar -xzf nargo.tar.gz
 chmod +x nargo
 export PATH=$PATH:$(pwd)
