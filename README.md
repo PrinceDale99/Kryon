@@ -13,6 +13,22 @@ Small to Medium Businesses (SMBs) consistently face crippling cash flow bottlene
 
 Kryon revolutionizes SMB financing by bringing invoice factoring on-chain. By leveraging cutting-edge **Noir Zero-Knowledge (ZK) Proofs** and **EZKL Machine Learning Models**, Kryon allows businesses to tokenize their open invoices in a fully trustless and private manner.
 
+---
+
+## 📖 Real-World Scenario: Sarah's Supply Co.
+
+**The Problem:**
+Sarah runs a mid-sized lumber supply company. She just landed a massive $50,000 contract with a major corporate construction firm and delivered the materials immediately. However, the corporate firm operates on strict **Net-90 terms**—meaning Sarah won't see a dime of that $50,000 for three months. Meanwhile, she needs cash *today* to pay her employees, buy more inventory, and keep the lights on. Traditional banks deny her a loan because she lacks years of credit history, and legacy factoring companies want to charge her 15% in fees and spend weeks auditing her books.
+
+**How Kryon Solves It:**
+1. **Instant Connection:** Sarah connects her QuickBooks account to Kryon via OAuth.
+2. **Total Privacy:** Kryon's **Noir ZK Engine** mathematically proves that the $50,000 invoice is real and valid without leaking the corporate client's name or proprietary pricing to the public Stellar ledger.
+3. **Unbiased AI:** Kryon's **EZKL AI Oracle** evaluates her business history and generates a low-risk score, proving the AI inference on-chain via a Halo2 zk-SNARK.
+4. **Immediate Liquidity:** The Soroban smart contract instantly verifies the cryptography and releases $45,000 (90%) worth of XLM directly to Sarah's Freighter wallet within 5 seconds.
+5. **The Outcome:** Sarah makes payroll today. In 90 days, when the corporate firm pays the invoice, the Soroban contract routes the remaining 10% (minus a small, transparent protocol fee) back to Sarah, while Liquidity Providers earn yield on the transaction.
+
+---
+
 ### How ZK is Used in Kryon:
 - **Privacy Preservation**: Invoices contain highly sensitive business logic (client names, pricing). ZK allows the SMB to prove they hold a valid invoice without publishing details to the public ledger.
 - **ZKML Risk Assessment**: AI dynamically scores default risk using an EZKL PyTorch model. The generated zk-SNARK proves that the AI model ran correctly and wasn't tampered with, allowing the Soroban Smart Contract to execute loan parameters trustlessly.
