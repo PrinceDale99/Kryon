@@ -126,6 +126,15 @@ Generates a zk-SNARK proving that `Total Protocol Assets > Total LP Liabilities`
 
 ---
 
+## 🏗️ Hackathon Status & Transparency (Honest WIP)
+
+We believe in building transparent and verifiable technology. Because Kryon is a highly ambitious protocol encompassing Zero-Knowledge machine learning, frontend WASM generation, and smart contracts, we utilized a few mocks to ensure a smooth hackathon presentation:
+- **ZK Identity Generation:** Real Noir circuit compilation and proving in the browser takes ~15 seconds. For the live UI demo, the identity verification button simulates this delay and uses a Next.js API in-memory store to persist your verified status across devices instead of fully computing a WASM proof.
+- **EZKL ZKML Engine:** The Render microservice successfully executes a PyTorch evaluation, but dynamically generating a Halo2 zk-SNARK for *every* invoice takes too much server RAM for the free tier. We fallback to Gemini AI for risk evaluation if the Render microservice goes to sleep or errors.
+- **Soroban Verification:** Currently, Soroban lacks native precompiles for cheap Halo2/Groth16 verification on-chain. The `KryonEscrow` smart contract currently mocks the final cryptographic verification step before releasing liquidity.
+
+---
+
 ## 🛠 Prerequisites & Running Locally
 
 1. **Node.js**: `v20.0.0` or higher
