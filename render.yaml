@@ -2,7 +2,7 @@ services:
   - type: web
     name: kryon-orchestrator
     env: node
-    buildCommand: cd kryon_backend_orchestrator && npm install
+    buildCommand: bash render-build.sh
     startCommand: cd kryon_backend_orchestrator && npm start
     plan: free
     envVars:
