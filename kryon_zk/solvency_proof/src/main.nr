@@ -24,8 +24,8 @@ fn main(
 
 #[test]
 fn test_solvent_protocol() {
-    let assets = 5_000_000_u64;
-    let liabilities = 3_000_000_u64;
+    let assets: u64 = 5_000_000;
+    let liabilities: u64 = 3_000_000;
     let bf = 999 as Field;
     let ac = poseidon::bn254::hash_2([assets as Field, bf]);
     let lc = poseidon::bn254::hash_2([liabilities as Field, bf]);
@@ -34,8 +34,8 @@ fn test_solvent_protocol() {
 
 #[test(should_fail)]
 fn test_insolvent_protocol() {
-    let assets = 2_000_000_u64; // less than liabilities
-    let liabilities = 3_000_000_u64;
+    let assets: u64 = 2_000_000; // less than liabilities
+    let liabilities: u64 = 3_000_000;
     let bf = 999 as Field;
     let ac = poseidon::bn254::hash_2([assets as Field, bf]);
     let lc = poseidon::bn254::hash_2([liabilities as Field, bf]);

@@ -19,9 +19,9 @@ fn main(
 
 #[test]
 fn test_adult_verification() {
-    let birth_year = 1995_u32;
-    let current_year = 2025_u32;
-    let min_age = 18_u32;
+    let birth_year: u32 = 1995;
+    let current_year: u32 = 2025;
+    let min_age: u32 = 18;
     let secret = 12345 as Field;
     let commitment = poseidon::bn254::hash_2([birth_year as Field, secret]);
     main(birth_year, current_year, min_age, secret, commitment);
@@ -29,9 +29,9 @@ fn test_adult_verification() {
 
 #[test(should_fail)]
 fn test_underage_rejected() {
-    let birth_year = 2015_u32;  // 10 years old
-    let current_year = 2025_u32;
-    let min_age = 18_u32;
+    let birth_year: u32 = 2015;  // 10 years old
+    let current_year: u32 = 2025;
+    let min_age: u32 = 18;
     let secret = 99 as Field;
     let commitment = poseidon::bn254::hash_2([birth_year as Field, secret]);
     main(birth_year, current_year, min_age, secret, commitment); // Must fail
