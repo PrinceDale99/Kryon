@@ -17,10 +17,11 @@ export class KryonOracle {
     constructor() {
         const secretKey = process.env.ORACLE_SECRET_KEY;
         if (!secretKey) {
-            throw new Error('ORACLE_SECRET_KEY environment variable not set. ' +
-                'Generate one with: stellar keys generate oracle --network testnet');
+            console.warn('WARNING: ORACLE_SECRET_KEY environment variable not set. Generating a temporary random keypair for this session.');
+            this.keypair = StellarSdk.Keypair.random();
+        } else {
+            this.keypair = StellarSdk.Keypair.fromSecret(secretKey);
         }
-        this.keypair = StellarSdk.Keypair.fromSecret(secretKey);
     }
 
     get publicKey(): string {
