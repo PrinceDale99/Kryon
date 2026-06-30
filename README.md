@@ -16,29 +16,45 @@ Kryon revolutionizes SMB financing by bringing invoice factoring on-chain. By le
 - **Data Authenticity**: Kryon uses ZK to verify the TLS/HTTPS responses from the ERP system (similar to DECO), proving mathematically that the API response came directly from the ERP server and was not tampered with by the borrower.
 - **On-chain Verification**: The generated ZK SNARK is submitted to a Soroban Smart Contract, which natively verifies the proof. This removes the need for centralized credit agencies or manual auditors.
 
-### 🏗 System Architecture (Mermaid)
+### 🏗 System Architecture
 
 ```mermaid
-sequenceDiagram
-    participant B as Borrower (SMB)
-    participant ERP as ERP System (ERPNext/Stripe)
-    participant F as Frontend (Browser / WASM)
-    participant O as Node.js Orchestrator (Oracle)
-    participant S as Soroban Smart Contract
-    participant LP as Liquidity Providers
+graph TD
+    %% Core Entities
+    SMB["🏢 Borrower (SMB)"]
+    LP["💧 Liquidity Providers"]
+    ERP["🗄️ ERP System<br/>(ERPNext / Stripe)"]
+    
+    %% Kryon Network Components
+    subgraph Kryon Network
+        App["💻 Frontend Client<br/>(React / WASM)"]
+        Oracle["⚡ ZK Orchestrator<br/>(Node.js / Barretenberg)"]
+        SmartContract["⛓️ Soroban Smart Contracts<br/>(KryonEscrow)"]
+    end
 
-    LP->>S: 1. Deposit XLM Liquidity
-    B->>F: 2. Connects Wallet & Links ERP
-    F->>ERP: 3. Fetch Outstanding Invoices (OAuth)
-    ERP-->>F: 4. Invoice Data (JSON)
-    F->>F: 5. Borrower selects Invoice to Factor
-    F->>O: 6. Send ZK Proof Generation Request
-    O->>O: 7. Compile Noir Circuit & Generate Proof
-    O->>O: 8. Cryptographically Sign Attestation (Ed25519)
-    O-->>F: 9. Return Attestation Signature & Payload
-    F->>S: 10. submit_zk_factoring(Signature, Nullifier)
-    S->>S: 11. Verify Oracle Signature & Nullifier
-    S-->>B: 12. Payout 90% Invoice Value (XLM)
+    %% Interactions
+    LP -- "1. Deposits XLM" --> SmartContract
+    SMB -- "2. Connects Wallet" --> App
+    App -- "3. Fetches Invoices" --> ERP
+    ERP -- "4. Returns JSON" --> App
+    App -- "5. Requests ZK Proof" --> Oracle
+    
+    Oracle -. "6. Generates SNARK<br/>& Ed25519 Sig" .-> Oracle
+    Oracle -- "7. Returns Attestation" --> App
+    
+    App -- "8. submit_zk_factoring()" --> SmartContract
+    SmartContract -. "9. Verifies Sig<br/>& Spends Nullifier" .-> SmartContract
+    SmartContract -- "10. Payouts 90% XLM" --> SMB
+
+    %% Styling
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:1px,color:#000
+    classDef contract fill:#e0f7fa,stroke:#006064,stroke-width:2px,color:#000
+    classDef backend fill:#fff3e0,stroke:#e65100,stroke-width:2px,color:#000
+    classDef external fill:#f3e5f5,stroke:#4a148c,stroke-width:2px,color:#000
+
+    class SmartContract contract
+    class Oracle backend
+    class ERP external
 ```
 
 Once the ZK Proof is mathematically verified on-chain via **Soroban Smart Contracts**, Kryon instantly routes working capital from decentralized Liquidity Provider (LP) pools directly into the borrower's Freighter wallet.
