@@ -1,6 +1,6 @@
 // Proves total_assets > total_liabilities without revealing individual values.
 // Used by the protocol to generate a daily solvency attestation.
-use std::hash::poseidon;
+use dep::std::hash::poseidon;
 
 fn main(
     total_assets: u64,              // Private

@@ -1,6 +1,6 @@
 // Proves that a leaf value is a member of a Merkle tree
 // without revealing the leaf index or sibling path values.
-use std::hash::poseidon;
+use dep::std::hash::poseidon;
 
 global DEPTH: u32 = 20; // 2^20 = 1M leaves
 

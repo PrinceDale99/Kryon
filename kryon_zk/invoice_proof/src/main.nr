@@ -2,7 +2,7 @@
 // Proves that a user has a valid invoice with sufficient balance, without revealing the exact balance or the customer.
 
 // We import the standard library for hashing (Poseidon)
-use std::hash::poseidon;
+use dep::std::hash::poseidon;
 
 fn main(
     invoice_amount: u64,           // Private: The actual amount on the invoice

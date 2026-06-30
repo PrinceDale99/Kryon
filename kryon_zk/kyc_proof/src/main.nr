@@ -1,4 +1,4 @@
-use std::hash::poseidon;
+use dep::std::hash::poseidon;
 
 // Proves that a Liquidity Provider is accredited (e.g. income > 200k) 
 // based on a signed W3C Verifiable Credential from a trusted issuer,

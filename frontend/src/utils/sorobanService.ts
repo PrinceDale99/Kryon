@@ -145,9 +145,9 @@ export const submitFactoringRequest = async (
     };
 
     // Build the XDR operation to call KryonEscrow::submit_zk_factoring
-    const { Contract, TransactionBuilder, Networks, xdr, SorobanRpc } = StellarSdk;
+    const { Contract, TransactionBuilder, Networks, xdr, rpc } = StellarSdk;
     const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
-    const sorobanServer = new SorobanRpc.Server(rpcUrl);
+    const sorobanServer = new rpc.Server(rpcUrl);
     const account = await server.loadAccount(publicKey);
     const fee = await server.fetchBaseFee();
     const contract = new Contract(contractId);
@@ -188,12 +188,12 @@ export const submitFactoringRequest = async (
 
     // Simulate the transaction first to get the resource fee
     const simResult = await sorobanServer.simulateTransaction(tx);
-    if (SorobanRpc.Api.isSimulationError(simResult)) {
+    if (rpc.Api.isSimulationError(simResult)) {
         throw new Error(`Soroban simulation failed: ${simResult.error}`);
     }
 
     // Assemble with correct resource limits from simulation
-    tx = SorobanRpc.assembleTransaction(tx, simResult).build();
+    tx = rpc.assembleTransaction(tx, simResult).build();
 
     // Sign with Freighter
     const txXdr = tx.toXDR();
@@ -218,13 +218,13 @@ export const submitFactoringRequest = async (
     // Poll for confirmation
     let getResult = await sorobanServer.getTransaction(sendResult.hash);
     let attempts = 0;
-    while (getResult.status === SorobanRpc.Api.GetTransactionStatus.NOT_FOUND && attempts < 30) {
+    while (getResult.status === rpc.Api.GetTransactionStatus.NOT_FOUND && attempts < 30) {
         await new Promise(r => setTimeout(r, 2000));
         getResult = await sorobanServer.getTransaction(sendResult.hash);
         attempts++;
     }
 
-    if (getResult.status === SorobanRpc.Api.GetTransactionStatus.FAILED) {
+    if (getResult.status === rpc.Api.GetTransactionStatus.FAILED) {
         throw new Error(`Soroban transaction failed: ${JSON.stringify(getResult)}`);
     }
 

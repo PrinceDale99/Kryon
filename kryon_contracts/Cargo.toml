@@ -8,6 +8,7 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 soroban-sdk = "22.0.0"
+wee_alloc = "0.4.5"
 
 # Arkworks BN254 Groth16  compiled for wasm32-unknown-unknown
 # MUST use no_std + alloc features. DO NOT enable std.

@@ -1,5 +1,5 @@
 // Proves user is above a minimum age threshold without revealing birthdate.
-use std::hash::poseidon;
+use dep::std::hash::poseidon;
 
 fn main(
     birth_year: u32,                 // Private
