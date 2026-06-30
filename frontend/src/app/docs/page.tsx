@@ -165,19 +165,27 @@ export default function DocsPage() {
             },
             { 
               step: 4, 
-              title: "4. Instant XLM Advance", 
-              desc: "KryonLiquidity releases 90% of the invoice face value instantly into the borrower's Freighter Wallet. No waiting 60 days.", 
-              color: "from-amber-400 to-orange-500", 
-              shadow: "shadow-amber-500/20",
+              title: "4. Dynamic Price Oracle", 
+              desc: "The protocol queries a live CoinGecko API oracle to instantly convert the fiat invoice value (e.g., PHP, USD) into the exact, to-the-second equivalent amount of XLM.", 
+              color: "from-blue-500 to-indigo-400", 
+              shadow: "shadow-blue-500/20",
               align: "right"
             },
             { 
               step: 5, 
-              title: "5. Invoice Paid & Yield", 
+              title: "5. Instant XLM Advance", 
+              desc: "KryonLiquidity releases exactly 90% of the live XLM converted value instantly into the borrower's Freighter Wallet from its massive >100k XLM testnet treasury. No waiting 60 days.", 
+              color: "from-amber-400 to-orange-500", 
+              shadow: "shadow-amber-500/20",
+              align: "left"
+            },
+            { 
+              step: 6, 
+              title: "6. Invoice Paid & Yield", 
               desc: "The Corporation pays the invoice on day 60. The remaining 10% is released to the borrower, minus a protocol fee distributed to LPs as yield.", 
               color: "from-rose-500 to-pink-600", 
               shadow: "shadow-rose-500/20",
-              align: "left"
+              align: "right"
             }
           ].map((node, i) => (
             <motion.div 
