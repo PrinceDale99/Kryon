@@ -176,7 +176,7 @@ export class ZKOrchestrator {
         const input = { 
             leaf: this.formatHex(leaf), 
             path_elements: pathElements.map(p => this.formatHex(p)), 
-            path_indices: pathIndices, 
+            path_indices: pathIndices.map(x => x === 1 || x === true), 
             root: this.formatHex(root) 
         };
         const { witness } = await noir.execute(input);

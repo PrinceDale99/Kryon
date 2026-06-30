@@ -11,7 +11,7 @@ fn merkle_hash(left: Field, right: Field) -> Field {
 fn main(
     leaf: Field,                     // Private: the leaf value (e.g., invoice commitment)
     path_elements: [Field; 20],      // Private: sibling hashes along the path
-    path_indices: [u1; 20],          // Private: 0 = current is left, 1 = current is right
+    path_indices: [bool; 20],          // Private: false = current is left, true = current is right
     root: pub Field,                 // Public: the Merkle root stored on-chain
 ) {
     let mut current = leaf;
@@ -42,7 +42,7 @@ fn test_single_leaf_tree() {
     }
     
     let root = current;
-    let path_indices = [0 as u1; 20];
+    let path_indices = [false; 20];
     
     main(leaf, path_elements, path_indices, root);
 }
@@ -51,7 +51,7 @@ fn test_single_leaf_tree() {
 fn test_invalid_membership() {
     let leaf = 12345 as Field;
     let path_elements = [0 as Field; 20];
-    let path_indices = [0 as u1; 20];
+    let path_indices = [false; 20];
     let root = 99999 as Field; // Fake root
     main(leaf, path_elements, path_indices, root); // Must fail
 }
