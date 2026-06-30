@@ -2,6 +2,6 @@
 name = "poseidon_util"
 type = "bin"
 authors = ["Kryon"]
-compiler_version = ">=1.0.0"
+compiler_version = ">=0.30.0"
 
 [dependencies]
