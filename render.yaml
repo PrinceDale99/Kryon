@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: kryon-orchestrator
+    env: node
+    rootDir: kryon_backend_orchestrator
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+  - type: web
+    name: kryon-zkml-engine
+    env: python
+    rootDir: kryon_zk/zkml_risk_model
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
