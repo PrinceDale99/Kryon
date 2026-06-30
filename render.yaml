@@ -3,7 +3,7 @@ services:
     name: kryon-orchestrator
     env: node
     rootDir: kryon_backend_orchestrator
-    buildCommand: npm install && npm run build
+    buildCommand: npm install
     startCommand: npm start
     plan: free
     envVars:
