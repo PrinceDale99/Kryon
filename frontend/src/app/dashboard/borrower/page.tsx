@@ -65,12 +65,29 @@ export default function BorrowerDashboard() {
       const hash = await submitFactoringRequest(selectedInvoice || "mock_hash_12345", faceValue, walletAddress || "", isDemoMode);
       
       if (!isDemoMode && erpConnected) {
-        // Now trigger the backend Treasury to dispense the actual XLM!
-        const advanceAmount = (faceValue * 0.9).toFixed(7);
+        const inv = liveInvoices.find(i => i.id === selectedInvoice);
+        
+        // Fetch live exchange rate from CoinGecko
+        let xlmRate = 0.1; // Fallback rate (1 XLM = $0.10)
+        let currency = inv?.currency?.toLowerCase() || 'usd';
+        
+        try {
+          const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=${currency}`);
+          const data = await res.json();
+          if (data && data.stellar && data.stellar[currency]) {
+            xlmRate = data.stellar[currency];
+          }
+        } catch(e) {
+          console.warn("Failed to fetch live XLM price, using fallback.");
+        }
+
+        // Calculate exact XLM advance
+        let advanceAmountInXlm = (faceValue / xlmRate) * 0.9;
+        
         const payoutRes = await fetch('/api/factor', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ destination: walletAddress, amount: advanceAmount })
+          body: JSON.stringify({ destination: walletAddress, amount: advanceAmountInXlm.toFixed(7) })
         });
         const payoutJson = await payoutRes.json();
         
@@ -320,7 +337,7 @@ export default function BorrowerDashboard() {
                   </motion.div>
                   <h3 className="text-3xl font-black mb-3 tracking-tight">XLM Deposited!</h3>
                   <p className="text-slate-500 mb-8 leading-relaxed">
-                    {(liveInvoices.find(i => i.id === selectedInvoice)?.amount_due * 0.9 || 45000).toLocaleString()} XLM has been instantly advanced to your Freighter wallet.
+                    The requested XLM has been instantly advanced to your Freighter wallet.
                   </p>
                   
                   <div className="p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl mb-8 break-all shadow-inner">
