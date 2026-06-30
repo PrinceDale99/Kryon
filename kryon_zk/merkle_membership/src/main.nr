@@ -47,8 +47,7 @@ fn test_single_leaf_tree() {
     main(leaf, path_elements, path_indices, root);
 }
 
-#[test]
-#[should_fail]
+#[test(should_fail)]
 fn test_invalid_membership() {
     let leaf = 12345 as Field;
     let path_elements = [0 as Field; 20];

@@ -27,8 +27,7 @@ fn test_adult_verification() {
     main(birth_year, current_year, min_age, secret, commitment);
 }
 
-#[test]
-#[should_fail]
+#[test(should_fail)]
 fn test_underage_rejected() {
     let birth_year = 2015_u32;  // 10 years old
     let current_year = 2025_u32;

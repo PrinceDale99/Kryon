@@ -32,8 +32,7 @@ fn test_solvent_protocol() {
     main(assets, liabilities, bf, ac, lc, true);
 }
 
-#[test]
-#[should_fail]
+#[test(should_fail)]
 fn test_insolvent_protocol() {
     let assets = 2_000_000_u64; // less than liabilities
     let liabilities = 3_000_000_u64;
