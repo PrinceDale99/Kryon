@@ -18,27 +18,28 @@ const orchestrator = new ZKOrchestrator(process.env.STELLAR_RPC_URL || 'https://
  */
 app.post('/prove/invoice', async (req: Request, res: Response) => {
     try {
-        const { invoiceAmount, advanceRequested, invoiceSecret, invoiceCommitment, nullifierSecret, nullifier } = req.body;
+        let { invoiceAmount, advanceRequested, invoiceSecret, invoiceCommitment, nullifierSecret, nullifier } = req.body;
+
+        invoiceAmount = Math.floor(Number(invoiceAmount));
+        advanceRequested = Math.floor(Number(advanceRequested));
 
         if (!invoiceAmount || !advanceRequested || !invoiceSecret || !invoiceCommitment || !nullifierSecret || !nullifier) {
             return res.status(400).json({ error: 'Missing required fields' });
         }
 
         // Step 1: Generate proof off-chain using Barretenberg
+        const realInvoiceCommitment = await orchestrator.poseidonHashPublic([invoiceAmount, '0x' + invoiceSecret.replace('0x', '')]);
+        const realNullifier = await orchestrator.poseidonHashPublic([realInvoiceCommitment, '0x' + nullifierSecret.replace('0x', '')]);
         const proofBytes = await orchestrator.generateInvoiceProof(
             invoiceAmount, advanceRequested, invoiceSecret,
-            invoiceCommitment, nullifierSecret, nullifier
+            realInvoiceCommitment, nullifierSecret, realNullifier
         );
 
         // Step 2: Oracle verifies the proof and signs attestation
-        const publicInputs = [
-            String(advanceRequested),
-            invoiceCommitment,
-            nullifier
-        ];
+        const publicInputs = [String(advanceRequested), realInvoiceCommitment, realNullifier];
 
         const attestation = await oracle.verifyAndAttest(
-            proofBytes, publicInputs, nullifier, 'invoice'
+            proofBytes, publicInputs, realNullifier, 'invoice'
         );
 
         res.json({
