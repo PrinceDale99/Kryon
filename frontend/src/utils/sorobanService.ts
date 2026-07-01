@@ -121,9 +121,10 @@ export const submitFactoringRequest = async (
         throw new Error(`Proof generation failed: ${err.error}`);
     }
 
-    const { attestation } = await proveResponse.json();
+    const payload = await proveResponse.json();
+    const { attestation, publicInputs } = payload;
     const { messageHash, signature, nullifier, timestamp } = attestation;
-    const realInvoiceCommitment = (await proveResponse.clone().json()).publicInputs[1];
+    const realInvoiceCommitment = publicInputs[1];
 
     // Step 3: Build Soroban contract invocation using SorobanRpc
     const rpcUrl = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org';
