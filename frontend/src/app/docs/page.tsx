@@ -1,6 +1,7 @@
 "use client";
-import { motion } from 'framer-motion';
-import { BookOpen, Code, ShieldCheck, ExternalLink } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { BookOpen, Code, ShieldCheck, ExternalLink, Lock, CheckCircle, FileText, Cpu, Scale, EyeOff, Network, Database, Zap, FileJson, XCircle } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 export default function DocsPage() {
   const container = {
@@ -16,18 +17,30 @@ export default function DocsPage() {
     show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100 } }
   };
 
+  // State to handle animated demonstrations
+  const [demoState, setDemoState] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDemoState(s => (s + 1) % 4);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className="max-w-4xl mx-auto px-4 py-16 relative">
-      <div className="absolute top-40 -left-40 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
-      <div className="absolute top-80 -right-40 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[120px] -z-10" />
+    <div className="max-w-6xl mx-auto px-4 py-16 relative">
+      <div className="absolute top-40 -left-40 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-80 -right-40 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="mb-16 text-center"
       >
-        <h1 className="text-5xl md:text-6xl font-black tracking-tighter mb-6">Kryon Network <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">Docs</span></h1>
-        <p className="text-xl text-slate-600 dark:text-slate-400 font-medium">The decentralized Accounts Receivable factoring protocol on Soroban.</p>
+        <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-6">Kryon Network <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-emerald-500">Docs</span></h1>
+        <p className="text-xl md:text-2xl text-slate-600 dark:text-slate-400 font-medium max-w-3xl mx-auto leading-relaxed">
+          The fully decentralized, Zero-Knowledge invoice factoring and liquidity protocol on Soroban.
+        </p>
       </motion.div>
 
       <motion.div 
@@ -36,218 +49,349 @@ export default function DocsPage() {
         animate="show"
         className="space-y-12"
       >
+        {/* The Problem & Solution */}
         <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
-          <div className="flex items-center space-x-4 mb-6">
+          <div className="grid md:grid-cols-2 gap-12">
+            <div>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="p-3 bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-400 rounded-2xl">
+                  <EyeOff className="w-8 h-8" />
+                </div>
+                <h2 className="text-3xl font-black">The Problem</h2>
+              </div>
+              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-4">
+                Small to Medium Businesses (SMBs) consistently face crippling cash flow bottlenecks due to standard Net-30, Net-60, or Net-90 invoice payment terms. 
+              </p>
+              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
+                Traditional factoring is heavily centralized, opaque, painfully slow, and predatory—charging exorbitant fees and requiring massive amounts of manual paperwork, invasive audits, and exposing proprietary client lists to third parties.
+              </p>
+            </div>
+            <div>
+              <div className="flex items-center space-x-4 mb-6">
+                <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl">
+                  <ShieldCheck className="w-8 h-8" />
+                </div>
+                <h2 className="text-3xl font-black">The Kryon Solution</h2>
+              </div>
+              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed mb-4">
+                Kryon brings invoice factoring entirely on-chain while preserving complete corporate privacy. 
+              </p>
+              <p className="text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
+                By leveraging cutting-edge <strong>Noir Zero-Knowledge (ZK) Proofs</strong> and <strong>EZKL Machine Learning Models (ZKML)</strong>, businesses can tokenize open invoices trustlessly. Liquidity Providers supply capital to a decentralized Soroban Treasury, earning reliable yield as borrowers factor invoices instantly.
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* System Architecture */}
+        <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
+          <div className="flex items-center space-x-4 mb-8">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl">
+              <Network className="w-8 h-8" />
+            </div>
+            <h2 className="text-3xl font-black">Comprehensive Architecture</h2>
+          </div>
+          
+          <div className="bg-slate-50 dark:bg-slate-950 p-8 rounded-2xl border border-slate-200 dark:border-slate-800 mb-8 overflow-hidden">
+            <div className="flex flex-col md:flex-row items-center justify-between space-y-8 md:space-y-0 md:space-x-8">
+              {/* Animated Architecture Diagram */}
+              <div className="flex-1 w-full space-y-6 relative">
+                {/* Connecting Lines */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" style={{ minHeight: '300px' }}>
+                  <motion.path 
+                    d="M 150 50 C 250 50, 250 150, 350 150" 
+                    stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-300 dark:text-slate-700" 
+                    strokeDasharray="5,5" 
+                    animate={{ strokeDashoffset: [0, -20] }} 
+                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                  />
+                  <motion.path 
+                    d="M 150 250 C 250 250, 250 150, 350 150" 
+                    stroke="currentColor" strokeWidth="2" fill="none" className="text-slate-300 dark:text-slate-700" 
+                    strokeDasharray="5,5" 
+                    animate={{ strokeDashoffset: [0, -20] }} 
+                    transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+                  />
+                </svg>
+
+                {/* Left side: Actors */}
+                <div className="flex flex-col space-y-12 z-10 relative w-64">
+                  <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border-2 border-indigo-500 shadow-lg flex items-center space-x-3">
+                    <Database className="w-6 h-6 text-indigo-500" />
+                    <span className="font-bold">ERP (Stripe/QuickBooks)</span>
+                  </div>
+                  <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border-2 border-emerald-500 shadow-lg flex items-center space-x-3">
+                    <Lock className="w-6 h-6 text-emerald-500" />
+                    <span className="font-bold">ZK Identity Store</span>
+                  </div>
+                </div>
+
+                {/* Middle: Frontend/Backend */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-64">
+                  <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl border-4 border-blue-500 shadow-2xl flex flex-col items-center justify-center space-y-2 text-center">
+                    <Zap className="w-10 h-10 text-blue-500" />
+                    <span className="font-black text-lg">Kryon Frontend & Noir ZK Prover</span>
+                  </div>
+                </div>
+
+                {/* Right: Blockchain */}
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-64">
+                  <div className="bg-slate-900 dark:bg-black p-6 rounded-2xl border-2 border-slate-700 shadow-2xl flex flex-col items-center justify-center space-y-2 text-center text-white">
+                    <Code className="w-10 h-10 text-slate-300" />
+                    <span className="font-black text-lg">Soroban Smart Contracts</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6 text-slate-600 dark:text-slate-300">
+            <div>
+              <h4 className="font-bold text-slate-900 dark:text-white mb-2">1. Decoupled Proving</h4>
+              <p>The client fetches OAuth data from the ERP. The Noir Backend generates an execution trace proving integrity, while the EZKL microservice runs a PyTorch model for risk assessment.</p>
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-900 dark:text-white mb-2">2. Trustless Execution</h4>
+              <p>Soroban Smart Contracts receive ONLY the SNARK proofs, not the raw data. Soroban verifies the cryptography and releases the XLM from the Liquidity Pool instantly.</p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* ZK Visualizations */}
+        <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
+          <div className="flex items-center space-x-4 mb-12">
+            <div className="p-3 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-2xl">
+              <Zap className="w-8 h-8" />
+            </div>
+            <h2 className="text-3xl font-black">Zero-Knowledge Implementation (Animated)</h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* ZK Identity */}
+            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center">
+              <h3 className="text-xl font-bold mb-4">1. Persistent ZK Identity</h3>
+              <div className="h-40 w-full flex items-center justify-center mb-4 relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <motion.div 
+                  animate={{ 
+                    x: demoState === 0 ? 0 : (demoState === 1 ? -100 : 100),
+                    opacity: demoState === 0 ? 1 : 0
+                  }}
+                  className="absolute flex items-center space-x-2 bg-slate-100 dark:bg-slate-800 p-3 rounded-lg"
+                >
+                  <FileText className="text-slate-500" /> <span>Raw KYC Data</span>
+                </motion.div>
+                <motion.div 
+                  animate={{ 
+                    scale: demoState === 1 ? [1, 1.2, 1] : 1,
+                    opacity: demoState === 1 ? 1 : (demoState === 0 ? 0 : 0.5)
+                  }}
+                  className="absolute text-emerald-500"
+                >
+                  <Lock size={64} />
+                </motion.div>
+                <motion.div 
+                  animate={{ 
+                    y: demoState === 2 ? 0 : 50,
+                    opacity: demoState === 2 ? 1 : 0
+                  }}
+                  className="absolute flex flex-col items-center text-emerald-500"
+                >
+                  <CheckCircle size={48} className="mb-2" />
+                  <span className="font-bold font-mono">Proof Verified</span>
+                </motion.div>
+              </div>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">
+                Proves a borrower holds a valid digital identity (KYC/AML) without leaking specific PII to the public ledger. Verified status is persisted globally across devices via a KV store.
+              </p>
+            </div>
+
+            {/* ZK Invoice Integrity */}
+            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center">
+              <h3 className="text-xl font-bold mb-4">2. Confidential Factoring (Noir)</h3>
+              <div className="h-40 w-full flex items-center justify-center mb-4 relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <motion.div 
+                  animate={{ 
+                    rotateY: demoState === 0 ? 0 : 180,
+                    opacity: demoState === 2 ? 0 : 1
+                  }}
+                  transition={{ duration: 1 }}
+                  className="absolute bg-blue-100 dark:bg-blue-900/50 p-4 rounded-xl border border-blue-500"
+                >
+                  {demoState === 0 ? (
+                    <div className="flex flex-col items-center"><FileJson className="text-blue-500 mb-1" /> <span className="text-xs font-bold text-blue-700 dark:text-blue-300">Invoice $50k</span></div>
+                  ) : (
+                    <div className="flex flex-col items-center"><ShieldCheck className="text-blue-500 mb-1" /> <span className="text-xs font-mono font-bold text-blue-700 dark:text-blue-300">0x8f...2a1</span></div>
+                  )}
+                </motion.div>
+                <motion.div 
+                  animate={{ 
+                    scale: demoState === 2 ? 1 : 0,
+                    opacity: demoState === 2 ? 1 : 0
+                  }}
+                  className="absolute text-emerald-500 flex flex-col items-center"
+                >
+                  <CheckCircle size={48} />
+                  <span className="font-bold text-sm mt-2">Soroban Verified</span>
+                </motion.div>
+              </div>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">
+                Generates a Groth16 SNARK proving that an invoice from Stripe/ERPNext is digitally signed and valid, fully concealing the corporate client and trade margins.
+              </p>
+            </div>
+
+            {/* ZKML EZKL */}
+            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center">
+              <h3 className="text-xl font-bold mb-4">3. ZKML Risk Model (EZKL)</h3>
+              <div className="h-40 w-full flex items-center justify-center mb-4 relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <motion.div 
+                  animate={{ 
+                    scale: demoState === 1 ? [1, 1.2, 1] : 1,
+                    rotate: demoState === 1 ? 360 : 0
+                  }}
+                  transition={{ duration: 2 }}
+                  className="absolute text-purple-500"
+                >
+                  <Cpu size={64} />
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ 
+                    opacity: demoState === 2 ? 1 : 0,
+                    y: demoState === 2 ? -20 : 0
+                  }}
+                  className="absolute bg-purple-500 text-white font-bold px-3 py-1 rounded-full shadow-lg"
+                >
+                  Risk Score: 12 (Low) + SNARK
+                </motion.div>
+              </div>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">
+                A PyTorch Neural Network executes inside a Halo2 circuit. It evaluates default risk and generates a cryptographic proof that the exact, untampered AI model was used.
+              </p>
+            </div>
+
+            {/* Solvency Proof */}
+            <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 flex flex-col items-center text-center">
+              <h3 className="text-xl font-bold mb-4">4. Proof of Solvency</h3>
+              <div className="h-40 w-full flex items-center justify-center mb-4 relative overflow-hidden rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                <motion.div 
+                  animate={{ 
+                    rotate: demoState === 0 ? -15 : (demoState === 1 ? 15 : 0)
+                  }}
+                  transition={{ type: "spring", stiffness: 50 }}
+                  className="absolute text-amber-500 origin-bottom"
+                >
+                  <Scale size={64} />
+                </motion.div>
+                <motion.div 
+                  animate={{ opacity: demoState === 2 ? 1 : 0 }}
+                  className="absolute bottom-4 font-mono font-bold text-emerald-500 text-sm bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1 rounded-full"
+                >
+                  Assets {">"} Liabilities (Verified)
+                </motion.div>
+              </div>
+              <p className="text-slate-600 dark:text-slate-400 text-sm">
+                Assures Liquidity Providers that the Soroban treasury is perfectly healthy. Proves Total Assets exceed Liabilities without exposing specific underlying loans.
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Feature Comparison Table */}
+        <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none overflow-x-auto">
+          <div className="flex items-center space-x-4 mb-8">
+            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
               <BookOpen className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-black">Introduction</h2>
+            <h2 className="text-3xl font-black">With ZK vs. Without ZK</h2>
           </div>
-          <div className="space-y-4 text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
-            <p>
-              Small and Medium-sized Businesses (SMBs) often suffer from severe cash flow issues because corporate clients take 60 to 90 days to pay their invoices.
-            </p>
-            <p>
-              <strong>Kryon Network</strong> solves this by allowing SMBs to instantly factor (sell) their unpaid invoices for an immediate XLM advance. Liquidity Providers (LPs) fund these advances and earn yield when the invoice is ultimately paid by the corporation.
-            </p>
-          </div>
+          
+          <table className="w-full text-left border-collapse min-w-[800px]">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800">
+                <th className="p-4 font-bold text-slate-900 dark:text-white">Feature</th>
+                <th className="p-4 font-bold text-rose-500 flex items-center"><XCircle className="w-4 h-4 mr-2"/> Without Zero-Knowledge</th>
+                <th className="p-4 font-bold text-emerald-500 flex items-center"><ShieldCheck className="w-4 h-4 mr-2"/> With ZK (Kryon)</th>
+                <th className="p-4 font-bold text-slate-900 dark:text-white">How ZK Improves It</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+              <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">Invoice Integrity</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">Upload raw invoices directly to smart contract. Exposes secrets.</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">Generates a Groth16/Halo2 SNARK off-chain. Submits only the proof.</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm"><strong>Total Privacy:</strong> Competitors cannot see your corporate clients or pricing on the public blockchain.</td>
+              </tr>
+              <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">Credit Risk Assessment</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">Manual human review or black-box centralized AI model.</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">PyTorch model executes inside a Halo2 circuit (ZKML).</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm"><strong>Unbiased:</strong> Borrowers cryptographically verify they were evaluated fairly without human bias.</td>
+              </tr>
+              <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">Identity & KYC</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">Upload passports/IDs to central databases (honeypots).</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">Localized ZK Identity Proof confirms compliance signatures.</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm"><strong>Security:</strong> Eliminates data breach risks. Proves Age {">"} 18 without touching actual data.</td>
+              </tr>
+              <tr className="hover:bg-slate-50 dark:hover:bg-slate-800/20 transition-colors">
+                <td className="p-4 font-semibold text-slate-800 dark:text-slate-200">Factoring Speed</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">Weeks of legal paperwork and human underwriters.</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">Takes {"<"} 15 seconds to generate SNARK and submit to Soroban.</td>
+                <td className="p-4 text-slate-600 dark:text-slate-400 text-sm"><strong>Hyper-efficiency:</strong> Math removes the need for human trust, enabling instant atomic settlement.</td>
+              </tr>
+            </tbody>
+          </table>
         </motion.section>
 
-        <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="p-3 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl">
-              <ShieldCheck className="w-8 h-8" />
-            </div>
-            <h2 className="text-3xl font-black">Zero-Knowledge Architecture</h2>
-          </div>
-          <div className="space-y-4 text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
-            <p>
-              Traditionally, factoring requires intensive manual audits and highly biased credit checks. Kryon Network completely removes this friction using a dual-engine <strong>Zero-Knowledge Cryptography</strong> framework.
-            </p>
-            
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-2">1. Privacy & Authenticity (Noir)</h3>
-            <p>
-              SMBs connect their ERPs (QuickBooks, Stripe) via OAuth. The protocol uses the Noir ZK engine to generate a cryptographic proof that mathematically guarantees:
-            </p>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li><strong>Authenticity:</strong> The invoice data was fetched directly from the ERP's secure servers and hasn't been tampered with.</li>
-              <li><strong>Privacy:</strong> Sensitive business data (the client's identity, line items, corporate rates) is <em>never</em> exposed to the public Stellar ledger.</li>
-            </ul>
-
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mt-8 mb-2">2. AI Risk Assessment (EZKL ZKML)</h3>
-            <p>
-              Instead of relying on biased banking officers, Kryon uses a PyTorch Neural Network to score the default risk of the invoice based on borrower history. We use <strong>EZKL</strong> to compile this AI inference into a <strong>Halo2 zk-SNARK</strong>.
-            </p>
-            <p className="mt-4">
-              This proof guarantees that the AI model ran correctly on the true invoice data without the borrower tampering with the algorithm to get a better rate. Both proofs are submitted to the Soroban smart contract, which acts as the decentralized judge.
-            </p>
-          </div>
-        </motion.section>
-
-        <motion.section variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 md:p-12 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none">
-          <div className="flex items-center space-x-4 mb-6">
-            <div className="p-3 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-2xl">
+        {/* Installation & Setup */}
+        <motion.section variants={item} className="bg-slate-900 p-8 md:p-12 rounded-3xl border border-slate-800 shadow-2xl text-white">
+          <div className="flex items-center space-x-4 mb-8">
+            <div className="p-3 bg-slate-800 text-white rounded-2xl">
               <Code className="w-8 h-8" />
             </div>
-            <h2 className="text-3xl font-black">Soroban Smart Contracts</h2>
+            <h2 className="text-3xl font-black">Installation & Setup</h2>
           </div>
-          <div className="space-y-6 text-slate-600 dark:text-slate-300 text-lg leading-relaxed">
-            <p>The protocol runs on two primary Rust smart contracts deployed to the Stellar Testnet:</p>
+          <div className="space-y-6 text-slate-300">
+            <p>To run the entire suite locally (Frontend, ZK Backend, and Smart Contracts), ensure you follow these instructions precisely.</p>
             
-            <div className="p-6 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">1. KryonLiquidity</h3>
-              <p className="text-base mb-6">Manages the decentralized pool of XLM. LPs call the <code>deposit()</code> function to add funds to the pool, increasing the Total Value Locked (TVL).</p>
-              
-              <a 
-                href="https://stellar.expert/explorer/testnet/account/GCO5RGVLRVNIF42JRQYCOCIC4Z66W2WIBVO3EMEUIM4LYHPOIM5KPGSG" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 transition-colors"
-              >
-                <span>View Treasury on Stellar Expert</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
+            <h3 className="text-xl font-bold text-white mt-6 mb-2">Prerequisites</h3>
+            <ul className="list-disc list-inside space-y-1 ml-4 mb-6">
+              <li>Node.js v20.0.0+</li>
+              <li>Rust 1.70.0+ (with <code>wasm32-unknown-unknown</code>)</li>
+              <li>Soroban CLI v22.0.0+</li>
+              <li>Python 3.10+</li>
+            </ul>
+
+            <div className="bg-black/50 p-6 rounded-xl border border-slate-800">
+              <h4 className="font-bold text-white mb-4">Phase 1: Deploy Soroban Contracts</h4>
+              <pre className="text-sm font-mono overflow-x-auto text-emerald-400 bg-black p-4 rounded-lg">
+{`cd kryon_contracts
+soroban contract build
+cargo test
+soroban contract deploy \\
+  --wasm target/wasm32-unknown-unknown/release/kryon_escrow.wasm \\
+  --source admin_wallet \\
+  --network testnet`}
+              </pre>
             </div>
 
-            <div className="p-6 bg-slate-50 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">2. KryonEscrow</h3>
-              <p className="text-base mb-6">Verifies the ZK proof logic and manages the factoring execution. When an SMB calls <code>submit_zk_factoring()</code> with the Noir and EZKL proofs, the contract instructs the Liquidity pool to release the advance directly to the SMB's Freighter wallet.</p>
-              
-              <a 
-                href="https://stellar.expert/explorer/testnet/contract/CCJUOYAZCR4JHADRXSV7IOAHPX45SW3IXH6FJ4A4FM22ARIWDNTJYNNP" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center space-x-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-semibold hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors"
-              >
-                <span>View Live Contract on Stellar Expert</span>
-                <ExternalLink className="w-4 h-4" />
-              </a>
+            <div className="bg-black/50 p-6 rounded-xl border border-slate-800">
+              <h4 className="font-bold text-white mb-4">Phase 2: Next.js Frontend</h4>
+              <pre className="text-sm font-mono overflow-x-auto text-blue-400 bg-black p-4 rounded-lg">
+{`cd frontend
+npm install
+cp .env.example .env.local
+
+# Required in .env.local:
+# NEXT_PUBLIC_SOROBAN_CONTRACT_ID="<YOUR_CONTRACT_ID>"
+# KV_REST_API_URL="<YOUR_KVDB_URL>"
+
+npm run dev`}
+              </pre>
             </div>
           </div>
         </motion.section>
-      </motion.div>
 
-      {/* Animation Flow Section */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true, margin: "-100px" }}
-        className="mt-24 mb-24"
-      >
-        <div className="flex flex-col items-center mb-16 text-center">
-          <div className="p-4 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-3xl shadow-xl shadow-orange-500/20 mb-6 transform -rotate-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4">How Kryon Works</h2>
-          <p className="text-slate-500 text-lg max-w-xl">A seamless, trustless protocol turning unpaid invoices into instant liquidity.</p>
-        </div>
-
-        <div className="max-w-4xl mx-auto relative px-4">
-          {/* Central animated line */}
-          <motion.div 
-            initial={{ height: 0 }}
-            whileInView={{ height: "100%" }}
-            viewport={{ once: true }}
-            transition={{ duration: 2, ease: "easeInOut" }}
-            className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1.5 bg-gradient-to-b from-blue-500 via-emerald-500 to-amber-500 md:-ml-[3px] rounded-full hidden md:block"
-          />
-          
-          {[
-            { 
-              step: 1, 
-              title: "1. Connect ERP", 
-              desc: "Borrower connects accounting software (QuickBooks/Stripe) to the protocol securely via OAuth. No manual document uploads.", 
-              color: "from-blue-500 to-cyan-500", 
-              shadow: "shadow-blue-500/20",
-              align: "left"
-            },
-            { 
-              step: 2, 
-              title: "2. ZK Proof Generation", 
-              desc: "A Zero-Knowledge cryptographic proof is generated locally, mathematically proving the invoice is valid without leaking your private client data to the public.", 
-              color: "from-emerald-400 to-teal-500", 
-              shadow: "shadow-emerald-500/20",
-              align: "right"
-            },
-            { 
-              step: 3, 
-              title: "3. Smart Contract Execution", 
-              desc: "KryonEscrow validates the ZK Proof on the Stellar Network via Soroban. The smart contract acts as the decentralized judge.", 
-              color: "from-purple-500 to-indigo-500", 
-              shadow: "shadow-purple-500/20",
-              align: "left"
-            },
-            { 
-              step: 4, 
-              title: "4. Dynamic Price Oracle", 
-              desc: "The protocol queries a live CoinGecko API oracle to instantly convert the fiat invoice value (e.g., PHP, USD) into the exact, to-the-second equivalent amount of XLM.", 
-              color: "from-blue-500 to-indigo-400", 
-              shadow: "shadow-blue-500/20",
-              align: "right"
-            },
-            { 
-              step: 5, 
-              title: "5. Instant XLM Advance", 
-              desc: "KryonLiquidity releases exactly 90% of the live XLM converted value instantly into the borrower's Freighter Wallet from its massive >100k XLM testnet treasury. No waiting 60 days.", 
-              color: "from-amber-400 to-orange-500", 
-              shadow: "shadow-amber-500/20",
-              align: "left"
-            },
-            { 
-              step: 6, 
-              title: "6. Invoice Paid & Yield", 
-              desc: "The Corporation pays the invoice on day 60. The remaining 10% is released to the borrower, minus a protocol fee distributed to LPs as yield.", 
-              color: "from-rose-500 to-pink-600", 
-              shadow: "shadow-rose-500/20",
-              align: "right"
-            }
-          ].map((node, i) => (
-            <motion.div 
-              key={node.step}
-              initial={{ opacity: 0, y: 50 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.6, delay: i * 0.4 }}
-              className={`relative flex items-center justify-between mb-16 md:mb-24 w-full ${
-                node.align === 'left' ? 'md:flex-row-reverse' : 'md:flex-row'
-              } flex-col`}
-            >
-              {/* Empty space for alternating layout */}
-              <div className="hidden md:block w-5/12"></div>
-
-              {/* Central Node */}
-              <div className="absolute left-4 md:left-1/2 md:-translate-x-1/2 flex items-center justify-center z-10 hidden md:flex">
-                <motion.div 
-                  initial={{ scale: 0 }}
-                  whileInView={{ scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ type: "spring", delay: (i * 0.4) + 0.3 }}
-                  className={`w-14 h-14 rounded-full bg-gradient-to-br ${node.color} shadow-lg ${node.shadow} border-4 border-white dark:border-slate-900 flex items-center justify-center`}
-                >
-                  <span className="text-white font-black text-xl">{node.step}</span>
-                </motion.div>
-                
-                {/* Ping effect */}
-                <motion.div 
-                  className={`absolute inset-0 rounded-full bg-gradient-to-br ${node.color} -z-10`}
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: i * 0.4 }}
-                />
-              </div>
-
-              {/* Content Card */}
-              <motion.div 
-                whileHover={{ scale: 1.02, y: -5 }}
-                className={`w-full md:w-5/12 bg-white dark:bg-slate-900 p-8 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xl ${node.shadow} relative overflow-hidden group ml-12 md:ml-0 mt-8 md:mt-0`}
-              >
-                <div className={`absolute top-0 ${node.align === 'left' ? 'right-0' : 'left-0'} w-2 h-full bg-gradient-to-b ${node.color}`} />
-                <h3 className="text-2xl font-black mb-3 text-slate-900 dark:text-white tracking-tight">{node.title}</h3>
-                <p className="text-slate-600 dark:text-slate-400 text-lg leading-relaxed">{node.desc}</p>
-              </motion.div>
-            </motion.div>
-          ))}
-        </div>
       </motion.div>
     </div>
   );
-}
+// EOF
