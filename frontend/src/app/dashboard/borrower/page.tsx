@@ -202,7 +202,7 @@ export default function BorrowerDashboard() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-12 relative">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[120px] -z-10" />
+      <div className="fixed top-1/4 right-0 w-[800px] h-[800px] bg-blue-500/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
       
       <div className="flex flex-col md:flex-row gap-8">
         <motion.div 

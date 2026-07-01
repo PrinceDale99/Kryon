@@ -97,7 +97,7 @@ export default function LPDashboard() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-12 relative">
-      <div className="absolute top-20 left-0 w-[400px] h-[400px] bg-emerald-500/10 rounded-full blur-[100px] -z-10" />
+      <div className="fixed top-1/4 left-0 w-[800px] h-[800px] bg-emerald-500/20 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
