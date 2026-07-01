@@ -98,7 +98,8 @@ export const submitFactoringRequest = async (
     // Step 1: Generate inputs
     const secret = invoiceSecret || crypto.randomUUID().replace(/-/g, '');
     const nullSecret = nullifierSecret || crypto.randomUUID().replace(/-/g, '');
-    const advanceRequested = Math.floor(faceValue * 0.9);
+    const flooredFaceValue = Math.floor(faceValue);
+    const advanceRequested = Math.floor(flooredFaceValue * 0.9);
 
     // Step 2: Generate proof + oracle attestation
     const proveResponse = await fetch('/api/zk/prove', {
@@ -106,7 +107,7 @@ export const submitFactoringRequest = async (
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             type: 'invoice',
-            invoiceAmount: faceValue,
+            invoiceAmount: flooredFaceValue,
             advanceRequested,
             invoiceSecret: secret,
             invoiceCommitment: `0x${secret}`,
