@@ -569,6 +569,16 @@ export default function BorrowerDashboard() {
                     </button>
                   </div>
                   <div className="space-y-4 mb-8">
+                    <button 
+                      onClick={() => {
+                        setErpUrl('https://vertigral.s.frappe.cloud/');
+                        setErpApiKey('5d423e0da64fb28');
+                        setErpApiSecret('124a532af5e4830');
+                      }}
+                      className="w-full py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200 dark:border-indigo-800 text-sm mb-2"
+                    >
+                      Use Vertigral's ERP
+                    </button>
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">ERPNext URL</label>
                       <input 
