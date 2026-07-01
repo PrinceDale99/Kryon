@@ -259,7 +259,7 @@ export default function BorrowerDashboard() {
                       <div className="flex justify-between items-center mb-4">
                         <div className="flex items-center space-x-2 text-amber-700 dark:text-amber-500">
                           <Zap className="w-5 h-5" />
-                          <span className="font-bold text-sm">ZKML Risk Oracle (Gemini AI)</span>
+                          <span className="font-bold text-sm">ZKML Risk Oracle</span>
                         </div>
                         <button 
                           onClick={runZkmlAnalysis}
@@ -368,7 +368,7 @@ export default function BorrowerDashboard() {
                         <div className="flex justify-between items-center mb-4">
                           <div className="flex items-center space-x-2 text-emerald-700 dark:text-emerald-500">
                             <Zap className="w-5 h-5" />
-                            <span className="font-bold text-sm">ZKML Risk Oracle (Gemini AI)</span>
+                            <span className="font-bold text-sm">ZKML Risk Oracle</span>
                           </div>
                           <button 
                             onClick={runZkmlAnalysis}
