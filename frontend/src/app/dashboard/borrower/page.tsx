@@ -8,7 +8,7 @@ import { TransactionHistory } from '../../../components/TransactionHistory';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function BorrowerDashboard() {
-  const { isDemoMode, displayCurrency, exchangeRates, erpConnected, setErpConnected, disconnectErp: globalDisconnectErp } = useStore();
+  const { isDemoMode, displayCurrency, exchangeRates, erpConnected, setErpConnected, disconnectErp: globalDisconnectErp, isGlobalZkVerified } = useStore();
   const { walletAddress } = useFreighter();
   const [loadingStep, setLoadingStep] = useState(0);
   const [successHash, setSuccessHash] = useState<string | null>(null);
@@ -129,6 +129,10 @@ export default function BorrowerDashboard() {
   const initiateFactor = () => {
     if (!walletAddress) {
       setErrorMsg("Please connect your wallet first.");
+      return;
+    }
+    if (!isGlobalZkVerified) {
+      setErrorMsg("IMPORTANT: You must complete ZK Identity Verification in the top-right menu before you can pledge an invoice!");
       return;
     }
     setIsConfirming(true);

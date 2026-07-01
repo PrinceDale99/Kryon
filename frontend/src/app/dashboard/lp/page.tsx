@@ -8,7 +8,7 @@ import { TransactionHistory } from '../../../components/TransactionHistory';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LPDashboard() {
-  const { isDemoMode, displayCurrency, exchangeRates } = useStore();
+  const { isDemoMode, displayCurrency, exchangeRates, isGlobalZkVerified } = useStore();
   const { walletAddress } = useFreighter();
   const [amount, setAmount] = useState('');
   const [loading, setLoading] = useState(false);
@@ -27,8 +27,7 @@ export default function LPDashboard() {
     }
     const fetchTVL = async () => {
       try {
-        const TREASURY = "GCO5RGVLRVNIF42JRQYCOCIC4Z66W2WIBVO3EMEUIM4LYHPOIM5KPGSG";
-        const res = await fetch(`https://horizon-testnet.stellar.org/accounts/${TREASURY}`);
+        const res = await fetch('https://horizon-testnet.stellar.org/accounts/GAUXUXIXXY2TUD64ZHKG3K6P6B3O3Y3T2C7F7D2QZQZ2Z2Z2Z2Z2Z2Z2');
         if (res.ok) {
           const data = await res.json();
           const native = data.balances.find((b: any) => b.asset_type === 'native');
@@ -56,6 +55,10 @@ export default function LPDashboard() {
   const initiateDeposit = () => {
     if (!walletAddress) {
       setErrorMsg("Please connect your wallet first.");
+      return;
+    }
+    if (!isGlobalZkVerified) {
+      setErrorMsg("IMPORTANT: You must complete ZK Identity Verification in the top-right menu before you can deposit!");
       return;
     }
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) return;

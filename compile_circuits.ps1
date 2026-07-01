@@ -7,7 +7,7 @@ if (-not (Get-Command nargo -ErrorAction SilentlyContinue)) {
     $env:PATH += ";$env:USERPROFILE\.nargo\bin"
 }
 
-$circuits = @("invoice_proof", "kyc_proof", "merkle_membership", "solvency_proof", "age_proof")
+$circuits = @("invoice_proof", "kyc_proof", "merkle_membership", "solvency_proof", "age_proof", "poseidon_util")
 foreach ($circuit in $circuits) {
     Write-Host "Compiling $circuit..."
     Set-Location "kryon_zk\$circuit"

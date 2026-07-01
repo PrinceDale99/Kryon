@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 
-// In-memory store for the hackathon demo. 
-// This will persist cross-device as long as the Vercel function stays warm.
-const globalAny: any = global;
-if (!globalAny.verifiedWallets) {
-  globalAny.verifiedWallets = {};
-}
+const KV_BUCKET_URL = 'https://kvdb.io/6E8YCJv8JnU31fac64XVgE';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -15,8 +10,15 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Wallet address required' }, { status: 400 });
   }
 
-  const isVerified = !!globalAny.verifiedWallets[wallet];
-  return NextResponse.json({ verified: isVerified });
+  try {
+    const res = await fetch(`${KV_BUCKET_URL}/${wallet}`);
+    if (res.status === 200) {
+        return NextResponse.json({ verified: true });
+    }
+    return NextResponse.json({ verified: false });
+  } catch(e) {
+    return NextResponse.json({ verified: false });
+  }
 }
 
 export async function POST(req: Request) {
@@ -27,8 +29,11 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 });
     }
 
-    // Mark as verified
-    globalAny.verifiedWallets[wallet] = true;
+    // Mark as verified in persistent KV store
+    await fetch(`${KV_BUCKET_URL}/${wallet}`, {
+        method: 'POST',
+        body: 'true'
+    });
     
     return NextResponse.json({ success: true, verified: true });
   } catch (error) {

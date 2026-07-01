@@ -8,6 +8,7 @@ import { X, Wallet, Link as LinkIcon, Smartphone, Copy, Check, LogOut, ExternalL
 
 export const WalletConnectButton = () => {
   const { hasFreighter, connect, disconnect, walletAddress } = useFreighter();
+  const { isGlobalZkVerified, setIsGlobalZkVerified } = useStore();
   const { 
     balance, 
     displayCurrency, 
@@ -27,21 +28,20 @@ export const WalletConnectButton = () => {
   const [copied, setCopied] = useState(false);
   const [mounted, setMounted] = useState(false);
   
-  // Cross-device persistence state
-  const [isZkVerified, setIsZkVerified] = useState(false);
-
+  // We use global state instead of local state for isZkVerified
+  // to prevent locking out of other screens
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  // Check identity status whenever wallet connects or modal opens
+  // Check identity status whenever wallet connects
   useEffect(() => {
-    if (walletAddress && showProfileModal) {
+    if (walletAddress) {
       fetch(`/api/identity?wallet=${walletAddress}`)
         .then(res => res.json())
         .then(data => {
           if (data.verified) {
-            setIsZkVerified(true);
+            setIsGlobalZkVerified(true);
             const btn = document.getElementById('zk-btn');
             if (btn) {
               btn.innerText = 'Proof Generated & Verified!';
@@ -49,11 +49,13 @@ export const WalletConnectButton = () => {
               btn.classList.add('bg-emerald-500');
               btn.setAttribute('disabled', 'true');
             }
+          } else {
+            setIsGlobalZkVerified(false);
           }
         })
         .catch(console.error);
     }
-  }, [walletAddress, showProfileModal]);
+  }, [walletAddress]);
 
   const handleCopy = () => {
     if (walletAddress) {
@@ -65,7 +67,7 @@ export const WalletConnectButton = () => {
 
   const handleDisconnect = () => {
     disconnect();
-    setIsZkVerified(false);
+    setIsGlobalZkVerified(false);
     setShowDisconnectConfirm(false);
     setShowProfileModal(false);
   };
@@ -189,54 +191,73 @@ export const WalletConnectButton = () => {
                               <span className="text-xs font-semibold mb-1 text-slate-600 dark:text-slate-400">Credential Document (Local Only)</span>
                               <input type="file" className="text-xs border border-slate-200 dark:border-slate-700 rounded-lg p-2 bg-white dark:bg-slate-900" />
                           </label>
-                          <button 
-                            type="button" 
-                            onClick={() => {
-                                const btn = document.getElementById('zk-btn');
-                                if (btn && !isZkVerified) {
-                                    btn.setAttribute('disabled', 'true');
-                                    btn.classList.replace('bg-blue-600', 'bg-slate-600');
-                                    
-                                    const stages = [
-                                      "Compiling Noir Circuit (main.nr)...",
-                                      "Generating ACVM Execution Trace...",
-                                      "Initializing Barretenberg Backend...",
-                                      "Computing Witness...",
-                                      "Generating zk-SNARK Proof...",
-                                      "Proof Generated & Verified!"
-                                    ];
-                                    
-                                    let currentStage = 0;
-                                    btn.innerText = stages[0];
-                                    
-                                    const interval = setInterval(() => {
-                                        currentStage++;
-                                        if (currentStage < stages.length - 1) {
-                                            btn.innerText = stages[currentStage];
-                                        } else {
-                                            clearInterval(interval);
-                                            
-                                            // Save to our persistent mock API
-                                            if (walletAddress) {
-                                                fetch('/api/identity', {
-                                                    method: 'POST',
-                                                    headers: { 'Content-Type': 'application/json' },
-                                                    body: JSON.stringify({ wallet: walletAddress })
-                                                }).catch(console.error);
-                                            }
+                          <div className="flex space-x-2">
+                            <button 
+                              type="button" 
+                              onClick={() => {
+                                  const btn = document.getElementById('zk-btn');
+                                  if (btn && !isGlobalZkVerified) {
+                                      btn.setAttribute('disabled', 'true');
+                                      btn.classList.replace('bg-blue-600', 'bg-slate-600');
+                                      
+                                      const stages = [
+                                        "Compiling Noir Circuit (main.nr)...",
+                                        "Generating ACVM Execution Trace...",
+                                        "Initializing Barretenberg Backend...",
+                                        "Computing Witness...",
+                                        "Generating zk-SNARK Proof...",
+                                        "Proof Generated & Verified!"
+                                      ];
+                                      
+                                      let currentStage = 0;
+                                      btn.innerText = stages[0];
+                                      
+                                      const interval = setInterval(() => {
+                                          currentStage++;
+                                          if (currentStage < stages.length - 1) {
+                                              btn.innerText = stages[currentStage];
+                                          } else {
+                                              clearInterval(interval);
+                                              
+                                              // Save to our persistent mock API
+                                              if (walletAddress) {
+                                                  fetch('/api/identity', {
+                                                      method: 'POST',
+                                                      headers: { 'Content-Type': 'application/json' },
+                                                      body: JSON.stringify({ wallet: walletAddress })
+                                                  }).catch(console.error);
+                                              }
 
-                                            btn.innerText = stages[stages.length - 1];
-                                            btn.classList.replace('bg-slate-600', 'bg-emerald-500');
-                                            setIsZkVerified(true);
-                                        }
-                                    }, 2800); // ~15 seconds total
-                                }
-                            }}
-                            id="zk-btn"
-                            className={`w-full text-white py-2 px-4 rounded-xl transition text-sm font-bold shadow-sm ${isZkVerified ? 'bg-emerald-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'}`}
-                          >
-                              {isZkVerified ? 'Proof Generated & Verified!' : 'Generate ZK Proof'}
-                          </button>
+                                              btn.innerText = stages[stages.length - 1];
+                                              btn.classList.replace('bg-slate-600', 'bg-emerald-500');
+                                              setIsGlobalZkVerified(true);
+                                          }
+                                      }, 2800); // ~15 seconds total
+                                  }
+                              }}
+                              id="zk-btn"
+                              className={`w-full text-white py-2 px-4 rounded-xl transition text-sm font-bold shadow-sm ${isGlobalZkVerified ? 'bg-emerald-500 cursor-not-allowed opacity-90' : 'bg-blue-600 hover:bg-blue-700'}`}
+                            >
+                                {isGlobalZkVerified ? 'Proof Generated & Verified!' : 'Generate ZK Proof'}
+                            </button>
+                            {isGlobalZkVerified && (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setIsGlobalZkVerified(false);
+                                  const btn = document.getElementById('zk-btn');
+                                  if (btn) {
+                                    btn.removeAttribute('disabled');
+                                    btn.classList.replace('bg-emerald-500', 'bg-blue-600');
+                                    btn.innerText = 'Generate ZK Proof';
+                                  }
+                                }}
+                                className="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-sm font-bold hover:bg-slate-300 dark:hover:bg-slate-700 transition"
+                              >
+                                Re-verify
+                              </button>
+                            )}
+                          </div>
                         </form>
                       </div>
 

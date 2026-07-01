@@ -253,7 +253,7 @@ export class ZKOrchestrator {
      * Uses the compiled poseidon_util circuit via Barretenberg to guarantee
      * bit-exact compatibility with all Noir circuits.
      */
-    public async poseidonHashPublic(inputs: [number, number]): Promise<string> {
+    public async poseidonHashPublic(inputs: [number | bigint | string, number | bigint | string]): Promise<string> {
         const artifactPath = path.resolve(
             __dirname,
             '../../kryon_zk/poseidon_util/target/poseidon_util.json'

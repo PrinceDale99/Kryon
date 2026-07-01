@@ -14,6 +14,8 @@ interface AppState {
   erpConnected: string | null;
   setErpConnected: (provider: string | null) => void;
   disconnectErp: () => void;
+  isGlobalZkVerified: boolean;
+  setIsGlobalZkVerified: (v: boolean) => void;
 }
 
 export const useStore = create<AppState>((set) => ({
@@ -47,5 +49,7 @@ export const useStore = create<AppState>((set) => ({
       localStorage.removeItem('erp_secret');
     }
     set({ erpConnected: null });
-  }
+  },
+  isGlobalZkVerified: false,
+  setIsGlobalZkVerified: (v) => set({ isGlobalZkVerified: v })
 }));
