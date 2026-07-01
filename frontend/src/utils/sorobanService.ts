@@ -122,6 +122,7 @@ export const submitFactoringRequest = async (
 
     const { attestation } = await proveResponse.json();
     const { messageHash, signature, nullifier, timestamp } = attestation;
+    const realInvoiceCommitment = (await proveResponse.clone().json()).publicInputs[1];
 
     // Step 3: Build Soroban contract invocation using SorobanRpc
     const rpcUrl = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org';
@@ -135,7 +136,7 @@ export const submitFactoringRequest = async (
     const sigBuf = Buffer.from(signature, 'hex').slice(0, 64);
     const nullifierBuf = Buffer.from(nullifier.replace('0x', ''), 'hex').slice(0, 32);
     // Invoice commitment = Poseidon(faceValue, secret)  for now use the raw secret hash
-    const commitmentBuf = Buffer.from(secret, 'hex').slice(0, 32);
+    const commitmentBuf = Buffer.from(realInvoiceCommitment.replace('0x', ''), 'hex').slice(0, 32);
 
     // Pad to exact byte lengths
     const padTo = (buf: Buffer, len: number): Buffer => {
