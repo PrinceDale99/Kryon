@@ -107,7 +107,7 @@ export class KryonOracle {
 
         try {
             // UltraPlonk verification  real cryptographic check
-            const result = await backend.verifyFinalProof({
+            const result = await backend.verifyProof({
                 proof: proofBytes,
                 publicInputs: publicInputs,
             });
