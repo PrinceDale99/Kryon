@@ -59,7 +59,7 @@ export default function Home() {
           <div className="flex justify-center items-center gap-12 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
             <span className="text-3xl font-black text-slate-800 dark:text-slate-200 tracking-tight">QuickBooks</span>
             <span className="text-3xl font-black text-slate-800 dark:text-slate-200 tracking-tight">Stripe</span>
-            <span className="text-3xl font-black text-slate-800 dark:text-slate-200 tracking-tight">Xero</span>
+            <span className="text-3xl font-black text-slate-800 dark:text-slate-200 tracking-tight">ERPNext</span>
           </div>
         </motion.div>
       </motion.div>
