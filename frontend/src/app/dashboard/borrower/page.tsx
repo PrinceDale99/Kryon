@@ -169,20 +169,24 @@ export default function BorrowerDashboard() {
     setLoadingStep(3);
     
     try {
-      let faceValue = 50000;
+      let faceValueInFiat = 50000;
+      let currency = 'usd';
+      
       if (!isDemoMode && erpConnected) {
         const inv = liveInvoices.find(i => i.id === selectedInvoice);
-        if (inv) faceValue = inv.amount_due;
+        if (inv) {
+          faceValueInFiat = inv.amount_due;
+          currency = inv.currency?.toLowerCase() || 'usd';
+        }
       }
       
-      const hash = await submitFactoringRequest(selectedInvoice || "mock_hash_12345", faceValue, walletAddress || "", isDemoMode);
+      let xlmRate = exchangeRates[currency] || 0.1;
+      let faceValueInXlm = faceValueInFiat / xlmRate;
+      
+      const hash = await submitFactoringRequest(selectedInvoice || "mock_hash_12345", faceValueInXlm, walletAddress || "", isDemoMode);
       
       if (!isDemoMode && erpConnected) {
-        const inv = liveInvoices.find(i => i.id === selectedInvoice);
-        
-        let currency = inv?.currency?.toLowerCase() || 'usd';
-        let xlmRate = exchangeRates[currency] || 0.1;
-        let advanceAmountInXlm = (faceValue / xlmRate) * 0.9;
+        let advanceAmountInXlm = faceValueInXlm * 0.9;
         
         const payoutRes = await fetch('/api/factor', {
           method: 'POST',
