@@ -223,6 +223,18 @@ Because Kryon is a highly ambitious protocol encompassing Zero-Knowledge machine
 
 ---
 
+## 🌍 Alignment with SDG 9: Industry, Innovation and Infrastructure
+
+This system strongly aligns with **SDG 9**, which focuses on building resilient infrastructure, promoting inclusive and sustainable industrialization, and fostering innovation. Kryon fits into this framework primarily through its focus on financial infrastructure and technological innovation for small to medium businesses (SMBs).
+
+Here is a breakdown of how the project aligns with specific targets of SDG 9:
+
+- **Target 9.3 (Access to Financial Services for Small Enterprises):** This target specifically aims to increase the access of small-scale enterprises to financial services, including affordable credit, and their integration into value chains and markets. Kryon tackles this directly by decentralizing invoice factoring. By allowing SMBs to tokenize open invoices and access instant liquidity without the predatory fees or slow processes of traditional banks, Kryon provides critical financial infrastructure that keeps small businesses operational and growing.
+- **Target 9.4 (Upgrade Infrastructure and Retrofit Industries):** Kryon modernizes legacy financial systems. By bringing invoice factoring on-chain and replacing manual, opaque underwriting with a trustless, automated system, it upgrades the financial infrastructure that businesses rely on.
+- **Target 9.5 (Enhance Research and Upgrade Technological Capabilities):** Kryon represents a significant technological leap in financial services by integrating Zero-Knowledge (ZK) cryptography and ZK Machine Learning (ZKML). It fosters innovation by proving that highly sensitive corporate data (like identity, compliance, and credit risk) can be verified mathematically on a public ledger (Stellar/Soroban) without exposing proprietary trade secrets.
+
+---
+
 ## 📄 License
 This project is licensed under the **MIT License**.
 
