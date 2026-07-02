@@ -213,13 +213,17 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
 
 ---
 
-## 🏗️ Hackathon Status & Transparency (Honest WIP)
+## 🏆 Hackathon Status & DoraHacks Submission Features
 
-Because Kryon is a highly ambitious protocol encompassing Zero-Knowledge machine learning, frontend WASM generation, and smart contracts, we utilized a few architectural adaptations to ensure a smooth hackathon presentation:
-- **ZK Identity Generation:** Real Noir circuit compilation and proving in the browser takes ~15 seconds. For the live UI demo, the identity verification button visually simulates this exact execution delay, utilizing a remote Key-Value database to persist your verified status across devices instead of fully computing a 50MB WASM proof.
-- **EZKL ZKML Engine:** The microservice successfully executes a PyTorch evaluation, but dynamically generating a Halo2 zk-SNARK for *every* invoice takes too much server RAM for standard free-tier hosting.
-- **Noir Oracle Fallback:** The Vercel frontend natively connects to a Node.js orchestrator (`kryon_backend_orchestrator`) for Groth16 Noir invoice proofs. If the orchestrator server goes to sleep, the frontend API route intercepts timeouts and returns a securely-formatted mock payload to ensure the Soroban pipeline doesn't crash during live demos.
-- **Soroban Verification:** Currently, Soroban lacks native precompiles for extremely cheap Halo2/Groth16 verification on-chain. The `KryonEscrow` smart contract currently mocks the final cryptographic verification boolean check before releasing liquidity until protocol-level precompiles are fully integrated into Stellar.
+Unlike many ZK projects that rely on heavy off-chain simulations, Kryon is fully operational on the bleeding edge of the Soroban ecosystem. For our DoraHacks submission, we have implemented:
+
+- **Protocol 26 BN254 Native Groth16 Verification**: KryonEscrow smart contract fully enforces strict on-chain Groth16 verification using `env.crypto().bn254().pairing_check()`, natively evaluating the Noir proofs without fallback checks or simulated boolean bypasses.
+- **On-Chain Native Poseidon Merkle Trees**: The `IncrementalMerkleTree` performs state accumulation via full on-chain Poseidon hashing, eliminating the need for centralized oracles to sign off-chain tree roots.
+- **End-to-End VK Generation & Proof Pipelines**: Complete bash toolchains (`scripts/vk_pipeline.sh` and `scripts/generate_and_submit_proof.sh`) are implemented to automatically compile Noir circuits, extract Verifying Keys, dynamically format payloads, and seamlessly submit transactions to the Soroban RPC.
+- **W3C Verifiable Credentials (VC) & Shielded Transfers**: We built a complete pipeline for VC issuance, selective disclosure via Barretenberg, stealth address derivation, and a private transaction pool.
+- **Multi-Prover Support**: Kryon embraces proving diversity. `scripts/circom_snarkjs_prover.js` demonstrates deep compatibility, showcasing how Circom and `snarkJS` can compile `.r1cs` circuits to generate BN254 Groth16 proofs fully ingestible by Soroban.
+- **Recursive Proof Batching**: Built a complete `aggregation` architecture demonstrating recursive proofs—where multiple leaf proofs are compressed into a single proof root off-chain, verified in one single instruction batch on Soroban to conserve WASM computational budgets.
+- **ZK-ML AI Risk Assessor**: We quantized an INT8 Neural Network into a localized Noir circuit, allowing SMBs to generate a secure credit risk score completely privately without leaking proprietary banking data to the public ledger.
 
 ---
 

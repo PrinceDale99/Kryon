@@ -19,7 +19,7 @@ Soroban smart contracts serve exclusively as verifiers, minimizing gas costs and
 **Supported Verification Modes:**
 - **Primary (Mode 0):** Ed25519 Oracle Attestation via Node.js Orchestrator & Render ZKML Microservice. Secure, cheap, and ready for mainnet today using native `ed25519_verify`.
 - **Secondary (Mode 1):** Arkworks / Halo2 WASM execution in Soroban. Mathematically verifies pure PLONK/Groth16/Halo2 proofs natively on-chain. Requires high WASM bounds and `no_std` `alloc`.
-- **Future (Mode 2):** Protocol 25/26 Native ZK using built-in Soroban host functions for ultra-cheap BN254 arithmetic.
+- **Production (Mode 2):** Protocol 25/26 Native ZK using built-in Soroban host functions for ultra-cheap BN254 arithmetic and native `poseidon_permutation` hash limits. Completely removes oracle reliance.
 
 ---
 
@@ -115,3 +115,10 @@ To ensure the system is modular and reusable, Kryon is built on the following pr
 - [x] Deploy Shielded Pool Contract for confidential XLM/USDC transfers.
 - [x] Implement Proof of Solvency circuit.
 - [x] Finalize automated deployment script (`deploy.ps1`) and Multi-Mode verification architecture.
+
+### Phase 5: Production Hardening (Completed)
+- [x] Integrate full BN254 Protocol 25/26 Native On-Chain Pairing capabilities.
+- [x] Remove centralized oracle attestation in favor of Native Poseidon Hashing.
+- [x] Implement Multi-Prover compatibility (Circom + snarkJS).
+- [x] Architect recursive proof aggregation pipeline for batching proofs (`kryon_zk/aggregation`).
+- [x] Fully automate GitHub Actions CI pipeline and bash submission toolchains.
