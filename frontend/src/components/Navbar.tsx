@@ -10,7 +10,9 @@ export const Navbar = () => {
 
   useEffect(() => {
     fetchExchangeRates();
-  }, []);
+    const interval = setInterval(fetchExchangeRates, 10000);
+    return () => clearInterval(interval);
+  }, [fetchExchangeRates]);
 
   return (
     <motion.nav 

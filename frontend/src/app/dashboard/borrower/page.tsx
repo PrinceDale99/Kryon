@@ -159,21 +159,8 @@ export default function BorrowerDashboard() {
       if (!isDemoMode && erpConnected) {
         const inv = liveInvoices.find(i => i.id === selectedInvoice);
         
-        // Fetch live exchange rate from CoinGecko
-        let xlmRate = 0.1; // Fallback rate (1 XLM = $0.10)
         let currency = inv?.currency?.toLowerCase() || 'usd';
-        
-        try {
-          const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=stellar&vs_currencies=${currency}`);
-          const data = await res.json();
-          if (data && data.stellar && data.stellar[currency]) {
-            xlmRate = data.stellar[currency];
-          }
-        } catch(e) {
-          console.warn("Failed to fetch live XLM price, using fallback.");
-        }
-
-        // Calculate exact XLM advance
+        let xlmRate = exchangeRates[currency] || 0.1;
         let advanceAmountInXlm = (faceValue / xlmRate) * 0.9;
         
         const payoutRes = await fetch('/api/factor', {
