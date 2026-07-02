@@ -74,19 +74,14 @@ impl KryonEscrow {
             panic!("Invoice already factored: Nullifier spent");
         }
 
-        // 2. Real ZK verification via Native Host Functions (Groth16 only)
-        // Since the frontend is currently generating Halo2 (EZKL) proofs, we bypass 
-        // the strict Groth16 checking if VK is not initialized to avoid UnreachableCodeReached traps.
-        if let Some(vk_bytes) = env.storage().instance().get::<_, Bytes>(&symbol_short!("VK")) {
-            // Only try verifying if the proof size looks like a Groth16 proof (128 bytes)
-            if proof_bytes.len() == 128 {
-                let is_valid = crate::groth16::verify_groth16_bn254_native(&env, &vk_bytes, &proof_bytes, &public_inputs_bytes);
-                if !is_valid {
-                    panic!("ZK Proof verification failed");
-                }
-            }
+        // 2. Strict ZK verification via Native Host Functions (Groth16)
+        let vk_bytes = env.storage().instance().get::<_, Bytes>(&symbol_short!("VK"))
+            .unwrap_or_else(|| panic!("Verifying key not initialized"));
+            
+        let is_valid = crate::groth16::verify_groth16_bn254_native(&env, &vk_bytes, &proof_bytes, &public_inputs_bytes);
+        if !is_valid {
+            panic!("ZK Proof verification failed");
         }
-        // Fallback: If no VK is set or proof is Halo2 (1500+ bytes), we accept the off-chain/Oracle verified proof for the demo.
 
         // 3. Mark nullifier as spent
         env.storage().persistent().set(&nullifier, &env.ledger().sequence());
