@@ -239,7 +239,7 @@ Here is a breakdown of how the project aligns with specific targets of SDG 9:
 
 Kryon leverages powerful Google Cloud and Developer technologies to ensure scalability, persistence, and intelligent workflows:
 
-- **Google Gemini API & Google AI (Antigravity):** Acted as the core autonomous AI agent co-pilot driving full-stack development, architectural design, codebase generation, and intelligent automation throughout the protocol's lifecycle.
+- **Google Gemini API:** Acted as the core autonomous AI agent co-pilot driving full-stack development, architectural design, codebase generation, and intelligent automation throughout the protocol's lifecycle.
 - **Firebase Firestore:** Used as a highly-available, fast NoSQL document database to securely persist Zero-Knowledge Identity Verification statuses globally across devices without exposing underlying PII.
 - **Google Analytics (via Firebase):** Integrated to track user interactions, telemetry, and platform engagement metrics.
 - **Google Fonts (Inter):** Integrated via Next.js for highly readable, modern, and perfectly optimized typography across the entire web application.
