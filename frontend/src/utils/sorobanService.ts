@@ -89,7 +89,7 @@ export const depositLiquidity = async (amount: number, publicKey: string, isDemo
         // token: Address (Native XLM)
         StellarSdk.xdr.ScVal.scvAddress(
             StellarSdk.xdr.ScAddress.scAddressTypeContract(
-                StellarSdk.StrKey.decodeContract(NATIVE_XLM_CONTRACT)
+                StellarSdk.StrKey.decodeContract(NATIVE_XLM_CONTRACT) as any
             )
         ),
         // amount: i128
@@ -232,7 +232,7 @@ export const submitFactoringRequest = async (
         // token: Address (Native XLM)
         StellarSdk.xdr.ScVal.scvAddress(
             StellarSdk.xdr.ScAddress.scAddressTypeContract(
-                StellarSdk.StrKey.decodeContract(NATIVE_XLM_CONTRACT)
+                StellarSdk.StrKey.decodeContract(NATIVE_XLM_CONTRACT) as any
             )
         ),
         // advance_requested: i128

@@ -5,10 +5,11 @@ export async function generateClientSideProof(invoiceData: any) {
     // In a real WASM setup, we would host the compiled circuit, settings, and SRS on Vercel as public static files
     // so the browser can download them and run the heavy compute locally.
     
-    console.log("Downloading ZKML model assets (circuit, settings, srs)...");
+    console.log("Downloading ZKML model assets (circuit, settings, srs, pk)...");
     const compiledCircuit = await fetch('/models/network.compiled').then(r => r.arrayBuffer());
     const settings = await fetch('/models/settings.json').then(r => r.arrayBuffer());
     const srs = await fetch('/models/kzg.srs').then(r => r.arrayBuffer());
+    const pk = await fetch('/models/network.pk').then(r => r.arrayBuffer());
 
     console.log("Preparing witness generation locally...");
     
@@ -32,6 +33,7 @@ export async function generateClientSideProof(invoiceData: any) {
     console.log("Running Halo2/KZG proof generation via WebAssembly...");
     const proofStr = await ezkl.prove(
       new Uint8ClampedArray(Buffer.from(witnessStr)),
+      new Uint8ClampedArray(pk),
       new Uint8ClampedArray(compiledCircuit),
       new Uint8ClampedArray(srs)
     );
