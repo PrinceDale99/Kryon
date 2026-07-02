@@ -11,29 +11,19 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-        // MOCK ORACLE RESPONSE for hackathon demo (Free Tier Solution)
-        // Since Vercel cannot reach a local oracle on port 4000 and we bypassed 
-        // the Groth16 trap on-chain, we generate a mock valid payload here.
-        
-        const mockNullifier = inputs.nullifier || `0x${crypto.randomUUID().replace(/-/g, '')}`;
-        const mockCommitment = inputs.invoiceCommitment || `0x${crypto.randomUUID().replace(/-/g, '')}`;
-        
-        const mockResponse = {
-            success: true,
-            proof: "0x271e2ddd0004bc50a98f15afbddeef83fdffe6fe65076fffc71d8ed7fda6a8d40f6a0a3ab13d0323fb53f0f955dff0d35fb9611ca219c15c8a419b6c2b0bdd461cfb5ce1fc555df5c0bba4db35da5e71c542bb477e433b3b540d0dd6356a6a7e25d39e56bf04ef4dffa993d6b08f01be8e66679a5ef7870d308d638b20098af619a13ff2587ae6214f8944ad925cb0d3621669eecfda8cc66d82d2639bf905890814dfe2207730b735fcc4848766bc5aa3ea213af10984c2b5977426d870de7f019b69397f0e04cd52979884e3d5a8a4b73ea6d659b1904d590ef2df89e871c718402dfff206e64b8fbeda2770ef1cd1e2a548b4c600af9954e472a8c79b7ba827181d2ba1b506172542570b18ccb31553042b47759bf201fcf01f74f26a729b03eca12017cb563eaf955acd0aa481227fd76c39b6fbe0b2dfb579fe80b46e0d20c73053f3493be9fe61752dfda5ecbbebb3acacbe7fcbcee285552a39021acb266d81b34cafc8b4eb254326fad722a26736bb77758bbf08b3cb669d688f9d8b14deabb95bccf21482439bbc23f8b73a220d75dd785318b03aeda46ae83c47c7050e6c2d59b0ae81f07aea5cf5a0f11f1b648d80fd0bd5c2448da0798d0fbc7814384fa0b281b85aad6a0b16058a91c1cf63c74dcbcdca45a571fe59c07cda3f02444fe89bc16a0ceee21ae065050483ce3579dccda568f0d34f1eb19fad0a3f0d37645d282f878f44f21becde190e877af899b4ae91376d72747155729738d704656d09d4809a7d6c5c07aacafd40ea4e4da4d82488f5ab31b4fa7752ecefe909613b585a4b90d62ba825a435b002ddac406ac04f774175d86df4a8629df9c301f0b736c0e5158f7f61b23a980135b470a410ae240cc8b175e215a2037b7c28182ff2f77d6b4128dcbed0e8102fe62a72b78b3dd79c951e18f1956a756f0edf22d4274a72a90aa628d1fe57c30086c5d1cc929e97b3e308fe3fc385ffb42e65287c177c1944d513e177d3c85a12f96fbd7ac56195121a74c1d4129bec61efb3117205fccd6b9c570016f05a272e965ff10c2503904423630a97736b568fdd8414b902ee2e326f2e8e3836cf52866b54623a95bfeed24f233284c7917b7ffca911b7bad12f57b42d745ca7ec81d5d5d64b21817a4f3ff2786c0bc933c452d28212b2463b68fa85ae12b7444455897ca371c4fcc7ff97bb66dc318a79ba4684371be5a25b48dc2b23cb1298fe4f4f78449259f662d9baeac43cd85f8e3433139f003c18c81746a952d768d81c11a581014a69b40585fe9222090acb06e01ee2fb1fb458deffa72f3e0cdc0296c83cd8e0bcbe5421377f7836fd9f97c3ac26a5de096153e98f2df92d6b7810b99caeebfd46c0322caab9b571f3319b0903ffd102042d3fae0a597fddceb29ab94cd6e74b7110a34bdb6c1484e8701c7ab89adf561f94ab6361aa73f9a9b1148bbeb39177338d3dfa409f23e0f45c31e2c5ff5b86195e15daadb14cc32608847bce306dccbea862fa0a2b98e5f650f36a31bc1f282b13a92067e4a47174399742b669d83be9dd22b76d4273c77ef417beb237aa5e0a3201c5e1c0718abaa0531ff4a89ecd7cb8d06ddfeae4acefbec258a70b895e13c916746df431a55bee90f39c78fb47a98d2546b7b79e89119052b9b2682cfe200813e2ee117fb530225869a3242702e01bef8b5964f37e11185441a3d542e60e15489032a80dd338e60a5d266075d9cab2a2ec661dc0129f7db79567d083381dd8934c3cc68f5dae46008e16ae6d25cb6c60cc9da4c5f10911490127699d8b0918753a4c5cbff66b105450281a89fb715c9ca347d302a7cd85a4fae26fd13123e938cdd2a4e99e56ca0c7ae654dcc3cc4c29d97c190bd8e3b8a52870204ad71552d24f46daf404aa479e08fcec7c8699442257353043876634bda25b7456e31a94005d9d06ca3902bdb3faae5a6be4c813f1f6f948c9cd002a73d0dfc703dd08a1350ae19d58570b8165ee3196babbb2aaa558060196618e8fd724a3c2442f2712b82b0765869ecc955d98365461efc57541018c73d38760d7300c57bd8482151fecd84bfc14bcd5590f8bb990b0c6b00bf462992ca01bef3c93601bb8c4d42c86cbb058703c1af9fa02072b1e1d0ddd7d3e95ec8ffd3871c5107d1bcbc38b2cd90194610867cc277bcb9e3d518b5f6397f8b42faa99ebdbf2a0a836b66f9d0e458d73e4a1dcad67e4ef32d4a335658cb8e0c03d527bfed6d054dd4bc1925b19297d89b0c990f8b75ec1b31b490709aec9b24cd831d925435fb019262fd08521ff21aa11c593bea0d6bc39befb2cad5c39eb534501e0946e0c4be6b698fba60a969eb0952ff841b5171bf9fcc80bb754640b0a880011e331682f6a7004b69306499689bb8fdcc46b41878e6faf6fc5240e76c8ab0d2067ece18a4f244f8595175e8ce7a927ec43db713070bac3653580dc443154c05eb6911c99fba9ea17f7076e13816d4c988c4085ea44df9f4e2bfce16e86a06e30f801e7a5468ed8022027b288b465797c2175f7801dc65ff2e6b86a1b12de1ae13005dd352af48caebb242804e995f4eeffb104f438410d3b54f8f2ab23e517a7cf1a898a446956077309ba48e4227b86c526137756cf3ce0efdf3ca0799566dde51867e7de42d223df035e6584e131f214bd7e9cae8db76d9ae7104adc6324e7c34150a165ce1c84f803a6434ff3f61b9677f3d467c4316167cfa6fbc41612a5be316caed8f49ee56203ee211b06ba451832690c20faab5534b83dacabc90063b92188bc4c1b2145cc0435fee6197e6e99ecde43da31254901a0d45d937bee21b411a4c9bf41a3a63603a2232c22e234ecb06c95e833cea9fb5d7b5e7e236e862eaa641b01884b6ba507e469e7c9cca3a8f576e90fe39a5bd8ee5a167ac137d66f2cf4ba95754de0100f16f2aef52138f54b67bcaf9a5cc2d9e0344332cfeb05f5767a241a7237cce60f34ee1c0acfaead4fff9600420dadbb259856b95b8e88228f747c84e0b4214a",
-            publicInputs: [
-                mockCommitment
-            ],
-            attestation: {
-                nullifier: mockNullifier,
-                signature: "0x000000"
-            }
-        };
+        const response = await fetch(`${ORACLE_URL}/prove/${type}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(inputs),
+        });
 
-        // Artificial delay to simulate proof generation
-        await new Promise(r => setTimeout(r, 1500));
+        if (!response.ok) {
+            const error = await response.json();
+            return NextResponse.json({ error: error.error }, { status: response.status });
+        }
 
-        return NextResponse.json(mockResponse);
+        const data = await response.json();
+        return NextResponse.json(data);
     } catch (err: any) {
         console.error(`Oracle unreachable for ${type}:`, err.message);
         return NextResponse.json({ error: `Oracle unreachable: ${err.message}` }, { status: 503 });
