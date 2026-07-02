@@ -57,7 +57,7 @@ impl IncrementalMerkleTree {
                 payload.append(&sibling.into());
             }
             
-            current_hash = env.crypto().sha256(&payload);
+            current_hash = env.crypto().sha256(&payload).into();
             current_index /= 2;
         }
 
