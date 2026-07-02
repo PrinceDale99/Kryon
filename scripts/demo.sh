@@ -12,7 +12,7 @@ command -v stellar >/dev/null 2>&1 || { echo >&2 "Stellar CLI is required. Run: 
 
 echo "[2/4] Building Soroban Contracts..."
 cd kryon_contracts
-cargo build --target wasm32-unknown-unknown --release
+cargo build --target wasm32v1-none --release
 cargo test
 cd ..
 echo "Contracts built successfully."

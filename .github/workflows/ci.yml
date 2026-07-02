@@ -16,8 +16,7 @@ jobs:
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: 1.81.0
-          targets: wasm32-unknown-unknown
+          targets: wasm32v1-none
           
       - name: Cache Cargo
         uses: actions/cache@v3
@@ -36,7 +35,7 @@ jobs:
         
       - name: Build Contracts
         working-directory: ./kryon_contracts
-        run: cargo build --target wasm32-unknown-unknown --release
+        run: cargo build --target wasm32v1-none --release
 
       - name: Run Contract Tests
         working-directory: ./kryon_contracts
