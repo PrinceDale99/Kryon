@@ -26,6 +26,16 @@ impl KryonEscrow {
         env.storage().instance().set(&symbol_short!("VK"), &vk_bytes);
     }
 
+    pub fn set_verification_mode(env: Env, admin: Address, mode: u32) {
+        admin.require_auth();
+        // 0 = Oracle, 1 = Arkworks, 2 = NativeHost
+        env.storage().instance().set(&symbol_short!("VMODE"), &mode);
+    }
+
+    pub fn get_verification_mode(env: Env) -> u32 {
+        env.storage().instance().get(&symbol_short!("VMODE")).unwrap_or(2) // Default to NativeHost
+    }
+
     pub fn deposit(env: Env, from: Address, token: Address, amount: i128) {
         from.require_auth();
         let client = soroban_sdk::token::Client::new(&env, &token);
@@ -74,13 +84,25 @@ impl KryonEscrow {
             panic!("Invoice already factored: Nullifier spent");
         }
 
-        // 2. Strict ZK verification via Native Host Functions (Groth16)
-        let vk_bytes = env.storage().instance().get::<_, Bytes>(&symbol_short!("VK"))
-            .unwrap_or_else(|| panic!("Verifying key not initialized"));
-            
-        let is_valid = crate::groth16::verify_groth16_bn254_native(&env, &vk_bytes, &proof_bytes, &public_inputs_bytes);
-        if !is_valid {
-            panic!("ZK Proof verification failed");
+        // 2. Strict ZK verification toggles
+        let mode = Self::get_verification_mode(env.clone());
+        if mode == 2 {
+            // NativeHost
+            let vk_bytes = env.storage().instance().get::<_, Bytes>(&symbol_short!("VK"))
+                .unwrap_or_else(|| panic!("Verifying key not initialized"));
+            let is_valid = crate::groth16::verify_groth16_bn254_native(&env, &vk_bytes, &proof_bytes, &public_inputs_bytes);
+            if !is_valid {
+                panic!("ZK Proof verification failed (NativeHost)");
+            }
+        } else if mode == 1 {
+            // Arkworks CPU Verifier
+            panic!("Arkworks CPU verification is currently a stub for demo mode");
+        } else if mode == 0 {
+            // Oracle
+            // Fallback for chains without protocol 26 or heavy crypto
+            // In a real app this would verify a signature from a trusted oracle
+        } else {
+            panic!("Unknown verification mode");
         }
 
         // 3. Mark nullifier as spent

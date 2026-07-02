@@ -1,97 +1,66 @@
-// issue_and_prove.js
-// Complete End-to-End W3C Verifiable Credential pipeline with ZK selective disclosure
-// Demonstrates Barretenberg and snarkJS integration
-
 const fs = require('fs');
-const crypto = require('crypto');
-const { BarretenbergBackend } = require('@noir-lang/backend_barretenberg');
-const { Noir } = require('@noir-lang/noir_js');
-// Mock circuit JSON for demonstration, in a real app this would be the compiled circuit from nargo
-const circuitJson = {
-    bytecode: "base64encoded_bytecode_would_be_here",
-    abi: { parameters: [{ name: "issuer_pub_key", type: "field", visibility: "public" }] }
-};
+const path = require('path');
 
-async function main() {
-    console.log("==========================================================");
-    console.log("Kryon Selective Disclosure VC Pipeline (Barretenberg ZK)");
-    console.log("==========================================================\n");
+console.log("=========================================");
+console.log("   W3C VC Selective Disclosure Demo      ");
+console.log("=========================================");
 
-    // 1. VC Issuance (Issuer)
-    console.log("[1] ISSUER: Generating W3C Verifiable Credential...");
-    const issuerPrivateKey = crypto.randomBytes(32).toString('hex');
-    const issuerPublicKey = "0x" + crypto.createHash('sha256').update(issuerPrivateKey).digest('hex').substring(0, 40);
-    
-    const vc = {
-        "@context": [
-            "https://www.w3.org/2018/credentials/v1",
-            "https://kryon.network/credentials/v1"
-        ],
-        "id": "http://kryon.network/credentials/3732",
-        "type": ["VerifiableCredential", "KryonCreditRiskCredential"],
-        "issuer": `did:kryon:${issuerPublicKey}`,
-        "issuanceDate": new Date().toISOString(),
-        "credentialSubject": {
-            "id": "did:kryon:holder_address_here",
-            "creditScore": 750,
-            "businessEntity": "ACME Corp",
-            "kycStatus": "Verified"
-        }
-    };
-    
-    // Simulate issuer signing the VC
-    const payload = JSON.stringify(vc.credentialSubject);
-    const signature = crypto.createHmac('sha256', issuerPrivateKey).update(payload).digest('hex');
-    
-    const signedVC = {
-        ...vc,
-        proof: {
-            type: "Ed25519Signature2018",
-            created: new Date().toISOString(),
-            proofPurpose: "assertionMethod",
-            verificationMethod: `did:kryon:${issuerPublicKey}#keys-1`,
-            jws: signature
-        }
-    };
-    
-    console.log("    -> VC Issued Successfully:");
-    console.log(JSON.stringify(signedVC, null, 2));
-
-
-    // 2. Holder ZK Proof Generation
-    console.log("\n[2] HOLDER: Generating Selective Disclosure ZK Proof (Barretenberg)...");
-    console.log("    -> Proving credit score > 700 without revealing exact score");
-    
-    // In a real environment, we'd initialize the backend with the Noir bytecode
-    console.log("    -> Initializing Barretenberg Backend...");
-    
-    // Simulate proof generation time
-    await new Promise(r => setTimeout(r, 1500));
-    
-    // Generate a mock Groth16 proof (128 bytes) to represent the Barretenberg output
-    const mockProof = crypto.randomBytes(128).toString('hex');
-    console.log(`    -> Proof Generated! Proof size: ${mockProof.length / 2} bytes (Groth16 compliant)`);
-    console.log(`    -> ZK Proof Hash: ${mockProof.substring(0, 32)}...`);
-
-
-    // 3. On-chain Verification (Verifier)
-    console.log("\n[3] VERIFIER: Verifying Proof On-Chain...");
-    console.log("    -> Submitting to Kryon Escrow Contract via Soroban RPC...");
-    
-    await new Promise(r => setTimeout(r, 800));
-    
-    // Verification simulates the Soroban contract checking the groth16 BN254 proof
-    const isValid = mockProof.length === 256; // 128 bytes hex string is 256 chars
-    
-    if (isValid) {
-        console.log("    -> VERIFICATION SUCCESS: Holder meets credit requirements.");
-        console.log("    -> Selective Disclosure Complete: No private data was leaked.");
-    } else {
-        console.log("    -> VERIFICATION FAILED.");
-    }
-    
-    console.log("\n==========================================================");
-    console.log("Pipeline Execution Complete.");
+const artifactsDir = path.join(__dirname, 'artifacts');
+if (!fs.existsSync(artifactsDir)) {
+    fs.mkdirSync(artifactsDir);
 }
 
-main().catch(console.error);
+// 1. Generate Mock JSON-LD VC
+const vc = {
+    "@context": [
+        "https://www.w3.org/2018/credentials/v1",
+        "https://www.w3.org/2018/credentials/examples/v1"
+    ],
+    "id": "http://example.edu/credentials/3732",
+    "type": ["VerifiableCredential", "BusinessCreditCredential"],
+    "issuer": "did:example:76e12ec712ebc6f1c221ebfeb1f",
+    "issuanceDate": new Date().toISOString(),
+    "credentialSubject": {
+        "id": "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        "business": {
+            "name": "Apple Inc.",
+            "creditScore": 850,
+            "annualRevenue": 1000000
+        }
+    },
+    "proof": {
+        "type": "Ed25519Signature2018",
+        "created": new Date().toISOString(),
+        "proofPurpose": "assertionMethod",
+        "verificationMethod": "did:example:76e12ec712ebc6f1c221ebfeb1f#keys-1",
+        "jws": "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mock_signature_bytes_here"
+    }
+};
+
+fs.writeFileSync(path.join(artifactsDir, 'credential.json'), JSON.stringify(vc, null, 2));
+console.log("[1/3] Generated signed Verifiable Credential -> artifacts/credential.json");
+
+// 2. Generate Selective Disclosure ZK Proof (Mocked)
+// In a real scenario, this would use a Noir circuit to prove `creditScore > 700` without revealing `850`.
+const zkProof = {
+    "proof_type": "Groth16",
+    "public_inputs": [
+        "0x0000000000000000000000000000000000000000000000000000000000000001" // Boolean TRUE (creditScore > 700)
+    ],
+    "proof_bytes": "0x1234abcd5678ef90..." // Mock proof bytes
+};
+
+fs.writeFileSync(path.join(artifactsDir, 'selective_disclosure_proof.json'), JSON.stringify(zkProof, null, 2));
+console.log("[2/3] Generated ZK Selective Disclosure Proof -> artifacts/selective_disclosure_proof.json");
+console.log("      (Proving creditScore > 700 without revealing actual score)");
+
+// 3. Instructions for on-chain submission
+console.log("[3/3] On-chain submission instructions:");
+console.log("      Run the following to submit to the Soroban verifier:");
+console.log("      stellar contract invoke \\");
+console.log("         --id <CONTRACT_ID> \\");
+console.log("         --source admin_wallet \\");
+console.log("         --network testnet \\");
+console.log("         -- verify_credential_proof \\");
+console.log("         --proof <bytes> --public_inputs <bytes>");
+console.log("=========================================");

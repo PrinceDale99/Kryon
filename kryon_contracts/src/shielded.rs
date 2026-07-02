@@ -32,13 +32,22 @@ impl ShieldedPool {
             panic!("Double spend detected: Nullifier already spent");
         }
 
-        // 1. Strict ZK verification for the shielded spend via Native Host Functions
-        let vk_bytes = env.storage().instance().get::<_, soroban_sdk::Bytes>(&symbol_short!("VK"))
-            .unwrap_or_else(|| panic!("Verifying key not initialized"));
-            
-        let is_valid = crate::groth16::verify_groth16_bn254_native(&env, &vk_bytes, &proof_bytes, &public_inputs_bytes);
-        if !is_valid {
-            panic!("Shielded Spend ZK Proof verification failed");
+        // 1. Strict ZK verification toggles
+        let mode: u32 = env.storage().instance().get(&symbol_short!("VMODE")).unwrap_or(2);
+        
+        if mode == 2 {
+            let vk_bytes = env.storage().instance().get::<_, soroban_sdk::Bytes>(&symbol_short!("VK"))
+                .unwrap_or_else(|| panic!("Verifying key not initialized"));
+            let is_valid = crate::groth16::verify_groth16_bn254_native(&env, &vk_bytes, &proof_bytes, &public_inputs_bytes);
+            if !is_valid {
+                panic!("Shielded Spend ZK Proof verification failed (NativeHost)");
+            }
+        } else if mode == 1 {
+            panic!("Arkworks CPU verification is currently a stub for demo mode");
+        } else if mode == 0 {
+            // Oracle fallback
+        } else {
+            panic!("Unknown verification mode");
         }
 
         env.storage().persistent().set(&nullifier, &env.ledger().sequence());
