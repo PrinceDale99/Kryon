@@ -50,19 +50,19 @@ jobs:
       - name: Install Nargo
         run: |
           curl -L https://raw.githubusercontent.com/noir-lang/noirup/main/install | bash
-          export PATH="$HOME/.noir-lang/bin:$PATH"
+          export PATH="$HOME/.nargo/bin:$PATH"
           noirup
           
       - name: Compile KYC Circuit
         working-directory: ./kryon_zk/kyc_circuit
         run: |
-          export PATH="$HOME/.noir-lang/bin:$PATH"
+          export PATH="$HOME/.nargo/bin:$PATH"
           nargo check || echo "Nargo check failed but CI continues"
           
       - name: Compile Invoice Circuit
         working-directory: ./kryon_zk/invoice_circuit
         run: |
-          export PATH="$HOME/.noir-lang/bin:$PATH"
+          export PATH="$HOME/.nargo/bin:$PATH"
           nargo check || echo "Nargo check failed but CI continues"
 
   frontend-lint:
