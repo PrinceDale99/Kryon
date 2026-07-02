@@ -2,7 +2,7 @@ import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAnoGn7HDQTbEIF9LCURQNwl8B0WMt4Gk0",
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: "kryonnetwork.firebaseapp.com",
   projectId: "kryonnetwork",
   storageBucket: "kryonnetwork.firebasestorage.app",
