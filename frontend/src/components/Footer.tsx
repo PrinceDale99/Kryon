@@ -41,7 +41,11 @@ export const Footer = () => {
           <p className="text-slate-500 dark:text-slate-400 text-sm font-medium">
             &copy; {new Date().getFullYear()} Kryon Network. All rights reserved.
           </p>
-          <div className="flex space-x-4 mt-4 md:mt-0 text-sm font-bold">
+          <div className="flex space-x-4 mt-4 md:mt-0 text-sm font-bold items-center">
+            <Link href="/privacy-policy" className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">Privacy Policy</Link>
+            <span className="text-slate-400">&bull;</span>
+            <Link href="/terms-and-conditions" className="text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">Terms & Conditions</Link>
+            <span className="text-slate-400">&bull;</span>
             <span className="text-slate-500">Built on Stellar</span>
             <span className="text-slate-400">&bull;</span>
             <span className="text-slate-500">Secured by Noir ZK</span>
