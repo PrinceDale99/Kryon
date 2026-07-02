@@ -12,13 +12,12 @@ pub mod solvency;
 pub mod credential;
 pub mod groth16;
 
-mod test;
 
 #[contract]
-pub struct KryonVerifier;
+pub struct KryonEscrow;
 
 #[contractimpl]
-impl KryonVerifier {
+impl KryonEscrow {
     pub fn init_verifying_key(env: Env, admin: Address, vk_bytes: Bytes) {
         admin.require_auth();
         if env.storage().instance().has(&symbol_short!("VK")) {
@@ -26,13 +25,7 @@ impl KryonVerifier {
         }
         env.storage().instance().set(&symbol_short!("VK"), &vk_bytes);
     }
-}
 
-#[contract]
-pub struct KryonEscrow;
-
-#[contractimpl]
-impl KryonEscrow {
     pub fn deposit(env: Env, from: Address, token: Address, amount: i128) {
         from.require_auth();
         let client = soroban_sdk::token::Client::new(&env, &token);
