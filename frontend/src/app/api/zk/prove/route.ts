@@ -25,27 +25,7 @@ export async function POST(req: NextRequest) {
         const data = await response.json();
         return NextResponse.json(data);
     } catch (err: any) {
-        console.warn(`Oracle unreachable, returning mock payload for ${type}:`, err.message);
-        // Fallback for hackathon demo if orchestrator is not deployed/running
-        const secretHash = inputs.invoiceCommitment || inputs.nullifier || '1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef';
-        const strippedHash = secretHash.replace('0x', '');
-        
-        // Use a mock Oracle Keypair to generate a valid Ed25519 signature
-        const StellarSdk = require('@stellar/stellar-sdk');
-        const oracleKeypair = StellarSdk.Keypair.fromSecret('SCNE3ZXYJPMQSJWTIF6PNI737YNY7OSOVTDQHHSV4WND4SI5SEEWE6ZS');
-        
-        const messageHashBuf = Buffer.alloc(32, 0); // dummy 32-byte hash
-        const signatureBuf = oracleKeypair.sign(messageHashBuf);
-        
-        return NextResponse.json({
-            proof: '0x' + '00'.repeat(300), // mock dummy proof
-            publicInputs: [secretHash],
-            attestation: {
-                messageHash: messageHashBuf.toString('hex'),
-                signature: signatureBuf.toString('hex'),
-                nullifier: secretHash,
-                timestamp: Math.floor(Date.now() / 1000)
-            }
-        });
+        console.error(`Oracle unreachable for ${type}:`, err.message);
+        return NextResponse.json({ error: `Oracle unreachable: ${err.message}` }, { status: 503 });
     }
 }

@@ -19,7 +19,7 @@ interface AppState {
 }
 
 export const useStore = create<AppState>((set) => ({
-  isDemoMode: true,
+  isDemoMode: false,
   toggleDemoMode: () => set((state) => ({ isDemoMode: !state.isDemoMode })),
   walletAddress: null,
   setWalletAddress: (address) => set({ walletAddress: address }),

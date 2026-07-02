@@ -4,13 +4,13 @@ import { KRYON_NETWORK_CONFIG } from '../constants';
 
 // Helper to execute a native XLM transaction on Testnet to verify Freighter + Live Network
 const executeTestnetTransaction = async (publicKey: string, amount: string, isPaymentToTreasury: boolean = true): Promise<string> => {
+  // Keeping this helper around for general legacy usage, but it is no longer the primary way to interact with the treasury.
   try {
     const server = new StellarSdk.Horizon.Server("https://horizon-testnet.stellar.org");
     const account = await server.loadAccount(publicKey);
     const fee = await server.fetchBaseFee();
 
-    // A mock treasury address on testnet
-    const TREASURY_ADDRESS = "GBWY47I7ECEDE4Y56J6CBS6P4ZGG7I72CSCS5PXSQS6IBWNQVXWYZKYG";
+    const TREASURY_ADDRESS = process.env.NEXT_PUBLIC_TREASURY_ADDRESS || "GBWY47I7ECEDE4Y56J6CBS6P4ZGG7I72CSCS5PXSQS6IBWNQVXWYZKYG";
 
     let operation;
     if (isPaymentToTreasury) {
@@ -20,8 +20,6 @@ const executeTestnetTransaction = async (publicKey: string, amount: string, isPa
         amount: amount, 
       });
     } else {
-      // For factoring requests, the user shouldn't SEND money. 
-      // We simulate the smart contract invocation using a ManageData operation so it costs 0 XLM but generates a real hash.
       operation = StellarSdk.Operation.manageData({
         name: "FactoringRequest",
         value: "Requested Advance",
@@ -37,8 +35,6 @@ const executeTestnetTransaction = async (publicKey: string, amount: string, isPa
     .build();
 
     const xdr = transaction.toXDR();
-    
-    // Request Freighter to sign it
     const signedResp: any = await signTransaction(xdr, { 
       networkPassphrase: StellarSdk.Networks.TESTNET
     });
@@ -55,8 +51,6 @@ const executeTestnetTransaction = async (publicKey: string, amount: string, isPa
     }
 
     const signedTx = StellarSdk.TransactionBuilder.fromXDR(finalSignedXdr, StellarSdk.Networks.TESTNET);
-    
-    // Submit to Horizon Testnet
     const response = await server.submitTransaction(signedTx);
     return response.hash;
   } catch (err) {
@@ -65,20 +59,91 @@ const executeTestnetTransaction = async (publicKey: string, amount: string, isPa
   }
 };
 
+const NATIVE_XLM_CONTRACT = "CDLZFC3SYJYDZT7K67VZ75HPJVIEUVNIXF47ZG2FB2RMQQVU2HHGCYSC";
+
 export const depositLiquidity = async (amount: number, publicKey: string, isDemo: boolean): Promise<string> => {
-  if (isDemo) {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(`mock_hash_lp_deposit_${Date.now()}`);
-      }, 2000);
+    const rpcUrl = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org';
+    const contractId = process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ID;
+    if (!contractId) {
+        throw new Error('NEXT_PUBLIC_ESCROW_CONTRACT_ID env var is not set');
+    }
+
+    const { Contract, TransactionBuilder, Networks, xdr, rpc } = StellarSdk;
+    const server = new StellarSdk.Horizon.Server('https://horizon-testnet.stellar.org');
+    const sorobanServer = new rpc.Server(rpcUrl);
+    const account = await server.loadAccount(publicKey);
+    const fee = await server.fetchBaseFee();
+    const contract = new Contract(contractId);
+
+    // amount is in standard XLM, convert to stroops (1 XLM = 10,000,000 stroops)
+    const stroops = Math.floor(amount * 10000000);
+
+    const operation = contract.call(
+        'deposit',
+        // from: Address
+        StellarSdk.xdr.ScVal.scvAddress(
+            StellarSdk.xdr.ScAddress.scAddressTypeAccount(
+                StellarSdk.Keypair.fromPublicKey(publicKey).xdrPublicKey()
+            )
+        ),
+        // token: Address (Native XLM)
+        StellarSdk.xdr.ScVal.scvAddress(
+            StellarSdk.xdr.ScAddress.scAddressTypeContract(
+                StellarSdk.StrKey.decodeContract(NATIVE_XLM_CONTRACT)
+            )
+        ),
+        // amount: i128
+        StellarSdk.xdr.ScVal.scvI128(new StellarSdk.xdr.Int128Parts({
+            hi: new StellarSdk.xdr.Int64(0),
+            lo: new StellarSdk.xdr.Uint64(stroops)
+        }))
+    );
+
+    let tx = new StellarSdk.TransactionBuilder(account, {
+        fee: fee.toString(),
+        networkPassphrase: StellarSdk.Networks.TESTNET,
+    })
+    .addOperation(operation)
+    .setTimeout(60)
+    .build();
+
+    const simResult = await sorobanServer.simulateTransaction(tx);
+    if (rpc.Api.isSimulationError(simResult)) {
+        throw new Error(`Soroban simulation failed: ${simResult.error}`);
+    }
+
+    tx = rpc.assembleTransaction(tx, simResult).build();
+    const txXdr = tx.toXDR();
+    
+    const signedResp: any = await signTransaction(txXdr, {
+        networkPassphrase: StellarSdk.Networks.TESTNET,
     });
-  }
 
-  // Format amount securely (e.g., 50 -> "50.0000000")
-  const formattedAmount = Number(amount).toFixed(7);
+    if (signedResp?.error) {
+        throw new Error(`Freighter signing failed: ${JSON.stringify(signedResp.error)}`);
+    }
 
-  // Live Mode: Execute a real Stellar Testnet Transaction using the actual amount
-  return await executeTestnetTransaction(publicKey, formattedAmount); 
+    const finalXdr = typeof signedResp === 'string' ? signedResp : signedResp.signedTxXdr;
+    const signedTx = StellarSdk.TransactionBuilder.fromXDR(finalXdr, StellarSdk.Networks.TESTNET);
+    
+    const sendResult = await sorobanServer.sendTransaction(signedTx);
+    if (sendResult.status === 'ERROR') {
+        throw new Error(`Soroban submission failed: ${sendResult.errorResult}`);
+    }
+
+    let getResult = await sorobanServer.getTransaction(sendResult.hash);
+    let attempts = 0;
+    while (getResult.status === rpc.Api.GetTransactionStatus.NOT_FOUND && attempts < 30) {
+        await new Promise(r => setTimeout(r, 2000));
+        getResult = await sorobanServer.getTransaction(sendResult.hash);
+        attempts++;
+    }
+
+    if (getResult.status === rpc.Api.GetTransactionStatus.FAILED) {
+        throw new Error(`Soroban transaction failed: ${JSON.stringify(getResult)}`);
+    }
+
+    return sendResult.hash;
 };
 
 export const submitFactoringRequest = async (
@@ -89,17 +154,13 @@ export const submitFactoringRequest = async (
     invoiceSecret?: string,
     nullifierSecret?: string,
 ): Promise<string> => {
-    if (isDemo) {
-        return new Promise(resolve => setTimeout(() =>
-            resolve(`demo_zk_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`), 3000
-        ));
-    }
-
     // Step 1: Generate inputs
     const secret = invoiceSecret || crypto.randomUUID().replace(/-/g, '');
     const nullSecret = nullifierSecret || crypto.randomUUID().replace(/-/g, '');
     const flooredFaceValue = Math.floor(faceValue);
-    const advanceRequested = Math.floor(flooredFaceValue * 0.9);
+    
+    // Stroops for advanced requested (90% factoring)
+    const advanceRequested = Math.floor(flooredFaceValue * 0.9 * 10000000);
 
     // Step 2: Generate proof + oracle attestation
     const proveResponse = await fetch('/api/zk/prove', {
@@ -108,7 +169,7 @@ export const submitFactoringRequest = async (
         body: JSON.stringify({
             type: 'invoice',
             invoiceAmount: flooredFaceValue,
-            advanceRequested,
+            advanceRequested: Math.floor(flooredFaceValue * 0.9),
             invoiceSecret: secret,
             invoiceCommitment: `0x${secret}`,
             nullifierSecret: nullSecret,
@@ -118,13 +179,13 @@ export const submitFactoringRequest = async (
 
     if (!proveResponse.ok) {
         const err = await proveResponse.json();
-        throw new Error(`Proof generation failed: ${err.error}`);
+        throw new Error(`Proof generation failed: ${err.error || JSON.stringify(err)}`);
     }
 
     const payload = await proveResponse.json();
-    const { attestation, publicInputs } = payload;
-    const { messageHash, signature, nullifier, timestamp } = attestation;
-    const realInvoiceCommitment = publicInputs[1];
+    const { attestation, publicInputs, proof } = payload;
+    const { nullifier } = attestation;
+    const realInvoiceCommitment = publicInputs[0] || publicInputs[1] || `0x${secret}`; 
 
     // Step 3: Build Soroban contract invocation using SorobanRpc
     const rpcUrl = process.env.NEXT_PUBLIC_SOROBAN_RPC_URL || 'https://soroban-testnet.stellar.org';
@@ -133,12 +194,17 @@ export const submitFactoringRequest = async (
         throw new Error('NEXT_PUBLIC_ESCROW_CONTRACT_ID env var is not set');
     }
 
-    // Convert attestation hex strings to Buffers for XDR encoding
-    const msgHashBuf = Buffer.from(messageHash, 'hex').slice(0, 32);
-    const sigBuf = Buffer.from(signature, 'hex').slice(0, 64);
+    // Convert proof to buffers
     const nullifierBuf = Buffer.from(nullifier.replace('0x', ''), 'hex').slice(0, 32);
-    // Invoice commitment = Poseidon(faceValue, secret)  for now use the raw secret hash
     const commitmentBuf = Buffer.from(realInvoiceCommitment.replace('0x', ''), 'hex').slice(0, 32);
+    const proofBuf = Buffer.from((proof || '').replace('0x', ''), 'hex');
+    const piBuf = Buffer.concat((publicInputs || []).map((pi: string) => {
+        const b = Buffer.from(pi.replace('0x', ''), 'hex');
+        // Pad each PI to 32 bytes
+        if (b.length === 32) return b;
+        if (b.length > 32) return b.slice(0, 32);
+        return Buffer.concat([b, Buffer.alloc(32 - b.length)]);
+    }));
 
     // Pad to exact byte lengths
     const padTo = (buf: Buffer, len: number): Buffer => {
@@ -163,6 +229,12 @@ export const submitFactoringRequest = async (
                 StellarSdk.Keypair.fromPublicKey(publicKey).xdrPublicKey()
             )
         ),
+        // token: Address (Native XLM)
+        StellarSdk.xdr.ScVal.scvAddress(
+            StellarSdk.xdr.ScAddress.scAddressTypeContract(
+                StellarSdk.StrKey.decodeContract(NATIVE_XLM_CONTRACT)
+            )
+        ),
         // advance_requested: i128
         StellarSdk.xdr.ScVal.scvI128(new StellarSdk.xdr.Int128Parts({
             hi: new StellarSdk.xdr.Int64(0),
@@ -172,12 +244,10 @@ export const submitFactoringRequest = async (
         StellarSdk.xdr.ScVal.scvBytes(padTo(commitmentBuf, 32)),
         // nullifier: BytesN<32>
         StellarSdk.xdr.ScVal.scvBytes(padTo(nullifierBuf, 32)),
-        // message_hash: BytesN<32>
-        StellarSdk.xdr.ScVal.scvBytes(padTo(msgHashBuf, 32)),
-        // oracle_signature: BytesN<64>
-        StellarSdk.xdr.ScVal.scvBytes(padTo(sigBuf, 64)),
-        // attestation_timestamp: u64
-        StellarSdk.xdr.ScVal.scvU64(new StellarSdk.xdr.Uint64(timestamp)),
+        // proof_bytes: Bytes
+        StellarSdk.xdr.ScVal.scvBytes(proofBuf),
+        // public_inputs_bytes: Bytes
+        StellarSdk.xdr.ScVal.scvBytes(piBuf)
     );
 
     // Build the transaction
@@ -212,7 +282,7 @@ export const submitFactoringRequest = async (
     const finalXdr = typeof signedResp === 'string' ? signedResp : signedResp.signedTxXdr;
     const signedTx = StellarSdk.TransactionBuilder.fromXDR(finalXdr, StellarSdk.Networks.TESTNET);
 
-    // Submit to Soroban RPC (not Horizon  Soroban contracts use RPC)
+    // Submit to Soroban RPC
     const sendResult = await sorobanServer.sendTransaction(signedTx);
     if (sendResult.status === 'ERROR') {
         throw new Error(`Soroban submission failed: ${sendResult.errorResult}`);
