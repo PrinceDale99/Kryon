@@ -225,3 +225,7 @@ Because Kryon is a highly ambitious protocol encompassing Zero-Knowledge machine
 
 ## 📄 License
 This project is licensed under the **MIT License**.
+
+---
+
+*Note: This project was developed for SparkFest 2026.*
