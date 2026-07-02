@@ -244,6 +244,14 @@ Kryon leverages powerful Google Cloud and Developer technologies to ensure scala
 
 ---
 
+## 👨‍💻 Developed By
+
+| Name | Role(s) |
+| :--- | :--- |
+| **Prince Dale Limosnero** | <ul><li>Lead Protocol Architect</li><li>Technical Product Manager</li><li>Stellar/Soroban Smart Contracts Engineer</li><li>Rust Blockchain Developer</li><li>Tokenomics & Yield Strategist</li><li>Zero-Knowledge (ZK) Cryptography Engineer</li><li>Noir Circuit Developer</li><li>Applied Cryptographer</li><li>ZK Identity (ZK-ID) Systems Architect</li><li>ZKML (Zero-Knowledge Machine Learning) Engineer</li><li>PyTorch Data Scientist</li><li>Credit Risk Modeling Analyst</li><li>Node.js Backend Orchestrator</li><li>ERP Integration Specialist (Stripe, QuickBooks, ERPNext)</li><li>Oracle Integration Engineer</li><li>Key-Value Database Administrator</li><li>Next.js Frontend Developer</li><li>Web3 UI/UX Designer</li><li>Freighter Wallet Integration Specialist</li><li>Frontend State Management Engineer</li><li>Cloud Infrastructure Engineer</li><li>DevOps & CI/CD Automation Engineer</li><li>Docker & Containerization Specialist</li><li>Site Reliability Engineer (SRE)</li><li>Smart Contract Security Auditor</li><li>Cryptographic Security Researcher</li><li>Data Privacy & Compliance Officer</li><li>Protocol Penetration Tester</li><li>QA Automation Engineer</li><li>Web3 Testnet Operator</li><li>DeFi Liquidity Manager</li><li>Developer Relations (DevRel) Engineer</li></ul> |
+
+---
+
 ## 📄 License
 This project is licensed under the **MIT License**.
 
