@@ -213,9 +213,9 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
 
 ---
 
-## 🏆 Hackathon Status & DoraHacks Submission Features
+## 🏆 Production Readiness & Implemented Features
 
-Unlike many ZK projects that rely on heavy off-chain simulations, Kryon is fully operational on the bleeding edge of the Soroban ecosystem. For our DoraHacks submission, we have implemented:
+Unlike many ZK projects that rely on heavy off-chain simulations, Kryon is fully operational on the bleeding edge of the Soroban ecosystem. We have implemented:
 
 - **Protocol 26 BN254 Native Groth16 Verification**: KryonEscrow smart contract fully enforces strict on-chain Groth16 verification using `env.crypto().bn254().pairing_check()`, natively evaluating the Noir proofs without fallback checks or simulated boolean bypasses.
 - **On-Chain Native Poseidon Merkle Trees**: The `IncrementalMerkleTree` performs state accumulation via full on-chain Poseidon hashing, eliminating the need for centralized oracles to sign off-chain tree roots.
