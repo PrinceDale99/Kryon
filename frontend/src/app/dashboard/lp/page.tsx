@@ -134,10 +134,11 @@ export default function LPDashboard() {
         className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
       >
         <motion.div variants={item} className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl p-8 rounded-3xl border border-slate-200/50 dark:border-slate-800/50 shadow-xl shadow-slate-200/20 dark:shadow-none relative overflow-hidden group hover:-translate-y-1 transition-transform">
+          <a href={`https://stellar.expert/explorer/testnet/contract/${process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ID || 'CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG'}`} target="_blank" rel="noreferrer" className="absolute inset-0 z-20"></a>
           <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity"><Layers className="w-24 h-24 text-blue-500" /></div>
           <div className="flex items-center space-x-4 mb-6">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl"><Layers className="w-6 h-6" /></div>
-            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest">Total Value Locked</h3>
+            <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">Total Value Locked <ArrowUpRight className="w-4 h-4 opacity-50" /></h3>
           </div>
           <div>
             <p className="text-5xl font-black tracking-tighter">{isDemoMode ? "2.45M" : treasuryBalance} <span className="text-2xl text-slate-400 font-medium tracking-normal">XLM</span></p>
