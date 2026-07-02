@@ -54,13 +54,13 @@ jobs:
           noirup
           
       - name: Compile KYC Circuit
-        working-directory: ./kryon_zk/kyc_circuit
+        working-directory: ./kryon_zk/kyc_proof
         run: |
           export PATH="$HOME/.nargo/bin:$PATH"
           nargo check || echo "Nargo check failed but CI continues"
           
       - name: Compile Invoice Circuit
-        working-directory: ./kryon_zk/invoice_circuit
+        working-directory: ./kryon_zk/invoice_proof
         run: |
           export PATH="$HOME/.nargo/bin:$PATH"
           nargo check || echo "Nargo check failed but CI continues"

@@ -6,14 +6,14 @@ echo "Kryon Network: VK Generation & Contract Initialization"
 echo "=========================================================="
 
 echo "[1] Generating Verifying Keys (VK) from Noir circuits..."
-cd kryon_zk/kyc_circuit
+cd kryon_zk/kyc_proof
 nargo check
 nargo prove kyc_proof || echo "Note: Proof generation expects inputs in Prover.toml"
 
 echo "\n[2] Extracting VK Artifacts..."
 # In production, nargo creates a verifier smart contract or we extract the raw bytes from the build artifact
 # We extract the VK hash from the compiled ACIR JSON payload using jq
-VK_HEX=$(cat target/kyc_circuit.json 2>/dev/null | grep -o '"bytecode":"[^"]*"' | cut -d'"' -f4 | sha256sum | awk '{print $1}')
+VK_HEX=$(cat target/kyc_proof.json 2>/dev/null | grep -o '"bytecode":"[^"]*"' | cut -d'"' -f4 | sha256sum | awk '{print $1}')
 if [ -z "$VK_HEX" ]; then
     # Fallback if circuit isn't compiled yet for the pipeline
     VK_HEX="0000000000000000000000000000000000000000000000000000000000000000"

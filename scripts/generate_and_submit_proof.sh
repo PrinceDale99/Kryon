@@ -7,7 +7,7 @@ echo "=========================================================="
 
 echo "[1] Compiling Noir circuit & Generating Groth16 Proof (Barretenberg)..."
 # In a real environment: nargo prove
-cd kryon_zk/kyc_circuit
+cd kryon_zk/kyc_proof
 nargo prove kyc_proof || echo "Proof generation requires valid inputs"
 cd ../..
 
