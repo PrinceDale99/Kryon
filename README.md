@@ -147,8 +147,8 @@ To run the entire suite locally (Frontend, ZK Backend, and Smart Contracts), ens
 
 ### Prerequisites
 1. **Node.js**: `v20.0.0` or higher (Required for Next.js and Noir Backend)
-2. **Rust**: `rustc 1.70.0+` with the `wasm32-unknown-unknown` target installed.
-3. **Soroban CLI**: `stellar-cli v22.0.0+` for smart contract compilation and deployment.
+2. **Rust**: `rustc 1.82.0+` with the `wasm32v1-none` target installed.
+3. **Stellar CLI**: `stellar-cli` (latest) for smart contract compilation and deployment.
 4. **Python**: `3.10+` (Required if you wish to recompile the EZKL PyTorch circuits).
 5. **Freighter Wallet**: The official browser extension installed and set to **Testnet**.
 
@@ -158,15 +158,15 @@ The backend heart of the protocol runs on Stellar's smart contract environment.
 ```bash
 cd kryon_contracts
 
-# Build the Rust contract into WASM
-soroban contract build
+# Build the Rust contract into WASM using the Protocol 26 target
+stellar contract build --target wasm32v1-none
 
 # Run the comprehensive test suite
 cargo test
 
 # Deploy to Testnet (Ensure you have a funded identity setup in stellar-cli)
-soroban contract deploy \
-  --wasm target/wasm32-unknown-unknown/release/kryon_escrow.wasm \
+stellar contract deploy \
+  --wasm target/wasm32v1-none/release/kryon_escrow.wasm \
   --source admin_wallet \
   --network testnet
 ```
