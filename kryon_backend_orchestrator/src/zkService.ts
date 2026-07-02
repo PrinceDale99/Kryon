@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { BarretenbergBackend } from '@noir-lang/backend_barretenberg';
 import { Noir } from '@noir-lang/noir_js';
-import * as invoiceCircuit from '../../kryon_zk/invoice_proof/target/invoice_proof.json';
-import * as kycCircuit from '../../kryon_zk/kyc_proof/target/kyc_proof.json';
+// Static JSON imports removed to prevent crash on startup if Noir artifacts aren't built yet
+// We will dynamically load them inside the methods.
 import { Horizon, Keypair, TransactionBuilder, Networks, Contract, xdr } from '@stellar/stellar-sdk';
 
 /**
@@ -42,9 +42,12 @@ export class ZKOrchestrator {
         console.log("Compiling Noir Circuit...");
         
         // Ensure @ts-ignore for hackathon mock types
-        // @ts-ignore
+        const artifactPath = path.resolve(__dirname, '../../kryon_zk/invoice_proof/target/invoice_proof.json');
+        if (!fs.existsSync(artifactPath)) {
+            throw new Error(`invoice_proof circuit not compiled at ${artifactPath}. Run nargo compile`);
+        }
+        const invoiceCircuit = JSON.parse(fs.readFileSync(artifactPath, 'utf-8'));
         const backend = new BarretenbergBackend(invoiceCircuit);
-        // @ts-ignore
         const noir = new Noir(invoiceCircuit, backend);
 
         const input = {
@@ -76,9 +79,12 @@ export class ZKOrchestrator {
     ) {
         console.log("Compiling KYC Circuit...");
         
-        // @ts-ignore
+        const artifactPath = path.resolve(__dirname, '../../kryon_zk/kyc_proof/target/kyc_proof.json');
+        if (!fs.existsSync(artifactPath)) {
+            throw new Error(`kyc_proof circuit not compiled at ${artifactPath}. Run nargo compile`);
+        }
+        const kycCircuit = JSON.parse(fs.readFileSync(artifactPath, 'utf-8'));
         const backend = new BarretenbergBackend(kycCircuit);
-        // @ts-ignore
         const noir = new Noir(kycCircuit, backend);
 
         const input = {
@@ -167,8 +173,8 @@ export class ZKOrchestrator {
         pathIndices: number[],   // 20 values: 0 or 1
         root: string             // public Merkle root
     ): Promise<Uint8Array> {
-        // @ts-ignore
-        const merkleCircuit = await import('../../kryon_zk/merkle_membership/target/merkle_membership.json');
+        const artifactPath = path.resolve(__dirname, '../../kryon_zk/merkle_membership/target/merkle_membership.json');
+        const merkleCircuit = JSON.parse(fs.readFileSync(artifactPath, 'utf-8'));
         // @ts-ignore
         const backend = new BarretenbergBackend(merkleCircuit);
         // @ts-ignore
@@ -192,8 +198,8 @@ export class ZKOrchestrator {
         totalLiabilities: number,
         blindingFactor: string
     ): Promise<Uint8Array> {
-        // @ts-ignore
-        const solvencyCircuit = await import('../../kryon_zk/solvency_proof/target/solvency_proof.json');
+        const artifactPath = path.resolve(__dirname, '../../kryon_zk/solvency_proof/target/solvency_proof.json');
+        const solvencyCircuit = JSON.parse(fs.readFileSync(artifactPath, 'utf-8'));
         // @ts-ignore
         const backend = new BarretenbergBackend(solvencyCircuit);
         // @ts-ignore
@@ -224,8 +230,8 @@ export class ZKOrchestrator {
         minimumAge: number,
         userSecret: string
     ): Promise<Uint8Array> {
-        // @ts-ignore
-        const ageCircuit = await import('../../kryon_zk/age_proof/target/age_proof.json');
+        const artifactPath = path.resolve(__dirname, '../../kryon_zk/age_proof/target/age_proof.json');
+        const ageCircuit = JSON.parse(fs.readFileSync(artifactPath, 'utf-8'));
         // @ts-ignore
         const backend = new BarretenbergBackend(ageCircuit);
         // @ts-ignore
