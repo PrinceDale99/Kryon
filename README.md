@@ -235,6 +235,15 @@ Here is a breakdown of how the project aligns with specific targets of SDG 9:
 
 ---
 
+## 🛠️ Google Technologies Used
+
+Kryon leverages powerful Google Cloud and Developer technologies to ensure scalability, persistence, and intelligent workflows:
+
+- **Firebase Firestore:** Used as a highly-available, fast NoSQL document database to securely persist Zero-Knowledge Identity Verification statuses globally across devices without exposing underlying PII.
+- **Google Fonts (Inter):** Integrated via Next.js for highly readable, modern, and perfectly optimized typography across the entire web application.
+
+---
+
 ## 📄 License
 This project is licensed under the **MIT License**.
 
