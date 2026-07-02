@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-
-const KV_BUCKET_URL = 'https://kvdb.io/6E8YCJv8JnU31fac64XVgE';
+import { db } from '../../../lib/firebase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
@@ -11,8 +11,9 @@ export async function GET(req: Request) {
   }
 
   try {
-    const res = await fetch(`${KV_BUCKET_URL}/${wallet}`);
-    if (res.status === 200) {
+    const docRef = doc(db, 'identities', wallet);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists() && docSnap.data().verified === true) {
         return NextResponse.json({ verified: true });
     }
     return NextResponse.json({ verified: false });
@@ -29,11 +30,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Wallet address required' }, { status: 400 });
     }
 
-    // Mark as verified in persistent KV store
-    await fetch(`${KV_BUCKET_URL}/${wallet}`, {
-        method: 'POST',
-        body: 'true'
-    });
+    // Mark as verified in persistent Firebase Firestore
+    const docRef = doc(db, 'identities', wallet);
+    await setDoc(docRef, {
+        verified: true,
+        updatedAt: new Date().toISOString()
+    }, { merge: true });
     
     return NextResponse.json({ success: true, verified: true });
   } catch (error) {
