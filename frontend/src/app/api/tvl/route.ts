@@ -7,7 +7,7 @@ export async function GET() {
         const contractId = process.env.NEXT_PUBLIC_ESCROW_CONTRACT_ID || 'CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG';
         
         const key = xdr.LedgerKey.contractData(new xdr.LedgerKeyContractData({
-            contract: xdr.ScAddress.scAddressTypeContract(StrKey.decodeContract(contractId)),
+            contract: xdr.ScAddress.scAddressTypeContract(StrKey.decodeContract(contractId) as any),
             key: xdr.ScVal.scvSymbol('Total'),
             durability: xdr.ContractDataDurability.persistent()
         }));
