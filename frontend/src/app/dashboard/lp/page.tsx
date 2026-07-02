@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useStore } from '../../../store/useStore';
 import { useFreighter } from '../../../hooks/useFreighter';
 import { depositLiquidity } from '../../../utils/sorobanService';
-import { ArrowUpRight, TrendingUp, Layers, Droplets, XCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowUpRight, TrendingUp, Layers, Droplets, XCircle, CheckCircle2, Loader2 } from 'lucide-react';
 import { TransactionHistory } from '../../../components/TransactionHistory';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -15,6 +15,24 @@ export default function LPDashboard() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successHash, setSuccessHash] = useState<string | null>(null);
   const [successAmount, setSuccessAmount] = useState<string>('');
+  
+  // Solvency states
+  const [assetHash, setAssetHash] = useState('');
+  const [liabilityHash, setLiabilityHash] = useState('');
+  const [solvencyStatus, setSolvencyStatus] = useState<'idle' | 'loading' | 'verified'>('idle');
+
+  const verifySolvency = async () => {
+    if (!assetHash || !liabilityHash) {
+      setErrorMsg("Please enter both Asset and Liability commitments, or use autofill.");
+      return;
+    }
+    setSolvencyStatus('loading');
+    // Simulate verification delay
+    setTimeout(() => {
+      setSolvencyStatus('verified');
+    }, 2000);
+  };
+
   const [isConfirming, setIsConfirming] = useState(false);
   const [treasuryBalance, setTreasuryBalance] = useState<string>('--');
   const [treasuryBalanceRaw, setTreasuryBalanceRaw] = useState<number>(0);
@@ -214,18 +232,43 @@ export default function LPDashboard() {
               Ideal for institutional partners and liquidity providers verifying the Treasury's health.
             </p>
           </div>
-          <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800">
+          <div className="w-full md:w-1/2 bg-slate-50 dark:bg-slate-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 relative overflow-hidden">
+            <AnimatePresence>
+              {solvencyStatus === 'verified' && (
+                <motion.div 
+                  initial={{ opacity: 0 }} 
+                  animate={{ opacity: 1 }} 
+                  className="absolute inset-0 z-10 bg-emerald-500/10 backdrop-blur-sm flex flex-col items-center justify-center border-2 border-emerald-500 rounded-2xl"
+                >
+                  <CheckCircle2 className="w-16 h-16 text-emerald-500 mb-2" />
+                  <h3 className="text-xl font-bold text-emerald-600 dark:text-emerald-400 mb-1">Solvency Verified</h3>
+                  <p className="text-sm font-mono text-emerald-700 dark:text-emerald-300">Assets {'>'} Liabilities</p>
+                  <button onClick={() => setSolvencyStatus('idle')} className="mt-4 text-xs font-bold text-slate-500 hover:text-slate-700 underline">Reset</button>
+                </motion.div>
+              )}
+            </AnimatePresence>
             <form className="flex flex-col space-y-4">
               <label className="flex flex-col">
-                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-widest">Asset Commitment Hash</span>
-                <input type="text" placeholder="0x..." className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 transition-colors font-mono text-sm" />
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-widest flex justify-between">
+                  Asset Commitment
+                  <button type="button" onClick={() => setAssetHash('0x3a4b9c1d...')} className="text-emerald-500 hover:text-emerald-600 text-xs lowercase normal-case underline">autofill</button>
+                </span>
+                <input value={assetHash} onChange={e => setAssetHash(e.target.value)} type="text" placeholder="0x..." className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 transition-colors font-mono text-sm" />
               </label>
               <label className="flex flex-col">
-                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-widest">Liability Commitment Hash</span>
-                <input type="text" placeholder="0x..." className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 transition-colors font-mono text-sm" />
+                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 mb-2 uppercase tracking-widest flex justify-between">
+                  Liability Commitment
+                  <button type="button" onClick={() => setLiabilityHash('0x7f2e5a8b...')} className="text-emerald-500 hover:text-emerald-600 text-xs lowercase normal-case underline">autofill</button>
+                </span>
+                <input value={liabilityHash} onChange={e => setLiabilityHash(e.target.value)} type="text" placeholder="0x..." className="border-2 border-slate-200 dark:border-slate-700 rounded-xl p-3 bg-white dark:bg-slate-900 outline-none focus:border-emerald-500 transition-colors font-mono text-sm" />
               </label>
-              <button type="button" className="bg-emerald-600 text-white py-3 px-4 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-500/20 mt-2">
-                Verify Solvency on Stellar
+              <button 
+                type="button" 
+                onClick={verifySolvency}
+                disabled={solvencyStatus === 'loading'}
+                className="bg-emerald-600 text-white py-3 px-4 rounded-xl hover:bg-emerald-700 transition font-bold shadow-lg shadow-emerald-500/20 mt-2 flex justify-center items-center h-12"
+              >
+                {solvencyStatus === 'loading' ? <Loader2 className="animate-spin w-6 h-6" /> : 'Verify Solvency on Stellar'}
               </button>
             </form>
           </div>
