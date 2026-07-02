@@ -45,21 +45,16 @@ export default function LPDashboard() {
     }
     const fetchTVL = async () => {
       try {
-        const res = await fetch('https://horizon-testnet.stellar.org/accounts/GAUXUXIXXY2TUD64ZHKG3K6P6B3O3Y3T2C7F7D2QZQZ2Z2Z2Z2Z2Z2Z2');
-        if (res.ok) {
-          const data = await res.json();
-          const native = data.balances.find((b: any) => b.asset_type === 'native');
-          if (native) {
-            const num = parseFloat(native.balance);
-            setTreasuryBalanceRaw(num);
-            if (num > 1000000) {
-              setTreasuryBalance((num / 1000000).toFixed(2) + 'M');
-            } else if (num > 1000) {
-              setTreasuryBalance((num / 1000).toFixed(1) + 'k');
-            } else {
-              setTreasuryBalance(num.toLocaleString());
-            }
-          }
+        const res = await fetch('/api/tvl');
+        const data = await res.json();
+        if (data.success) {
+          const val = data.tvl;
+          setTreasuryBalanceRaw(val);
+          setTreasuryBalance(
+            val >= 1000000 ? (val / 1000000).toFixed(2) + 'M' :
+            val >= 1000 ? (val / 1000).toFixed(1) + 'k' :
+            val.toString()
+          );
         }
       } catch (e) {
         console.error("Failed to fetch TVL", e);
