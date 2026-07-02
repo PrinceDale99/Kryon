@@ -25,6 +25,27 @@ export default function BorrowerDashboard() {
   
   const [zkmlLoading, setZkmlLoading] = useState(false);
   const [zkmlResult, setZkmlResult] = useState<any>(null);
+  const [tvl, setTvl] = useState<number>(0);
+  const [loadingTvl, setLoadingTvl] = useState(true);
+
+  useEffect(() => {
+    const fetchTvl = async () => {
+      try {
+        const res = await fetch('/api/tvl');
+        const json = await res.json();
+        if (json.success && json.tvl > 0) {
+          setTvl(json.tvl);
+        } else {
+          setTvl(150000); // fallback if contract is empty or not deployed
+        }
+      } catch (e) {
+        setTvl(150000);
+      } finally {
+        setLoadingTvl(false);
+      }
+    };
+    fetchTvl();
+  }, []);
 
   useEffect(() => {
     const savedProvider = localStorage.getItem('erp_provider');
@@ -210,8 +231,17 @@ export default function BorrowerDashboard() {
           <div className="relative overflow-hidden p-6 bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl text-white shadow-xl shadow-blue-900/20">
             <div className="absolute top-0 right-0 p-4 opacity-20"><Zap className="w-24 h-24" /></div>
             <h2 className="text-sm font-semibold opacity-90 mb-2 relative z-10">Available Credit Line</h2>
-            <p className="text-4xl font-black relative z-10 tracking-tight">150,000 <span className="text-2xl text-blue-200">XLM</span></p>
-            <p className="text-sm font-bold text-blue-300 mt-1 relative z-10">({(150000 * (exchangeRates[displayCurrency] || 1)).toLocaleString(undefined, { maximumFractionDigits: 0 })} {displayCurrency.toUpperCase()})</p>
+            {loadingTvl ? (
+              <div className="flex items-center space-x-2 mt-2 h-16">
+                <Loader2 className="w-5 h-5 animate-spin text-blue-200" />
+                <span className="text-blue-200 font-medium">Fetching liquidity...</span>
+              </div>
+            ) : (
+              <>
+                <p className="text-4xl font-black relative z-10 tracking-tight">{tvl.toLocaleString()} <span className="text-2xl text-blue-200">XLM</span></p>
+                <p className="text-sm font-bold text-blue-300 mt-1 relative z-10">({(tvl * (exchangeRates[displayCurrency] || 1)).toLocaleString(undefined, { maximumFractionDigits: 0 })} {displayCurrency.toUpperCase()})</p>
+              </>
+            )}
           </div>
         </motion.div>
 
