@@ -213,6 +213,16 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
 
 ---
 
+## 🌐 Deployment
+
+### Test Net Transaction
+- Contract / App Address: `CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG` 
+- 📸 Screenshot — Stellar Expert (Testnet)
+  ![Testnet Screenshot](public/testnetKryon.png)
+- Link: [Stellar Expert Testnet](https://stellar.expert/explorer/testnet/contract/CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG)
+
+---
+
 ## 🏆 Production Readiness & Implemented Features
 
 Unlike many ZK projects that rely on heavy off-chain simulations, Kryon is fully operational on the bleeding edge of the Soroban ecosystem. We have implemented:
