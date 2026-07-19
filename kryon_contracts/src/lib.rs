@@ -130,4 +130,17 @@ impl KryonEscrow {
             (invoice_commitment, advance_requested)
         );
     }
+
+    
+    // Feature: Time-Locked Bounties (Refunds)
+    pub fn set_deadline(env: Env, admin: Address, deadline: u64) {
+        admin.require_auth();
+        env.storage().instance().set(&symbol_short!("DEADLINE"), &deadline);
+    }
+    pub fn refund(env: Env, from: Address, token: Address) {
+        let deadline: u64 = env.storage().instance().get(&symbol_short!("DEADLINE")).unwrap_or(0);
+        if env.ledger().timestamp() < deadline { panic!("Deadline not reached"); }
+    }
+
+    // ADD_FEATURES_HERE
 }
