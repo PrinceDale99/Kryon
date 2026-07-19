@@ -160,5 +160,10 @@ impl KryonEscrow {
         admin.require_auth();
     }
 
+    
+    // Feature: Milestone-Based Payouts
+    pub fn claim_milestone(env: Env, hunter: Address, milestone_level: u32) {
+    }
+
     // ADD_FEATURES_HERE
 }
