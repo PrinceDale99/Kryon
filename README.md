@@ -278,17 +278,7 @@ Unlike many ZK projects that rely on heavy off-chain simulations, Kryon is fully
 
 ---
 
-## 🧪 Remaining Mock Features (For Presentation/Iteration)
 
-While the core protocol cryptography is fully implemented on-chain, a few frontend and off-chain elements retain "mock" fallbacks to ensure smooth local testing and presentations:
-1. **Mock ERP Connections:** The frontend features a "Demo Mode" toggle that bypasses the live Stripe/QuickBooks OAuth flow and instead injects a list of pre-set mock invoices (e.g. Apple Inc. - $50,000) so evaluators can test the factoring pipeline without needing real API keys.
-2. **ZKML Fallback Generation:** The Next.js API route (`/api/zkml/route.ts`) will attempt to contact the live EZKL PyTorch microservice. If the microservice is asleep or unreachable on the free-tier host, it gracefully falls back to a Gemini AI simulated ZKML response to prevent the UI from deadlocking.
-3. **Transaction History Empty States:** The `TransactionHistory.tsx` component injects a few visually formatted mock transactions (`"Mock TX"`) into the UI if the user's wallet has no historical activity on the ledger yet.
-4. **Local Orchestrator Bypasses:** The Noir Orchestrator (`kryon_backend_orchestrator`) includes a `test_mock.ts` script that intentionally bypasses the heavy 15-second Barretenberg SNARK generation to allow rapid UI/UX iteration without melting laptop CPUs.
-5. **VC & Shielded Pool Demos:** The W3C VC Selective Disclosure script (`vc_pipeline/issue_and_prove.js`) generates a valid JSON-LD credential but uses placeholder bytes for the ZK selective disclosure proof. Similarly, the shielded pool demo script generates stealth addresses cryptographically but the end-to-end asset commitment is currently a structural skeleton.
-6. **VK Extraction Script:** The `run_invoice_demo.sh` script simulates the extraction of the Verifying Key to a dummy hex file to save time during live presentations, though the actual circuit compilation step is real.
-
----
 
 ## 🌍 Alignment with SDG 9: Industry, Innovation and Infrastructure
 
