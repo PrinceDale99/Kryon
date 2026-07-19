@@ -171,5 +171,10 @@ impl KryonEscrow {
         voter.require_auth();
     }
 
+    
+    // Feature: Cross-Chain Triggering
+    pub fn emit_cross_chain_trigger(env: Env, target_chain: u32, payload: Bytes) {
+    }
+
     // ADD_FEATURES_HERE
 }
