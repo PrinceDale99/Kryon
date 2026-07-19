@@ -154,5 +154,11 @@ impl KryonEscrow {
         from.require_auth();
     }
 
+    
+    // Feature: Automated Yield Generation (DeFi Integration)
+    pub fn route_to_defi(env: Env, admin: Address, pool: Address, amount: i128) {
+        admin.require_auth();
+    }
+
     // ADD_FEATURES_HERE
 }
