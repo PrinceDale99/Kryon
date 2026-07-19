@@ -280,3 +280,4 @@ This project is licensed under the **MIT License**.
 
 ## User Recommendation / Feedback:
 - **Time-Locked Bounties (Refunds)**: Implemented in commit `a46a227`
+- **Spam Prevention (Staking and Slashing)**: Implemented in commit `31c8e03`
