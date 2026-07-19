@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kryon Network Pitch Deck</title>
+    <style>
+        :root {
+            --bg-color: #0b0c10;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f5f6f9;
+            --text-muted: #94a3b8;
+            --accent-cyan: #00f2fe;
+            --accent-purple: #4facfe;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Slide Container */
+        .presentation-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 8%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            background: radial-gradient(circle at 80% 20%, rgba(79, 172, 254, 0.05) 0%, transparent 50%),
+                        radial-gradient(circle at 10% 80%, rgba(0, 242, 254, 0.03) 0%, transparent 50%);
+        }
+
+        .slide.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Typography & Layout elements */
+        h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            letter-spacing: -0.05em;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--text-main), var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .title-slide h1 {
+            font-size: 5.5rem;
+            background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        h2 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 2.5rem;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.8rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .tag {
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            color: var(--accent-cyan);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        p.large-body {
+            font-size: 1.8rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            max-width: 85%;
+        }
+
+        /* Grid & List Component System */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 2.5rem;
+            backdrop-filter: blur(12px);
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(0, 242, 254, 0.3);
+        }
+
+        .card-num {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+            margin-bottom: 1.5rem;
+        }
+
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .card p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .list-clean {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            max-width: 90%;
+        }
+
+        .list-clean li {
+            font-size: 1.4rem;
+            line-height: 1.5;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .list-clean li::before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-purple);
+            border-radius: 50%;
+        }
+
+        .list-clean strong {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .links-container {
+            margin-top: 3rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .link-item {
+            font-size: 1.3rem;
+            color: var(--accent-cyan);
+            text-decoration: none;
+            font-family: monospace;
+        }
+
+        /* Controls UI */
+        .controls {
+            position: absolute;
+            bottom: 2.5rem;
+            right: 4rem;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            z-index: 100;
+            user-select: none;
+        }
+
+        .nav-btn {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-muted);
+        }
+
+        .slide-indicator {
+            font-size: 1rem;
+            color: var(--text-muted);
+            font-family: monospace;
+            min-width: 4rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presentation-container">
+        
+        <!-- Slide 1 -->
+        <div class="slide title-slide active">
+            <h1>Kryon Network</h1>
+            <p class="subtitle">Liquid Capital for Moving Businesses.</p>
+            <div class="tag" style="margin-top: 2rem;">Decentralized B2B invoice factoring powered by Stellar and Soroban</div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="slide">
+            <div class="tag">Market Inefficiencies</div>
+            <h2>The Cash Flow Bottleneck for MSMEs</h2>
+            <ul class="list-clean">
+                <li><strong>The Wait:</strong> Rigid Net-30/60/90 payment terms freeze working capital for months, stalling growth.</li>
+                <li><strong>The Gatekeepers:</strong> Centralized traditional factoring options remain slow, heavy on manual paperwork, and aggressively expensive.</li>
+                <li><strong>The Exclusion:</strong> Smaller emerging operations are systemically rejected by structural legacy credit scoring models.</li>
+            </ul>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="slide">
+            <div class="tag">Core Paradigm</div>
+            <h2>Instant Liquidity. Zero Middlemen.</h2>
+            <p class="large-body">
+                Kryon brings commercial invoice factoring fully on-chain. We empower operating businesses to directly tokenize verified open invoices and draw down immediate, friction-free working capital from decentralized liquidity pools.
+            </p>
+        </div>
+
+        <!-- Slide 4 -->
+        <div class="slide">
+            <div class="tag">Workflow Execution</div>
+            <h2>How It Works</h2>
+            <div class="grid-3" style="margin-top: 1rem;">
+                <div class="card">
+                    <div class="card-num">01</div>
+                    <h3>Connect & Tokenize</h3>
+                    <p>The operating business cleanly syncs their verified accounting or ERP system to mint an immutable programmatic invoice token.</p>
+                </div>
+                <div class="card">
+                    <div class="card-num">02</div>
+                    <h3>Cryptographic Verification</h3>
+                    <p>Zero-Knowledge (ZK) proofs actively validate invoice legitimacy and vendor records without exposing any sensitive or proprietary corporate data.</p>
+                </div>
+                <div class="card">
+                    <div class="card-num">03</div>
+                    <h3>Instant Funding</h3>
+                    <p>Soroban smart contracts handle instantaneous settlement routing, deploying institutional USDC liquidity directly to the borrower's wallet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5 -->
+        <div class="slide">
+            <div class="tag">Protocol Foundations</div>
+            <h2>Powered by Stellar & Soroban</h2>
+            <ul class="list-clean">
+                <li><strong>Soroban Smart Contracts:</strong> Custom-engineered, ultra-secure automated escrow logic and programmatic risk assessment layer written entirely in Rust.</li>
+                <li><strong>Enterprise Execution Speed:</strong> Fast sub-second transaction finality paired with optimized, near-zero network transaction overhead fees.</li>
+                <li><strong>Global Standard Assets:</strong> Fully native USDC integration providing a highly stable pool architecture alongside global asset on/off-ramps.</li>
+            </ul>
+        </div>
+
+        <!-- Slide 6 -->
+        <div class="slide">
+            <div class="tag">Liquidity Dynamics</div>
+            <h2>Real-World Yield for DeFi Providers</h2>
+            <ul class="list-clean">
+                <li>DeFi Liquidity Providers (LPs) seamlessly supply liquidity by routing stable USDC directly into underlying systemic protocol pools.</li>
+                <li>Upon verified clearing and final corporate settlement of the invoice, the Soroban smart contract completely closes out the dynamic pool position.</li>
+                <li>Principal capital alongside the calculated organic discount interest rate flows straight back to pool LPs, delivering predictable yield backed by genuine economic activity.</li>
+            </ul>
+        </div>
+
+        <!-- Slide 7 -->
+        <div class="slide">
+            <div class="tag">Engineering Architecture</div>
+            <h2>Proven Architecture</h2>
+            <div class="grid-3" style="margin-top: 1rem;">
+                <div class="card">
+                    <h3>Frontend Stack</h3>
+                    <p>Engineered via React and Next.js as a high-performance, rapid-loading progressive web application interface.</p>
+                </div>
+                <div class="card">
+                    <h3>Wallet Core</h3>
+                    <p>Secured via clean, native non-custodial transaction authorization utilizing Freighter Wallet integrations.</p>
+                </div>
+                <div class="card">
+                    <h3>Network State</h3>
+                    <p>All core smart contracts are fully engineered, tested, and actively running live across the Horizon Testnet infrastructure.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8 -->
+        <div class="slide">
+            <div class="tag">Market Vector Expansion</div>
+            <h2>Scalable Across High-Velocity Sectors</h2>
+            <div class="grid-3" style="margin-top: 1rem;">
+                <div class="card">
+                    <h3>B2B Logistics</h3>
+                    <p>Unlocking vital operational capital immediately upon real-time validation of digital proof-of-delivery waybills.</p>
+                </div>
+                <div class="card">
+                    <h3>Micro-Transit</h3>
+                    <p>Factoring upcoming public utility and cooperative transport subsidies to guarantee timely fleet optimization and upkeep.</p>
+                </div>
+                <div class="card">
+                    <h3>Local Commerce</h3>
+                    <p>Financing fast aggregated wholesale order fulfillment runs across high-density neighborhood community retail clusters.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9 -->
+        <div class="slide">
+            <div class="tag">Execution Horizon</div>
+            <h2>Product Roadmap</h2>
+            <div class="grid-3" style="margin-top: 1rem;">
+                <div class="card">
+                    <div class="card-num">Phase 1 (Achieved)</div>
+                    <p>Next.js functional MVP application layer framework, native Freighter integration testing, and comprehensive testnet contract deployments.</p>
+                </div>
+                <div class="card">
+                    <div class="card-num">Phase 2 (Upcoming)</div>
+                    <p>Automated cloud ERP transaction parsing pipelines alongside the integration of initial dedicated off-chain Zero-Knowledge proving infrastructure.</p>
+                </div>
+                <div class="card">
+                    <div class="card-num">Phase 3 (Scale)</div>
+                    <p>Formally audited mainnet liquidity pool launch, institutional B2B enterprise testing runs, and decentralized protocol governance structures.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10 -->
+        <div class="slide">
+            <div class="tag">Conclusion</div>
+            <h2>Dematerializing Commercial Friction</h2>
+            <p class="large-body">Interact with the protocol or inspect the codebase today.</p>
+            
+            <div class="links-container">
+                <a href="https://kryonnetwork.vercel.app" target="_blank" class="link-item">Live App: kryonnetwork.vercel.app</a>
+                <a href="https://github.com/PrinceDale99/Kryon" target="_blank" class="link-item">Repository: github.com/PrinceDale99/Kryon</a>
+            </div>
+        </div>
+
+        <!-- Controls UI -->
+        <div class="controls">
+            <button class="nav-btn" id="prevBtn">&#8592;</button>
+            <div class="slide-indicator" id="indicator">1 / 10</div>
+            <button class="nav-btn" id="nextBtn">&#8594;</button>
+        </div>
+
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const indicator = document.getElementById('indicator');
+        let currentSlide = 0;
+
+        function updateSlides() {
+            slides.forEach((slide, index) => {
+                if (index === currentSlide) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            indicator.textContent = `${currentSlide + 1} / ${slides.length}`;
+        }
+
+        function showNext() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlides();
+            }
+        }
+
+        function showPrev() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlides();
+            }
+        }
+
+        nextBtn.addEventListener('click', showNext);
+        prevBtn.addEventListener('click', showPrev);
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                showNext();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                showPrev();
+            }
+        });
+    </script>
+</body>
+</html>
