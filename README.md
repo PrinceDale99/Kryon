@@ -194,10 +194,6 @@ stellar contract deploy \
   --source admin_wallet \
   --network public
 ```
-- **Mainnet Address:** `CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO`
-- **Stellar Expert Link:** [View on Stellar Expert](https://stellar.expert/explorer/public/contract/CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO)
-- **Deployment Screenshot:** 
-  ![Mainnet Deployment](public/mainnet.png)
 
 *Note the output Contract ID. You will need to plug this into your frontend environment variables.*
 
@@ -258,6 +254,11 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
   ![Testnet Screenshot](public/testnetKryon.png)
 - Link: [Stellar Expert Testnet](https://stellar.expert/explorer/testnet/contract/CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG)
 
+- **Mainnet Address:** `CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO`
+- **Stellar Expert Link:** [View on Stellar Expert](https://stellar.expert/explorer/public/contract/CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO)
+- **Deployment Screenshot:** 
+  ![Mainnet Deployment](public/mainnet.png)
+  
 ---
 
 ## 🏆 Production Readiness & Implemented Features
@@ -309,8 +310,6 @@ Here is a breakdown of how the project aligns with specific targets of SDG 9:
 This project is licensed under the **MIT License**.
 
 ---
-
-*Note: This project was developed for SparkFest 2026.*
 
 ## User Recommendation / Feedback:
 - **Time-Locked Bounties (Refunds)**: Implemented in commit `a46a227`
@@ -383,7 +382,7 @@ This project is licensed under the **MIT License**.
 | Aaron Jeus Pizarras | `GA55N6TKDIQ2DZPYNHOH6QPVSJ3GJXMSX7MLL4BYZ2HIGFR5S2R5E6NY` | [52042a68...](https://stellar.expert/explorer/testnet/tx/52042a68c9846347f0729e29a4ef18ceb27d5bc542a1485fc0aebc73b501c256) |
 | Jimwell Steve Huerto | `GBOGORS46NPHNNJYSRXF6XKYSN4NWWBHLNDKH4DBEGSS6UHWI26MMTQ2` | [06254d54...](https://stellar.expert/explorer/testnet/tx/06254d541d693c0fe91e75684bdb69ab5bbc76c6872f40edd298651803b771ac) |
 
-## Mainnet Users (Low Balance Testing Accounts):
+## Mainnet Users:
 1. `GCVL4NAOUYCBXNURXM24SLOHZDYXXMCD6YHLN4YXDMWUSUV7ENCGXZEF`
 2. `GD4I2WQZD3E3DFHV2ESBPFLEG7X3JOKOTU2UCN3LZURZKF2Y5WHKAAJT`
 3. `GCF4W5PQKWTAEZURGCXY245G5ADUYOORBM6NQP23MHBWBFSFC3I3RLGK`
