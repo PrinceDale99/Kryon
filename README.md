@@ -9,6 +9,7 @@
 ## 🔗 Quick Links & Resources
 - **Twitter/X Launch Link:** [https://x.com/Aquamarine64049/status/2078713643290796036?s=20](https://x.com/Aquamarine64049/status/2078713643290796036?s=20)
 - **Pitch Deck:** [https://sincere-dog.staticdomains.app/pitchdeck](https://sincere-dog.staticdomains.app/pitchdeck)
+- **Product Feedback Form:** [Google Forms Link](https://docs.google.com/spreadsheets/d/1LeQyU5xgVqtsYiAjHNOlBHPGzelAcISQ9nYCAZR5kWI/edit?usp=sharing)
 - **Community Contribution:** [CONTRIBUTING.md](#)
 
 ## 📸 Platform Previews
