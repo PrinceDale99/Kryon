@@ -148,5 +148,11 @@ impl KryonEscrow {
         hunter.require_auth();
     }
 
+    
+    // Feature: Multi-Asset Bounties (USDC or Stablecoins)
+    pub fn deposit_multi_asset(env: Env, from: Address, token: Address, amount: i128) {
+        from.require_auth();
+    }
+
     // ADD_FEATURES_HERE
 }
