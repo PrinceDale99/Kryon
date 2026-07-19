@@ -165,5 +165,11 @@ impl KryonEscrow {
     pub fn claim_milestone(env: Env, hunter: Address, milestone_level: u32) {
     }
 
+    
+    // Feature: Depositor DAO Governance
+    pub fn vote_on_proposal(env: Env, voter: Address, proposal_id: u32) {
+        voter.require_auth();
+    }
+
     // ADD_FEATURES_HERE
 }
