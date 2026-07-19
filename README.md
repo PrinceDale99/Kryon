@@ -10,7 +10,7 @@
 - **Twitter/X Launch Link:** [https://x.com/Aquamarine64049/status/2078713643290796036?s=20](https://x.com/Aquamarine64049/status/2078713643290796036?s=20)
 - **Pitch Deck:** [https://sincere-dog.staticdomains.app/pitchdeck](https://sincere-dog.staticdomains.app/pitchdeck)
 - **Product Feedback Form:** [Google Forms Link](https://docs.google.com/spreadsheets/d/1LeQyU5xgVqtsYiAjHNOlBHPGzelAcISQ9nYCAZR5kWI/edit?usp=sharing)
-- **Community Contribution:** [CONTRIBUTING.md](#)
+- **Community Contribution:** [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## 📸 Platform Previews
 ### Dashboard
@@ -272,6 +272,9 @@ Unlike many ZK projects that rely on heavy off-chain simulations, Kryon is fully
 - **Multi-Prover Support**: Kryon embraces proving diversity. `scripts/circom_snarkjs_prover.js` demonstrates deep compatibility, showcasing how Circom and `snarkJS` can compile `.r1cs` circuits to generate BN254 Groth16 proofs fully ingestible by Soroban.
 - **Recursive Proof Batching**: Built a complete `aggregation` architecture demonstrating recursive proofs—where multiple leaf proofs are compressed into a single proof root off-chain, verified in one single instruction batch on Soroban to conserve WASM computational budgets.
 - **ZK-ML AI Risk Assessor**: We quantized an INT8 Neural Network into a localized Noir circuit, allowing SMBs to generate a secure credit risk score completely privately without leaking proprietary banking data to the public ledger.
+- **Multi-Signature Logic (M-of-N Threshold Approval)**: A full M-of-N multi-party approval system (`kryon_contracts/src/multisig.rs`) governs all privileged treasury operations. The `propose → approve → execute` pattern requires configurable threshold signers to collectively authorize large withdrawals, preventing any single admin from unilaterally draining the protocol treasury. Contract entrypoints: `ms_init`, `ms_propose`, `ms_approve`, `ms_execute`, `withdraw_multisig`.
+- **Cross-Border Flows (SEP-24 / SEP-31 Anchor Integration)**: Full Stellar SEP-24 interactive deposit/withdrawal and SEP-31 direct cross-border payment support is implemented across both the Soroban contract (`record_sep24_deposit`, `record_sep31_payment`, `confirm_anchor_settlement`) and the Next.js frontend API route (`/api/anchor`). The anchor integration uses `stellar.toml` discovery, SEP-10 Web Authentication, and on-chain memo-keyed settlement confirmation — enabling real fiat-to-XLM and XLM-to-fiat corridors (e.g. PHP ↔ XLM ↔ USD) for cross-border invoice factoring.
+
 
 ---
 
@@ -327,6 +330,9 @@ This project is licensed under the **MIT License**.
 - **Milestone-Based Payouts**: Implemented in commit `726ee79`
 - **Depositor DAO Governance**: Implemented in commit `50f0bd2`
 - **Cross-Chain Triggering**: Implemented in commit `3f1c5d5`
+- **Multi-Signature Logic (M-of-N Threshold Approval)**: Implemented — `kryon_contracts/src/multisig.rs` + `ms_init/ms_propose/ms_approve/ms_execute/withdraw_multisig` contract entrypoints
+- **Cross-Border Flows (SEP-24 / SEP-31 Anchor Integration)**: Implemented — `kryon_contracts/src/sep.rs`, `record_sep24_deposit`, `record_sep31_payment`, `confirm_anchor_settlement` on-chain + `frontend/src/app/api/anchor/route.ts`
+- **Community CONTRIBUTING.md**: Implemented — [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## Mainnet Users:
 
