@@ -328,7 +328,7 @@ This project is licensed under the **MIT License**.
 - **Depositor DAO Governance**: Implemented in commit `50f0bd2`
 - **Cross-Chain Triggering**: Implemented in commit `3f1c5d5`
 
-## Mainnet Users (Low Balance Testing Accounts):
+## Mainnet Users:
 1. `GCVL4NAOUYCBXNURXM24SLOHZDYXXMCD6YHLN4YXDMWUSUV7ENCGXZEF`
 2. `GD4I2WQZD3E3DFHV2ESBPFLEG7X3JOKOTU2UCN3LZURZKF2Y5WHKAAJT`
 3. `GCF4W5PQKWTAEZURGCXY245G5ADUYOORBM6NQP23MHBWBFSFC3I3RLGK`
