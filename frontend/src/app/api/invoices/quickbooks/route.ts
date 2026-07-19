@@ -1,9 +1,11 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export async function GET() {
   try {
-    const qboToken = process.env.QBO_ACCESS_TOKEN;
-    const companyId = process.env.QBO_COMPANY_ID;
+    const cookieStore = await cookies();
+    const qboToken = cookieStore.get('qb_token')?.value || process.env.QBO_ACCESS_TOKEN;
+    const companyId = cookieStore.get('qb_company')?.value || process.env.QBO_COMPANY_ID;
 
     if (!qboToken || !companyId) {
         throw new Error('QuickBooks token or company ID is missing.');

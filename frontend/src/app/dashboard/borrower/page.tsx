@@ -23,6 +23,13 @@ export default function BorrowerDashboard() {
   const [erpApiKey, setErpApiKey] = useState('');
   const [erpApiSecret, setErpApiSecret] = useState('');
   
+  const [showStripeModal, setShowStripeModal] = useState(false);
+  const [stripeSecretKey, setStripeSecretKey] = useState('');
+
+  const [showQbModal, setShowQbModal] = useState(false);
+  const [qbCompanyId, setQbCompanyId] = useState('');
+  const [qbToken, setQbToken] = useState('');
+
   const [zkmlLoading, setZkmlLoading] = useState(false);
   const [zkmlResult, setZkmlResult] = useState<any>(null);
   const [tvl, setTvl] = useState<number>(0);
@@ -76,19 +83,31 @@ export default function BorrowerDashboard() {
       setShowErpnextModal(true);
       return;
     }
+    if (provider === 'stripe' && !autoConnect && !showStripeModal) {
+      setShowStripeModal(true);
+      return;
+    }
+    if (provider === 'quickbooks' && !autoConnect && !showQbModal) {
+      setShowQbModal(true);
+      return;
+    }
 
     setIsConnectingErp(provider);
     try {
-      // If ERPNext is selected manually, submit the credentials to be stored as secure cookies
-      if (provider === 'erpnext' && !autoConnect) {
+      if (!autoConnect) {
+        let payload: any = { provider };
+        if (provider === 'erpnext') {
+          payload = { provider, erpnextUrl: erpUrl, apiKey: erpApiKey, apiSecret: erpApiSecret };
+        } else if (provider === 'stripe') {
+          payload = { provider, stripeSecretKey };
+        } else if (provider === 'quickbooks') {
+          payload = { provider, qbCompanyId, qbToken };
+        }
+        
         const sessionRes = await fetch('/api/erp/session', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            erpnextUrl: erpUrl,
-            apiKey: erpApiKey,
-            apiSecret: erpApiSecret
-          })
+          body: JSON.stringify(payload)
         });
         const sessionJson = await sessionRes.json();
         if (!sessionJson.success) {
@@ -104,6 +123,8 @@ export default function BorrowerDashboard() {
         if (json.data.length > 0) setSelectedInvoice(json.data[0].id);
         setErpConnected(provider);
         setShowErpnextModal(false);
+        setShowStripeModal(false);
+        setShowQbModal(false);
         
         localStorage.setItem('erp_provider', provider);
       } else {
@@ -590,16 +611,6 @@ export default function BorrowerDashboard() {
                     </button>
                   </div>
                   <div className="space-y-4 mb-8">
-                    <button 
-                      onClick={() => {
-                        setErpUrl('https://vertigral.s.frappe.cloud/');
-                        setErpApiKey('5d423e0da64fb28');
-                        setErpApiSecret('124a532af5e4830');
-                      }}
-                      className="w-full py-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 font-bold rounded-xl hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-colors border border-indigo-200 dark:border-indigo-800 text-sm mb-2"
-                    >
-                      Use Vertigral's ERP
-                    </button>
                     <div>
                       <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">ERPNext URL</label>
                       <input 
@@ -640,6 +651,100 @@ export default function BorrowerDashboard() {
                     disabled={isConnectingErp === 'erpnext'}
                   >
                     {isConnectingErp === 'erpnext' ? 'Connecting...' : 'Connect ERP'}
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            )}
+            
+            {showStripeModal && (
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
+              >
+                <motion.div 
+                  initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-black">Connect Stripe</h3>
+                    <button onClick={() => setShowStripeModal(false)} className="text-slate-400 hover:text-slate-600">
+                      <XCircle className="w-6 h-6" />
+                    </button>
+                  </div>
+                  <div className="space-y-4 mb-8">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Secret Key</label>
+                      <input 
+                        type="password" 
+                        value={stripeSecretKey} 
+                        onChange={e => setStripeSecretKey(e.target.value)} 
+                        placeholder="sk_test_..." 
+                        className="w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="text-center text-sm text-slate-500 mb-4 px-2">
+                    Leave blank to use the default platform account (environment variables)
+                  </div>
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => fetchLiveInvoices('stripe')} 
+                    className="w-full py-3 bg-[#635BFF] text-white font-bold rounded-xl shadow-lg hover:bg-[#524BEE] disabled:opacity-50"
+                    disabled={isConnectingErp === 'stripe'}
+                  >
+                    {isConnectingErp === 'stripe' ? 'Connecting...' : 'Connect Stripe'}
+                  </motion.button>
+                </motion.div>
+              </motion.div>
+            )}
+
+            {showQbModal && (
+              <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm"
+              >
+                <motion.div 
+                  initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.9, opacity: 0 }}
+                  className="bg-white dark:bg-slate-900 p-8 rounded-3xl shadow-2xl max-w-md w-full border border-slate-200 dark:border-slate-800"
+                >
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-black">Connect QuickBooks</h3>
+                    <button onClick={() => setShowQbModal(false)} className="text-slate-400 hover:text-slate-600">
+                      <XCircle className="w-6 h-6" />
+                    </button>
+                  </div>
+                  <div className="space-y-4 mb-8">
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Company ID</label>
+                      <input 
+                        type="text" 
+                        value={qbCompanyId} 
+                        onChange={e => setQbCompanyId(e.target.value)} 
+                        className="w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-slate-700 dark:text-slate-300 mb-1">Access Token</label>
+                      <input 
+                        type="password" 
+                        value={qbToken} 
+                        onChange={e => setQbToken(e.target.value)} 
+                        className="w-full bg-slate-100 dark:bg-slate-800 p-3 rounded-xl border-none focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                  <div className="text-center text-sm text-slate-500 mb-4 px-2">
+                    Leave blank to use the default platform account (environment variables)
+                  </div>
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => fetchLiveInvoices('quickbooks')} 
+                    className="w-full py-3 bg-[#2CA01C] text-white font-bold rounded-xl shadow-lg hover:bg-[#258a17] disabled:opacity-50"
+                    disabled={isConnectingErp === 'quickbooks'}
+                  >
+                    {isConnectingErp === 'quickbooks' ? 'Connecting...' : 'Connect QuickBooks'}
                   </motion.button>
                 </motion.div>
               </motion.div>

@@ -6,6 +6,21 @@
 
 ---
 
+## 🔗 Quick Links & Resources
+- **Twitter/X Launch Link:** [https://x.com/Aquamarine64049/status/2078713643290796036?s=20](https://x.com/Aquamarine64049/status/2078713643290796036?s=20)
+- **Pitch Deck:** [https://sincere-dog.staticdomains.app/pitchdeck](https://sincere-dog.staticdomains.app/pitchdeck)
+- **Technical Documentation:** [docs/technical_documentation.md](#)
+- **User Guide/Documentation:** [docs/user_guide.md](#)
+- **Community Contribution:** [CONTRIBUTING.md](#)
+
+## 📸 Platform Previews
+### Dashboard
+![Page Screenshot](public/HomeScreenshot.png)
+### Mobile Responsiveness
+![Mobile Responsiveness](public/mobile.png)
+### Data Analytics
+![Analytics](public/Analytics.png)
+
 ## 🛑 The Problem
 
 Small to Medium Businesses (SMBs) consistently face crippling cash flow bottlenecks due to standard Net-30, Net-60, or Net-90 invoice payment terms. Traditional invoice factoring is heavily centralized, opaque, painfully slow, and predatory—often charging exorbitant fees and requiring massive amounts of manual paperwork, invasive background audits, and extensive credit checks. Because legacy factoring companies possess all the leverage, SMBs are forced to leak proprietary trade secrets, supplier lists, and pricing data to third-party underwriters.
@@ -163,14 +178,37 @@ stellar contract build --target wasm32v1-none
 
 # Run the comprehensive test suite
 cargo test
+```
 
-# Deploy to Testnet (Ensure you have a funded identity setup in stellar-cli)
+#### Testnet Deployment
+```bash
 stellar contract deploy \
   --wasm target/wasm32v1-none/release/kryon_escrow.wasm \
   --source admin_wallet \
   --network testnet
 ```
+
+#### Mainnet Deployment
+```bash
+stellar contract deploy \
+  --wasm target/wasm32v1-none/release/kryon_escrow.wasm \
+  --source admin_wallet \
+  --network public
+```
+- **Mainnet Address:** `CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO`
+- **Stellar Expert Link:** [View on Stellar Expert](https://stellar.expert/explorer/public/contract/CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO)
+- **Deployment Screenshot:** 
+  ![Mainnet Deployment](public/mainnet.png)
+
 *Note the output Contract ID. You will need to plug this into your frontend environment variables.*
+
+---
+
+## 🛡️ Smart Contract Security Audit
+We have conducted a full security audit of the `KryonEscrow` Soroban Smart Contract for Mainnet readiness.
+- **Read the Full Audit Report:** [security.md](security.md)
+
+**Executive Summary:** The contract successfully utilizes native Protocol 26 BN254 verification, prevents replay attacks via nullifier uniqueness, and securely handles liquidity via the `soroban_sdk::token::Client`. The contract is deemed **SAFE** for Mainnet deployment.
 
 ### Phase 2: Starting the Noir ZK Orchestrator
 The orchestrator is a dedicated Node.js microservice handling the heavy Barretenberg proving logic for invoice integrity.

@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 
 export async function GET() {
   try {
-    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    const cookieStore = await cookies();
+    const stripeKey = cookieStore.get('stripe_secret')?.value || process.env.STRIPE_SECRET_KEY;
     if (!stripeKey) {
       throw new Error('Stripe Secret Key is missing.');
     }
