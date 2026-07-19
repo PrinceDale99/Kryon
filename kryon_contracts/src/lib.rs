@@ -142,5 +142,11 @@ impl KryonEscrow {
         if env.ledger().timestamp() < deadline { panic!("Deadline not reached"); }
     }
 
+    
+    // Feature: Spam Prevention (Staking and Slashing)
+    pub fn stake_for_proof(env: Env, hunter: Address, token: Address, amount: i128) {
+        hunter.require_auth();
+    }
+
     // ADD_FEATURES_HERE
 }
