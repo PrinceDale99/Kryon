@@ -251,6 +251,16 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
 
 ---
 
+## 🌐 Deployment
+
+### Test Net Transaction
+- Contract / App Address: `CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG` 
+- 📸 Screenshot — Stellar Expert (Testnet)
+  ![Testnet Screenshot](public/testnetKryon.png)
+- Link: [Stellar Expert Testnet](https://stellar.expert/explorer/testnet/contract/CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG)
+
+---
+
 ## 🏆 Production Readiness & Implemented Features
 
 Unlike many ZK projects that rely on heavy off-chain simulations, Kryon is fully operational on the bleeding edge of the Soroban ecosystem. We have implemented:
@@ -290,14 +300,8 @@ Here is a breakdown of how the project aligns with specific targets of SDG 9:
 
 ---
 
-## 🛠️ Google Technologies Used
-
-Kryon leverages powerful Google Cloud and Developer technologies to ensure scalability, persistence, and intelligent workflows:
-
-- **Google Gemini API:** Acted as the core autonomous AI agent co-pilot driving full-stack development, architectural design, codebase generation, and intelligent automation throughout the protocol's lifecycle.
-- **Firebase Firestore:** Used as a highly-available, fast NoSQL document database to securely persist Zero-Knowledge Identity Verification statuses globally across devices without exposing underlying PII.
-- **Google Analytics (via Firebase):** Integrated to track user interactions, telemetry, and platform engagement metrics.
-- **Google Fonts (Inter):** Integrated via Next.js for highly readable, modern, and perfectly optimized typography across the entire web application.
+### Demo Video: [KRYON DEMO VIDEO](https://www.youtube.com/watch?v=KU5zMwQjDOs)
+### Demo Link: [SYSTEM LINK](https://kryonnetwork.vercel.app/)
 
 ---
 
