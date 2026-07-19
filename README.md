@@ -285,3 +285,4 @@ This project is licensed under the **MIT License**.
 - **Automated Yield Generation (DeFi Integration)**: Implemented in commit `8b787c4`
 - **Milestone-Based Payouts**: Implemented in commit `726ee79`
 - **Depositor DAO Governance**: Implemented in commit `50f0bd2`
+- **Cross-Chain Triggering**: Implemented in commit `3f1c5d5`
