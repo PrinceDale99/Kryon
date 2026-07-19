@@ -277,3 +277,6 @@ This project is licensed under the **MIT License**.
 ---
 
 *Note: This project was developed for SparkFest 2026.*
+
+## User Recommendation / Feedback:
+- **Time-Locked Bounties (Refunds)**: Implemented in commit `a46a227`
