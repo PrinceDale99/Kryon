@@ -257,7 +257,7 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
 ### Main Net
 - Contract / App Address: `CBKJFKYUBHSG2AMMQ2RWM4NLB2TEU52IPTSAPN6TSJSJY5AC27QPQY5T` 
 - 📸 Screenshot — Stellar Expert (Mainnet)
-  ![Mainnet Screenshot](public/mainnet.png)
+  ![Mainnet Screenshot](public/mainnet2.png)
 - Link: [Stellar Expert Mainnet](https://stellar.expert/explorer/public/contract/CBKJFKYUBHSG2AMMQ2RWM4NLB2TEU52IPTSAPN6TSJSJY5AC27QPQY5T)
 
 ---
