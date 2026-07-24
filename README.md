@@ -248,12 +248,13 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
 
 ## 🌐 Deployment
 
-### Test Net Transaction
+### Test Net 
 - Contract / App Address: `CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG` 
 - 📸 Screenshot — Stellar Expert (Testnet)
   ![Testnet Screenshot](public/testnetKryon.png)
 - Link: [Stellar Expert Testnet](https://stellar.expert/explorer/testnet/contract/CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG)
 
+### Main Net
 - **Mainnet Address:** `CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO`
 - **Stellar Expert Link:** [View on Stellar Expert](https://stellar.expert/explorer/public/contract/CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO)
 - **Deployment Screenshot:** 
