@@ -255,11 +255,11 @@ Visit `http://localhost:3000` in your browser. Ensure your Freighter wallet is u
 - Link: [Stellar Expert Testnet](https://stellar.expert/explorer/testnet/contract/CD66AYN7K3O4EHKPPNETOZQL23UIBTBFYDI2EMNAWHQUC6FPBHQ5EOUG)
 
 ### Main Net
-- **Mainnet Address:** `CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO`
-- **Stellar Expert Link:** [View on Stellar Expert](https://stellar.expert/explorer/public/contract/CCSOWCGXDJSZJ3TLQOHHIC5YKD6XLF2WOSIZE5FLNDTXB73J76TXLDAO)
-- **Deployment Screenshot:** 
-  ![Mainnet Deployment](public/mainnet.png)
-  
+- Contract / App Address: `CBKJFKYUBHSG2AMMQ2RWM4NLB2TEU52IPTSAPN6TSJSJY5AC27QPQY5T` 
+- 📸 Screenshot — Stellar Expert (Mainnet)
+  ![Mainnet Screenshot](public/mainnet.png)
+- Link: [Stellar Expert Mainnet](https://stellar.expert/explorer/public/contract/CBKJFKYUBHSG2AMMQ2RWM4NLB2TEU52IPTSAPN6TSJSJY5AC27QPQY5T)
+
 ---
 
 ## 🏆 Production Readiness & Implemented Features
