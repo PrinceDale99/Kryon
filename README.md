@@ -10,6 +10,7 @@
 - **Twitter/X Launch Link:** [https://x.com/Aquamarine64049/status/2078713643290796036?s=20](https://x.com/Aquamarine64049/status/2078713643290796036?s=20)
 - **Pitch Deck:** [https://sincere-dog.staticdomains.app/pitchdeck](https://sincere-dog.staticdomains.app/pitchdeck)
 - **Product Feedback Form:** [Google Forms Link](https://docs.google.com/spreadsheets/d/1LeQyU5xgVqtsYiAjHNOlBHPGzelAcISQ9nYCAZR5kWI/edit?usp=sharing)
+- **Technical Blog:** [Revolutionizing DeFi and Enterprise Finance: An Inside Look at the Kryon Network](https://medium.com/@princedalelimosnero/revolutionizing-defi-and-enterprise-finance-an-inside-look-at-the-kryon-network-5be8eda9783a)
 - **Community Contribution:** [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 ## 📸 Platform Previews
